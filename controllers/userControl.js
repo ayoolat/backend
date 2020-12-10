@@ -1,13 +1,14 @@
 let userController = (app) =>{
-
     // require npm packages
     require('dotenv').config()
     const jwt = require('jsonwebtoken')
     const bcrypt = require('bcrypt')
+    const crypto = require('crypto')
 
     // exported modules
     let connection = require('../modules/db')
     const authenticateToken = require('../controllers/authentificate/authentification')
+    const imageUpload = require('../modules/fileUpload')
 
     console.log('users connected')
 
@@ -74,10 +75,10 @@ let userController = (app) =>{
     })
 
     // sign up User fromAdmin
-    app.post('/pace-time-sheet/newEmployeeSignUP', (req, res) => {
+    app.post('/pace-time-sheet/newEmployeeSignUP', authenticateToken, (req, res) => {
         permitDetails = req.respData.data.find(x => x.permitItem == 'Add user')
-        if(!!permitDetails){
-            if(permitDetails.permit = 'allowed'){
+        if(permitDetails){
+            if(permitDetails.permit ===  'allowed'){            
                 if(!req.body.email || !req.body.password || !req.body.roleID || !req.body.companyID || !req.body.expectedWorkHours || !req.body.billRateCharge || !req.body.staffRole){
                     res.send('All starred fields must be complete')
                 }
@@ -94,12 +95,12 @@ let userController = (app) =>{
                             '${req.body.billRateCharge}', '${req.body.staffRole}')`, 
                             (err, resp) =>{
                             if(err){
-                                res.statusCode = 401
+                                // res.statusCode = 401
                                 res.send(err)
                             }
         
                             if(resp){
-                                if (req.body.roleID === '2'){
+                                if (req.body.roleID === 2){
                                     // If user role is co-Admin (i.e roleID = 2)
                                     connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '1'), 
                                         ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
@@ -107,7 +108,7 @@ let userController = (app) =>{
                                         ('1', @@IDENTITY, '10'), ('1', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
                                         ('1', @@IDENTITY, '13'), ('1', @@IDENTITY, '13')`, (err, resp) => {
                                         if(err){
-                                            res.statusCode = 401
+                                            // res.statusCode = 401
                                             res.send(err)
                                         }
         
@@ -124,7 +125,7 @@ let userController = (app) =>{
                                         ('1', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
                                         ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
                                         if(err){
-                                            res.statusCode = 401
+                                            // res.statusCode = 401
                                             res.send(err)
                                         }
         
@@ -141,7 +142,7 @@ let userController = (app) =>{
                                         ('2', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('2', @@IDENTITY, '12'), 
                                         ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
                                         if(err){
-                                            res.statusCode = 401
+                                            // res.statusCode = 401
                                             res.send(err)
                                         }
         
@@ -157,8 +158,7 @@ let userController = (app) =>{
             }else{
                 res.send('You do not have permission to add a new user')
             }
-        } 
-       
+        }    
     })
 
     // **********************************************************************************************************
@@ -167,7 +167,7 @@ let userController = (app) =>{
     // login user
     app.post('/pace-time-sheet/login', (req, res) => {
         // get user with user email
-        connection.query(`SELECT s.firstName, s.password, s.lastName, s.companyID, permit, permitItem, roleID 
+        connection.query(`SELECT s.firstName, s.lastName, s.companyID, s.staffID, permit, permitItem, roleID 
         from permissions p JOIN staff s ON s.staffID = p.staffID 
         JOIN permitItem pi ON pi.permitItemID = p.permitItemID
         JOIN permit pe ON pe.permitID = p.permitID
@@ -230,9 +230,8 @@ let userController = (app) =>{
     // read user
     app.get('/pace-time-sheet/database/staff', authenticateToken, (req, res) => {
         permitDetails = req.respData.data.find(x => x.permitItem == 'View all company users')
-        companyID = req.respData.data.companyID
         if(!!permitDetails){
-            if(permitDetails.permit = 'allowed'){
+            if(permitDetails.permit === 'allowed'){
                 connection.query(`select * from staff where companyID = ${companyID}= `, (err, resp) => {
                     if(err) throw err
                     res.send(resp)
@@ -247,23 +246,25 @@ let userController = (app) =>{
     // ******************************************* UPDATE TABLES ************************************************
 
     // update company details
-    app.put('/pace-time-sheet/companyName/employeeSettings/:id', authenticateToken, (req, res) => {
+    app.put('/pace-time-sheet/companyName/companySettings/:id', authenticateToken, (req, res) => {
         permitDetails = req.respData.data.find(x => x.permitItem == 'Edit company settings')
         if(!!permitDetails){
-            if(permitDetails.permit = 'allowed'){
-                connection.query(`UPDATE staff SET firstName = '${req.body.firstName}', lastName='${req.body.lastName}',
-                phoneNumber =  '${req.body.phoneNumber}', address = '${req.body.address}', 
-                userName = '${req.body.userName}' WHERE staffID = ${req.params.id}`,
-                (err, resp) => {
-                    if(err){
-                        res.statusCode = 401
-                        res.send(err)
-                    }
-        
-                    if(resp){
-                        res.send('User details have been updated')
-                    }
-                })
+            if(permitDetails.permit === 'allowed'){
+                // if(permitDetails.companyID === `${req.params.companyID}`){
+                    connection.query(`UPDATE staff SET firstName = '${req.body.firstName}', lastName='${req.body.lastName}',
+                    phoneNumber =  '${req.body.phoneNumber}', address = '${req.body.address}', 
+                    userName = '${req.body.userName}' WHERE staffID = ${req.params.id}`,
+                    (err, resp) => {
+                        if(err){
+                            res.statusCode = 401
+                            res.send(err)
+                        }
+            
+                        if(resp){
+                            res.send('User details have been updated')
+                        }
+                    })
+                // }
             }else{
                 res.send('You do not have permission to edit details')
             }
@@ -274,24 +275,62 @@ let userController = (app) =>{
     })
 
     // update user details
-    app.put('/pace-time-sheet/companyName/employeeSettings/:id', authenticateToken, (req, res) => {
-        connection.query(`UPDATE staff SET firstName = '${req.body.firstName}', lastName='${req.body.lastName}',
-        phoneNumber =  '${req.body.phoneNumber}', address = '${req.body.address}', 
-        userName = '${req.body.userName}' WHERE staffID = ${req.params.id}`,
-        (err, resp) => {
-            if(err){
-                res.statusCode = 401
-                res.send(err)
-            }
+    app.put('/pace-time-sheet/companyName/employeeEdit/:id', authenticateToken, imageUpload.single('image'), (req, res) => {
+        permitDetails = req.respData.data.find(x => x.permitItem == 'Edit user billing and time')
+        if(!!permitDetails){
+            if(permit.staffID == req.params.id){
+                image = req.file.path.replace("/\\/g", "//")
+                connection.query(`UPDATE staff SET firstName = '${req.body.firstName}', lastName='${req.body.lastName}',
+                phoneNumber =  '${req.body.phoneNumber}', address = '${req.body.address}', 
+                userName = '${req.body.userName}', image = '${image}', lastUpdated = '${Date.now()}' WHERE staffID = ${req.params.id}`,
+                (err, resp) => {
+                    if(err){
+                        res.statusCode = 401
+                        res.send(err)
+                    }
 
-            if(resp){
-                res.send('User details have been updated')
-            } 
-        })    
+                    if(resp){
+                        res.send('User details have been updated')
+                    } 
+                })
+            }
+        }   
     })
 
-    // change password
-    app.put('/pace-time-sheet/companyName/changePassword', authenticateToken, (req, res) => {
+    // edit user billing and expected hours
+    app.put('/pace-time-sheet/companyName/employeeSettings/:id', authenticateToken, (req, res) => {
+        permitDetails = req.respData.data.find(x => x.permitItem == 'Edit user billing and time')
+        if(!!permitDetails){
+            if(permitDetails.permit === 'allowed'){
+                connection.query(`UPDATE staff SET expectedWorkHours = '${req.body.expectedWorkHours}', 
+                billRateCharge ='${req.body.billRateCharge}', lastUpdated = '${Date.now()}'
+                where staffID = ${req.params.id} and companyID = ${permitDetails.companyID}`,
+                (err, resp) => {
+                    if(err){
+                        // res.statusCode = 401
+                        res.send(err)
+                    }
+                    if(resp){
+                        let notified = {
+                            'staffID' : req.params.id,
+                            'heading' : 'User details update',
+                            'body' :  `Your bill rate charge has been updated to ${req.body.billRateCharge} and expected hours updated to ${req.body.expectedWorkHours}`,
+                            'status' : 'false'
+                        }
+                        logNotification(notified, res)
+                        res.send('User details have been updated')
+                    } 
+                })
+            }else{
+                res.send('You do not have permission to edit details')
+            }
+        }else{
+            return res.send('You do not have permission to edit details')
+        }  
+    })
+
+     // change password
+     app.put('/pace-time-sheet/companyName/changePassword', authenticateToken, (req, res) => {
         bcrypt.hash(req.body.password, 10, (err, hash) => {
             if(err){
                 res.statusCode = 401
@@ -312,36 +351,56 @@ let userController = (app) =>{
             }
         })
     })
+    
+    // reset password
+    app.post('/pace-time-sheet/companyName/passwordReset',(req, res) => {
+        passwordResetToken = crypto.randomBytes(20).toString('hex')
+        passwordResetExpires = date.now()+3600000
+        connection.query(`INSERT INTO staff (passwordResetToken, passwordResetExpires) 
+        VALUES (${passwordResetToken}, ${passwordResetExpires})`, (req, resp) => {
+            if(res){
+                connection.query(`SELECT passwordResetExpires FROM staff WHERE email = ${req.body.email}`)
 
-    // edit user billing and expected hours
-    app.put('/pace-time-sheet/companyName/employeeSettings/:id', authenticateToken, (req, res) => {
-        permitDetails = req.respData.data.find(x => x.permitItem == 'Edit user billing and time')
-        if(!!permitDetails){
-            if(permitDetails.permit = 'allowed'){
-                connection.query(`UPDATE staff SET expectedWorkHours = '${req.body.expectedWorkHours}', billingRate='${req.body.billingRate}'`,
-                (err, resp) => {
-                    if(err){
-                        res.statusCode = 401
-                        res.send(err)
-                    }
-        
-                    if(resp){
-                        let notified = {
-                            'staffID' : req.params.id,
-                            'heading' : 'User details update',
-                            'body' :  `Your bill rate charge has been updated to ${req.body.billRateCharge} and expected hours updated to ${req.body.expectedWorkHours}`,
-                            'status' : 'false'
-                        }
-                        logNotification(notified, res)
-                        res.send('User details have been updated')
-                    } 
-                })  
-            }else{
-                res.send('You do not have permission to edit details')
+                let  payload = {'data': resp}
+
+                //get token
+                let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, {expiresIn : '3600000'})
+
+                let respData = {
+                    'data' : resp,
+                    'accessToken' : accessToken
+                }
+
+                res.send(respData)
+
             }
-        }else{
-            return res.send('You do not have permission to edit details')
-        }  
+        })
+        
+        res.send('A reset password link has been sent to your mail')
+    })
+
+    app.post('/pace-time-sheet/passwordReset/:token',(req, res) => {
+        if(req.respData.data.passwordResetExpires > Date.now() ){
+            bcrypt.hash(req.body.password, 10, (err, hash) => {
+                if(err){
+                    res.statusCode = 401
+                    res.send(err)
+                }
+    
+                if(hash){
+                    connection.query(`password = '${req.body.hash}'`, (err, resp) => {
+                        if(err){
+                            res.statusCode = 401
+                            res.send(err)
+                        }
+    
+                        if(resp){
+                            res.send('Your password has been updated')
+                        }
+                    })
+                }
+            })
+        }
     })
 
     // delete company

@@ -9,7 +9,7 @@ function authenticateToken(req, res, next){
 
     jwt.verify(Token, process.env.ACCESS_TOKEN_KEY, (err, data) => {
         if(err) return res.send(err)
-        req.respData = data
+        // req.respData = data
         next()
     })
 }
