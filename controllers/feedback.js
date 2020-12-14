@@ -1,3 +1,5 @@
+// const nodemailer = require('nodemailer')
+
 const connection = require('../modules/db')
 module.exports = (app) => {
 
@@ -33,4 +35,5 @@ module.exports = (app) => {
             }
         })
     })
+
 }

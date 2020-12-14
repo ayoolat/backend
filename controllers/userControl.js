@@ -1,4 +1,4 @@
-let userController = (app) =>{
+let userController = (app) => {
     // require npm packages
     require('dotenv').config()
     const jwt = require('jsonwebtoken')
@@ -17,59 +17,59 @@ let userController = (app) =>{
 
     // sign up Company(post company)
     app.post('/pace-time-sheet/signUp', (req, res) => {
-        if(!req.body.email || !req.body.password){
+        if (!req.body.email || !req.body.password) {
             res.send('User must enter email and password')
         }
 
-        if(/^[a-zA-Z0-9_]{8,16}$/.test(req.body.password)){
+        if (/^[a-zA-Z0-9_]{8,16}$/.test(req.body.password)) {
             // hash password
             bcrypt.hash(req.body.password, 10, (err, hash) => {
                 // handle error
-                if(err) throw(err)
-                // handle success
-                if (hash){
+                if (err) throw (err)
+                    // handle success
+                if (hash) {
                     // add user/company into database
                     connection.query(`INSERT INTO company (companyName, password, email, companyType)
-                    VALUES ('${req.body.companyName}', '${hash}', '${req.body.email}', '${req.body.companyType}')`, 
-                    (err, resp) => {
-                        // handle error
-                        if(err){
-                            res.statusCode = 401
-                            res.end()
-                        }
-                        // handle success
-                        // Create admin user, add details to staff table
-                        if(resp){ 
-                            connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
+                    VALUES ('${req.body.companyName}', '${hash}', '${req.body.email}', '${req.body.companyType}')`,
+                        (err, resp) => {
+                            // handle error
+                            if (err) {
+                                res.statusCode = 401
+                                res.end()
+                            }
+                            // handle success
+                            // Create admin user, add details to staff table
+                            if (resp) {
+                                connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
                             VALUES (@@IDENTITY, '${hash}', '${req.body.email}', '1', '${req.body.email}')
                             `, (err, resp) => {
-                                if(err){
-                                    res.statusCode = 401
-                                    res.send(err)
-                                }
+                                    if (err) {
+                                        res.statusCode = 401
+                                        res.send(err)
+                                    }
 
-                                if(resp){
-                                    connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', @@IDENTITY, '1'), 
+                                    if (resp) {
+                                        connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', @@IDENTITY, '1'), 
                                     ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
                                     ('1', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('1', @@IDENTITY, '9'), 
                                     ('1', @@IDENTITY, '10'), ('1', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
                                     ('1', @@IDENTITY, '13'), ('1', @@IDENTITY, '14')`, (err, resp) => {
-                                        if(err){
-                                            res.statusCode = 401
-                                            res.send(err)
-                                        }
+                                            if (err) {
+                                                res.statusCode = 401
+                                                res.send(err)
+                                            }
 
-                                        if(resp){
-                                            res.send("User company has been created")
-                                        }
-                                    })
-                                }
-                            })
-                        }
-                    })
+                                            if (resp) {
+                                                res.send("User company has been created")
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        })
                 }
             })
-        }else{
+        } else {
             res.send('Password must have at least 8 letters')
         }
     })
@@ -77,88 +77,88 @@ let userController = (app) =>{
     // sign up User fromAdmin
     app.post('/pace-time-sheet/newEmployeeSignUP', authenticateToken, (req, res) => {
         permitDetails = req.respData.data.find(x => x.permitItem == 'Add user')
-        if(permitDetails){
-            if(permitDetails.permit ===  'allowed'){            
-                if(!req.body.email || !req.body.password || !req.body.roleID || !req.body.companyID || !req.body.expectedWorkHours || !req.body.billRateCharge || !req.body.staffRole){
+        if (permitDetails) {
+            if (permitDetails.permit === 'allowed') {
+                if (!req.body.email || !req.body.password || !req.body.roleID || !req.body.companyID || !req.body.expectedWorkHours || !req.body.billRateCharge || !req.body.staffRole) {
                     res.send('All starred fields must be complete')
                 }
                 // hash password
                 bcrypt.hash(req.body.password, 10, (err, hash) => {
                     // handle error
-                    if(err) throw(err)
-                    // handle success
-                    if(hash){
+                    if (err) throw (err)
+                        // handle success
+                    if (hash) {
                         connection.query(`INSERT INTO staff (password, userName, companyID, email, 
                             roleID, expectedWorkHours, billRateCharge, staffRole)
                             VALUES ('${hash}', '${req.body.userName}', '${req.body.companyID}', 
                             '${req.body.email}', '${req.body.roleID}', '${req.body.expectedWorkHours}', 
-                            '${req.body.billRateCharge}', '${req.body.staffRole}')`, 
-                            (err, resp) =>{
-                            if(err){
-                                // res.statusCode = 401
-                                res.send(err)
-                            }
-        
-                            if(resp){
-                                if (req.body.roleID === 2){
-                                    // If user role is co-Admin (i.e roleID = 2)
-                                    connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '1'), 
+                            '${req.body.billRateCharge}', '${req.body.staffRole}')`,
+                            (err, resp) => {
+                                if (err) {
+                                    // res.statusCode = 401
+                                    res.send(err)
+                                }
+
+                                if (resp) {
+                                    if (req.body.roleID === 2) {
+                                        // If user role is co-Admin (i.e roleID = 2)
+                                        connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '1'), 
                                         ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
                                         ('1', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
                                         ('1', @@IDENTITY, '10'), ('1', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
                                         ('1', @@IDENTITY, '13'), ('1', @@IDENTITY, '13')`, (err, resp) => {
-                                        if(err){
-                                            // res.statusCode = 401
-                                            res.send(err)
-                                        }
-        
-                                        if(resp){
-                                            res.send("User has been created")
-                                        }
-                                    })
-                                }
-                                // If user role is internal Admin (i.e roleID = 4)
-                                if (req.body.roleID === '4'){
-                                    connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '1'), 
+                                            if (err) {
+                                                // res.statusCode = 401
+                                                res.send(err)
+                                            }
+
+                                            if (resp) {
+                                                res.send("User has been created")
+                                            }
+                                        })
+                                    }
+                                    // If user role is internal Admin (i.e roleID = 4)
+                                    if (req.body.roleID === '4') {
+                                        connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '1'), 
                                         ('2', @@IDENTITY, '2'), ('2', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
                                         ('2', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
                                         ('1', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
                                         ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
-                                        if(err){
-                                            // res.statusCode = 401
-                                            res.send(err)
-                                        }
-        
-                                        if(resp){
-                                            res.send("User has been created")
-                                        }
-                                    })
-                                }
-                                // If user role is employee (i.e roleID = 5)
-                                if (req.body.roleID === '5'){
-                                    connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '2'), 
+                                            if (err) {
+                                                // res.statusCode = 401
+                                                res.send(err)
+                                            }
+
+                                            if (resp) {
+                                                res.send("User has been created")
+                                            }
+                                        })
+                                    }
+                                    // If user role is employee (i.e roleID = 5)
+                                    if (req.body.roleID === '5') {
+                                        connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '2'), 
                                         ('2', @@IDENTITY, '2'), ('2', @@IDENTITY, '5'), ('2', @@IDENTITY, '6'), 
                                         ('2', @@IDENTITY, '7'), ('2', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
                                         ('2', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('2', @@IDENTITY, '12'), 
                                         ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
-                                        if(err){
-                                            // res.statusCode = 401
-                                            res.send(err)
-                                        }
-        
-                                        if(resp){
-                                            res.send("User has been created")
-                                        }
-                                    })
+                                            if (err) {
+                                                // res.statusCode = 401
+                                                res.send(err)
+                                            }
+
+                                            if (resp) {
+                                                res.send("User has been created")
+                                            }
+                                        })
+                                    }
                                 }
-                            }
-                        })
+                            })
                     }
                 })
-            }else{
+            } else {
                 res.send('You do not have permission to add a new user')
             }
-        }    
+        }
     })
 
     // **********************************************************************************************************
@@ -171,48 +171,48 @@ let userController = (app) =>{
         from permissions p JOIN staff s ON s.staffID = p.staffID 
         JOIN permitItem pi ON pi.permitItemID = p.permitItemID
         JOIN permit pe ON pe.permitID = p.permitID
-        WHERE email = '${req.body.email}'`, 
-        (err, resp) => {
-            if(err){
-                res.send(err)
-                res.end()
-            }
+        WHERE email = '${req.body.email}'`,
+            (err, resp) => {
+                if (err) {
+                    res.send(err)
+                    res.end()
+                }
 
-            //if user email not in database
-            if(resp == []){
-                res.send("User does not exist")
-                res.statusCode = 401
-            }
+                //if user email not in database
+                if (resp == []) {
+                    res.send("User does not exist")
+                    res.statusCode = 401
+                }
 
-            //if user email in database
-            if(resp){
-                //check if password matches
-                bcrypt.compare(req.body.password, resp[0].password, (hashErr, valid) => {
-                    //if password does not match
-                    if(!valid){
-                       return res.send('invalid login details')
-                    }
+                //if user email in database
+                if (resp) {
+                    //check if password matches
+                    bcrypt.compare(req.body.password, resp[0].password, (hashErr, valid) => {
+                            //if password does not match
+                            if (!valid) {
+                                return res.send('invalid login details')
+                            }
 
-                    if(hashErr){
-                        return res.send(err)
-                    }
-                    // if password matches
+                            if (hashErr) {
+                                return res.send(err)
+                            }
+                            // if password matches
 
-                    let  payload = {'data': resp}
+                            let payload = { 'data': resp } //req.body.data[0].fullname
 
-                    //get token
-                    let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, {expiresIn : '3600000'})
+                            //get token
+                            let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, { expiresIn: '3600000' })
 
-                    let respData = {
-                        'data' : resp,
-                        'accessToken' : accessToken
-                    }
-                    res.send(respData)
-                    // res.end() 
-                })
-                // res.send(resp[0])
-            }
-        })
+                            let respData = {
+                                'data': resp,
+                                'accessToken': accessToken
+                            }
+                            res.send(respData)
+                                // res.end() 
+                        })
+                        // res.send(resp[0])
+                }
+            })
     })
 
     // **********************************************************************************************************
@@ -222,7 +222,7 @@ let userController = (app) =>{
     app.get('/pace-time-sheet/database', authenticateToken, (req, res) => {
         // approved = req.user.data.permit.find(x => x.permission == 'allowed')
         connection.query('select * from company', (err, resp) => {
-            if(err) throw err
+            if (err) throw err
             res.send(req.data)
         })
     })
@@ -230,16 +230,16 @@ let userController = (app) =>{
     // read user
     app.get('/pace-time-sheet/database/staff', authenticateToken, (req, res) => {
         permitDetails = req.respData.data.find(x => x.permitItem == 'View all company users')
-        if(!!permitDetails){
-            if(permitDetails.permit === 'allowed'){
+        if (!!permitDetails) {
+            if (permitDetails.permit === 'allowed') {
                 connection.query(`select * from staff where companyID = ${companyID}= `, (err, resp) => {
-                    if(err) throw err
+                    if (err) throw err
                     res.send(resp)
                 })
-            }else{
+            } else {
                 res.send('You do not have permission to view all company employees')
             }
-        } 
+        }
     })
 
     // **********************************************************************************************************
@@ -248,153 +248,153 @@ let userController = (app) =>{
     // update company details
     app.put('/pace-time-sheet/companyName/companySettings/:id', authenticateToken, (req, res) => {
         permitDetails = req.respData.data.find(x => x.permitItem == 'Edit company settings')
-        if(!!permitDetails){
-            if(permitDetails.permit === 'allowed'){
+        if (!!permitDetails) {
+            if (permitDetails.permit === 'allowed') {
                 // if(permitDetails.companyID === `${req.params.companyID}`){
-                    connection.query(`UPDATE staff SET firstName = '${req.body.firstName}', lastName='${req.body.lastName}',
+                connection.query(`UPDATE staff SET firstName = '${req.body.firstName}', lastName='${req.body.lastName}',
                     phoneNumber =  '${req.body.phoneNumber}', address = '${req.body.address}', 
                     userName = '${req.body.userName}' WHERE staffID = ${req.params.id}`,
-                    (err, resp) => {
-                        if(err){
-                            res.statusCode = 401
-                            res.send(err)
-                        }
-            
-                        if(resp){
-                            res.send('User details have been updated')
-                        }
-                    })
-                // }
-            }else{
+                        (err, resp) => {
+                            if (err) {
+                                res.statusCode = 401
+                                res.send(err)
+                            }
+
+                            if (resp) {
+                                res.send('User details have been updated')
+                            }
+                        })
+                    // }
+            } else {
                 res.send('You do not have permission to edit details')
             }
-        }else{
+        } else {
             return res.send('You do not have permission to edit details')
         }
-       
+
     })
 
     // update user details
     app.put('/pace-time-sheet/companyName/employeeEdit/:id', authenticateToken, imageUpload.single('image'), (req, res) => {
         permitDetails = req.respData.data.find(x => x.permitItem == 'Edit user billing and time')
-        if(!!permitDetails){
-            if(permit.staffID == req.params.id){
+        if (!!permitDetails) {
+            if (permit.staffID == req.params.id) {
                 image = req.file.path.replace("/\\/g", "//")
                 connection.query(`UPDATE staff SET firstName = '${req.body.firstName}', lastName='${req.body.lastName}',
                 phoneNumber =  '${req.body.phoneNumber}', address = '${req.body.address}', 
                 userName = '${req.body.userName}', image = '${image}', lastUpdated = '${Date.now()}' WHERE staffID = ${req.params.id}`,
-                (err, resp) => {
-                    if(err){
-                        res.statusCode = 401
-                        res.send(err)
-                    }
+                    (err, resp) => {
+                        if (err) {
+                            res.statusCode = 401
+                            res.send(err)
+                        }
 
-                    if(resp){
-                        res.send('User details have been updated')
-                    } 
-                })
+                        if (resp) {
+                            res.send('User details have been updated')
+                        }
+                    })
             }
-        }   
+        }
     })
 
     // edit user billing and expected hours
     app.put('/pace-time-sheet/companyName/employeeSettings/:id', authenticateToken, (req, res) => {
         permitDetails = req.respData.data.find(x => x.permitItem == 'Edit user billing and time')
-        if(!!permitDetails){
-            if(permitDetails.permit === 'allowed'){
+        if (!!permitDetails) {
+            if (permitDetails.permit === 'allowed') {
                 connection.query(`UPDATE staff SET expectedWorkHours = '${req.body.expectedWorkHours}', 
                 billRateCharge ='${req.body.billRateCharge}', lastUpdated = '${Date.now()}'
                 where staffID = ${req.params.id} and companyID = ${permitDetails.companyID}`,
-                (err, resp) => {
-                    if(err){
-                        // res.statusCode = 401
-                        res.send(err)
-                    }
-                    if(resp){
-                        let notified = {
-                            'staffID' : req.params.id,
-                            'heading' : 'User details update',
-                            'body' :  `Your bill rate charge has been updated to ${req.body.billRateCharge} and expected hours updated to ${req.body.expectedWorkHours}`,
-                            'status' : 'false'
+                    (err, resp) => {
+                        if (err) {
+                            // res.statusCode = 401
+                            res.send(err)
                         }
-                        logNotification(notified, res)
-                        res.send('User details have been updated')
-                    } 
-                })
-            }else{
+                        if (resp) {
+                            let notified = {
+                                'staffID': req.params.id,
+                                'heading': 'User details update',
+                                'body': `Your bill rate charge has been updated to ${req.body.billRateCharge} and expected hours updated to ${req.body.expectedWorkHours}`,
+                                'status': 'false'
+                            }
+                            logNotification(notified, res)
+                            res.send('User details have been updated')
+                        }
+                    })
+            } else {
                 res.send('You do not have permission to edit details')
             }
-        }else{
+        } else {
             return res.send('You do not have permission to edit details')
-        }  
+        }
     })
 
-     // change password
-     app.put('/pace-time-sheet/companyName/changePassword', authenticateToken, (req, res) => {
+    // change password
+    app.put('/pace-time-sheet/companyName/changePassword', authenticateToken, (req, res) => {
         bcrypt.hash(req.body.password, 10, (err, hash) => {
-            if(err){
+            if (err) {
                 res.statusCode = 401
                 res.send(err)
             }
 
-            if(hash){
+            if (hash) {
                 connection.query(`password = '${req.body.hash}'`, (err, resp) => {
-                    if(err){
+                    if (err) {
                         res.statusCode = 401
                         res.send(err)
                     }
 
-                    if(resp){
+                    if (resp) {
                         res.send('User details have been updated')
                     }
                 })
             }
         })
     })
-    
+
     // reset password
-    app.post('/pace-time-sheet/companyName/passwordReset',(req, res) => {
+    app.post('/pace-time-sheet/companyName/passwordReset', (req, res) => {
         passwordResetToken = crypto.randomBytes(20).toString('hex')
-        passwordResetExpires = date.now()+3600000
+        passwordResetExpires = date.now() + 3600000
         connection.query(`INSERT INTO staff (passwordResetToken, passwordResetExpires) 
         VALUES (${passwordResetToken}, ${passwordResetExpires})`, (req, resp) => {
-            if(res){
+            if (res) {
                 connection.query(`SELECT passwordResetExpires FROM staff WHERE email = ${req.body.email}`)
 
-                let  payload = {'data': resp}
+                let payload = { 'data': resp }
 
                 //get token
-                let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, {expiresIn : '3600000'})
+                let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, { expiresIn: '3600000' })
 
                 let respData = {
-                    'data' : resp,
-                    'accessToken' : accessToken
+                    'data': resp,
+                    'accessToken': accessToken
                 }
 
                 res.send(respData)
 
             }
         })
-        
+
         res.send('A reset password link has been sent to your mail')
     })
 
-    app.post('/pace-time-sheet/passwordReset/:token',(req, res) => {
-        if(req.respData.data.passwordResetExpires > Date.now() ){
+    app.post('/pace-time-sheet/passwordReset/:token', (req, res) => {
+        if (req.respData.data.passwordResetExpires > Date.now()) {
             bcrypt.hash(req.body.password, 10, (err, hash) => {
-                if(err){
+                if (err) {
                     res.statusCode = 401
                     res.send(err)
                 }
-    
-                if(hash){
+
+                if (hash) {
                     connection.query(`password = '${req.body.hash}'`, (err, resp) => {
-                        if(err){
+                        if (err) {
                             res.statusCode = 401
                             res.send(err)
                         }
-    
-                        if(resp){
+
+                        if (resp) {
                             res.send('Your password has been updated')
                         }
                     })
@@ -407,16 +407,16 @@ let userController = (app) =>{
 
     // delete user
     app.delete('/pace-time-sheet/companyName/deleteUser/:id', authenticateToken, (req, res) => {
-            connection.query(`DELETE from staff WHERE staffID = ${req.params.id}`, (err, resp) => {
-                if(err){
-                    res.statusCode = 401
-                    res.send(err)
-                }
+        connection.query(`DELETE from staff WHERE staffID = ${req.params.id}`, (err, resp) => {
+            if (err) {
+                res.statusCode = 401
+                res.send(err)
+            }
 
-                if(resp){
-                    res.send('User deleted')
-                }
-            })
+            if (resp) {
+                res.send('User deleted')
+            }
+        })
     })
 }
 
