@@ -1,7 +1,7 @@
 let connection = require('../modules/db')
 require('dotenv').config()
 const jwt = require("jsonwebtoken")
-const authenticateToken = require('../controllers/authentificate/authentification')
+const authenticateToken = require('../middleware/authentication')
 let todoController = (app) => {
 
     app.get('/todo-list', (req, res) => {

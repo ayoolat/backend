@@ -1,30 +1,31 @@
 let calendarController = (app) => {
     let connection = require('../modules/db')
-    const authenticateToken = require('../controllers/authentificate/authentification')
+    const authenticateToken = require('../middleware/authentication')
 
     // add to Calendar (internal and admin only)
     app.post("/pace-time-sheet/calendar", authenticateToken, (req, res) => {
         permitDetails = req.respData.data.find(x => x.permitItem == 'Add and edit Company calendar')
         if(!!permitDetails){
             if(permitDetails.permit === 'allowed'){
-                connection.query(`INSERT INTO calendar (eventName, eventDateAndTime) VALUE(${req.body.eventName}, ${eventDateAndTime})`, (req, resp) => {
+                connection.query(`INSERT INTO calendar (eventName, eventDateAndTime, staffID) VALUE('${req.body.eventName}', '${req.body.eventDateAndTime}', '${permitDetails.staffID}')`, (err, resp) => {
                     if(err){
-                        res.statusCode(401).end()
+                        res.send(err)
                     }
                     if(resp){
-                        connection.query(`SELECT staffID from staff WHERE companyID = ${req.respData.data.companyID}`, (req, response) => {
+                        connection.query(`SELECT staffID from staff WHERE companyID = ${permitDetails.companyID}`, (err, response) => {
+                            console.log(response)
                             let allStaff = response
                             allStaff.forEach(element => {
                                 let notified = {
                                     'staffID' : element.staffID,
-                                    'heading' : `${req.respData.data.firstName} added and event on ${eventDateAndTime}`,
+                                    'heading' : `${permitDetails.firstName} added and event on ${req.body.eventDateAndTime}`,
                                     'body' :  req.body.eventName,
                                     'status' : 'false'
                                 }
                                 logNotification(notified, res)
                             });
                             
-                            res.send('event created')
+                            res.send('Calendar added')
                         })
                        
                     }
@@ -40,40 +41,40 @@ let calendarController = (app) => {
                 res.statusCode(401).end()
             }
             if(resp){
-                res.send('read calendar')
+                res.send(resp)
             }
         })
     })
 
     // update
-    app.put('/pace-time-sheet/calendar/update', authenticateToken, (req, res) => {
+    app.put('/pace-time-sheet/calendar/update/:id/:eventID', authenticateToken, (req, res) => {
         permitDetails = req.respData.data.find(x => x.permitItem == 'Add and edit Company calendar')
         if(!!permitDetails){
             if(permitDetails.permit === 'allowed'){
-                connection.query(`UPDATE calendar SET eventName = '${eventName}', 
-                eventDateAndTime = '${eventDateAndTime}', lastUpdated = ${Date.now()}`, (err, resp) => {
+                connection.query(`UPDATE calendar SET eventName = '${req.body.eventName}', 
+                eventDateAndTime = '${req.body.eventDateAndTime}', lastUpdated = '${Date.now()}' WHERE staffID = ${req.params.id} AND eventID = ${req.params.eventID}`, (err, resp) => {
                     if(err){
-                        res.statusCode(401).end()
+                        return res.statusCode(401).end()
                     }
                     if(resp){
-                        connection.query(`SELECT staffID from staff WHERE companyID = ${req.respData.data.companyID}`, (req, response) => {
+                        connection.query(`SELECT staffID from staff WHERE companyID = ${permitDetails.companyID}`, (err, response) => {
                             let allStaff = response
                             allStaff.forEach(element => {
                                 let notified = {
                                     'staffID' : element.staffID,
-                                    'heading' : `${req.respData.data.firstName} added and event on ${eventDateAndTime}`,
+                                    'heading' : `${req.respData.data.firstName} added and event on ${req.body.eventDateAndTime}`,
                                     'body' :  req.body.eventName,
                                     'status' : 'false'
                                 }
                                 logNotification(notified, res)
                             });
                             
-                            res.send('event created')
+                            return res.send("Updated")
                         })
                     }
                 })
             }
-        }
+        }else {res.send('You do not have permission to edit calendar')}
     })
 
     // delete

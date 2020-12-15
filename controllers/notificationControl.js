@@ -14,7 +14,7 @@ let notificationControl = module.exports = (app) => {
 
             if(resp){
                 res.statusCode = 401
-                res.send('updated')
+                return res.send('updated')
             }
         })
     }
