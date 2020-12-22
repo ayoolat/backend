@@ -1,9 +1,10 @@
 const express = require('express')
 
+console.log('users')
+
 // Export middleWare
 const authenticateToken = require('../middleware/authentication')
-const authorize = require('../middleware/authorization')
-const imageUpload = require('../middleware/fileUpload')
+const fileUpload = require('../middleware/fileUpload')
 
 // Export controller
 const userController = require('../controllers/userControl')
@@ -23,7 +24,7 @@ router.post('/signUp/companyName/addUser', authenticateToken, userController.emp
 router.get('/companyName/employee/:companyID',authenticateToken, userController.getAllCompanyStaff)
 
 // Update user details
-router.put('/companyName/userProfile/updateProfile/:id', authenticateToken, imageUpload.single('image'), userController.updateUserRecord)
+router.put('/companyName/userProfile/updateProfile/:id', authenticateToken, fileUpload.uploadImage.single('image'), userController.updateUserRecord)
 
 // view personal profile
 router.get('/companyName/userProfile/:id',authenticateToken, userController.viewProfile)
@@ -34,20 +35,15 @@ router.put('/companyName/userProfile/changePassword/:id', authenticateToken, use
 // Manage employee time and billing details
 router.put('/companyName/employee/timeAndBilling/:id', authenticateToken, userController.timeAndBilling)
 
+// reset password
+router.post('/companyName/userProfile/forgot-password', userController.resetPassword)
+router.put('/companyName/userProfile/passwordReset/:token/:id', authenticateToken, userController.setNewPassword)
+
 // // Employees second stage signup
 // router.put('/companyName/signUp');
 
 // //Change company settings
 // router.put('/companyName/settings',authenticateToken, authorize, userController.updateCompanySettings)
-
-// // Manage employee
-// router.put('/companyName/manage-employee', authenticateToken, authorize, userController.editEmployeeDetails)
-
-
-// // reset password
-// router.post('/companyName/userProfile/forgot-password', userController.restPassword)
-// router.post('/companyName/userProfile/forgot-password/change-password', authenticateToken, userController.restPassword)
-
 
 module.exports = router;
 

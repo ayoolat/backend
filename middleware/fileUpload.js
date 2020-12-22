@@ -1,12 +1,13 @@
 const multer = require('multer')
 const fs = require('fs')
+const path = require('path')
 
 const storage = multer.diskStorage({
     destination : (req, file, cb) => {
         cb(null, '/paceImages')
     },
     filename: (req, file, cb) => {
-        cb(null, file.fieldname + '-' + Date.now() + file.originalname)
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
     }
 })
 
@@ -18,8 +19,6 @@ const imageFilter = (req, file, cb) =>{
     }
 }
 
-var uploadImage = multer({storage : storage, imageFilter : imageFilter})
-
-module.exports = uploadImage
-
+exports.uploadImage = multer({storage : storage, imageFilter : imageFilter})
+exports.fileUpload = multer({storage : storage})
 

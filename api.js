@@ -4,16 +4,18 @@ let bodyParser = require('body-parser')
 let fs = require('fs')
 
 const app = express()
+app.use(bodyParser.json())
 
 // exported modules
 let usersRoute = require('./Routes/usersRoute')
-// let taskControllers = require('./controllers/taskControl')
+let notificationsRoute = require('./Routes/notificationsRoute')
+let taskRoute = require('./Routes/tasksRoute')
 // let todoControllers = require('./controllers/todoController')
 // let feedback = require('./controllers/feedback')
 // const timeSheetController = require('./controllers/timesheetController')
 // const calendarController = require('./controllers/calenderContol')
 // const eScheduleController = require('./controllers/e-schedule')
-app.use(bodyParser.json())
+
 
 // app.use((error, req, res, next) => {
 //     if (req.file){
@@ -25,7 +27,8 @@ app.use(bodyParser.json())
 
 // instantiate controllers
 app.use('/api/companyName/users', usersRoute)
-// taskControllers(app)
+app.use('/api/companyName/notifications', notificationsRoute)
+app.use('/api/companyName/tasks', taskRoute)
 // todoControllers(app)
 // feedback(app)
 // calendarController(app)
