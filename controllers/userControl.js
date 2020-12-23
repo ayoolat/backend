@@ -71,8 +71,8 @@ exports.employeeSignUp = (req, res, next) => {
             // handle success
             if(hash){
                 // insert employee details into database
-                connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole)
-                    VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}')`, 
+                connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, tokenUsed)
+                    VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', 'false')`, 
                     (err, resp) =>{
 
                     if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
@@ -448,7 +448,7 @@ exports.setNewPassword = (req, res, next) => {
 
         if(respQuery){
             console.log(respQuery[0])
-            if( respQuery[0].tokenUsed == 'true'){
+            if( respQuery[0].tokenUsed == 'false'){
 
                 connection.query(`UPDATE staff SET tokenUsed = 'true' where staffID = '${req.params.id}'`,(err, respReset) => {
                 if(err){return res.status(500).json({message: 'There has been an error, try again'})}
@@ -466,7 +466,6 @@ exports.setNewPassword = (req, res, next) => {
                         }
 
                         if(!valid){
-                            console.log('hi')
                             bcrypt.hash(req.body.password, 10, (err, hash) => {
                                 if(err){return res.status(500).json({message: 'There has been an error, try again'})}
                     
@@ -496,9 +495,7 @@ exports.setNewPassword = (req, res, next) => {
 
                 })
             }
-            if( respQuery[0].tokenUsed == 'false'){
-                console.log('hiiiii')
-
+            if( respQuery[0].tokenUsed == 'true'){
                     return res.json({
                     message : 'This token has been used before',
                 })
