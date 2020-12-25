@@ -21,8 +21,8 @@ exports.signUp =  (req, res, next) =>{
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
         // handle success
         if (hash){
-            connection.query(`INSERT INTO company (companyName, password, email, companyType)
-            VALUES ('${companyName}', '${hash}', '${email}', '${companyType}')`, 
+            connection.query(`INSERT INTO company (companyName, email, companyType)
+            VALUES ('${companyName}', '${email}', '${companyType}')`, 
             (err, resp) => {
                 // handle error
                 if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
@@ -30,7 +30,7 @@ exports.signUp =  (req, res, next) =>{
                 // Create admin user, add details to staff table
                 if(resp){ 
                     connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
-                    VALUES (@@IDENTITY, '${hash}', '${req.body.email}', '1', '${req.body.email}')
+                    VALUES (@@IDENTITY, '${hash}', '${email}', '1', '${email}')
                     `, (err, resp) => {
                         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
@@ -62,6 +62,8 @@ exports.signUp =  (req, res, next) =>{
 exports.employeeSignUp = (req, res, next) => {
     const {companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole} = req.body
     const userName = email.split('@')[0]
+    const password = 'password'
+
     permitDetails = req.respData.response.find(x => x.permitItem == 'Add user')
     if(permitDetails.permit ===  'allowed'){            
         // hash password
@@ -89,13 +91,11 @@ exports.employeeSignUp = (req, res, next) => {
                                     'ayoola_toluwanimi@yahoo.com',
                                     'Password reset link',
                                     `<p>Please click the link below to reset you password<p/>
-                                    <a href = '/api/companyName/users/companyName/userProfile/passwordReset/${confirmationToken}/${resp.insertID}'>/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}<a/>`,
+                                    <a href = '/api/companyName/users/companyName/confirmation/${resp.insertID}'>/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}<a/>`,
                                     'To reset your password',
                                     (errMail, info) => {
                                         if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
-                                        
-                                        console.log(info.response)
-            
+                                                    
                                         return res.json({
                                             message : 'A confirmation link has been sent to the user',
                                             data : respData
@@ -224,12 +224,13 @@ exports.confirmSignUp = (req, res, next) => {
 
 // login user
 exports.userLogin = (req, res, next) => {
+    const {email, password} = req.body
     // get user with user email
     connection.query(`SELECT s.firstName, s.lastName, s.password, s.companyID, s.staffID, permit, permitItem, roleID 
     from permissions p JOIN staff s ON s.staffID = p.staffID 
     JOIN permitItem pi ON pi.permitItemID = p.permitItemID
     JOIN permit pe ON pe.permitID = p.permitID
-    WHERE email = '${req.body.email}'`, 
+    WHERE email = '${email}'`, 
     (err, resp) => {
 
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
@@ -242,7 +243,7 @@ exports.userLogin = (req, res, next) => {
         //if user email in database
         if(resp){
             //check if password matches
-            bcrypt.compare(req.body.password, resp[0].password, (hashErr, valid) => {
+            bcrypt.compare(password, resp[0].password, (hashErr, valid) => {
                 //if password does not match
                 if(!valid) {return res.status(500).json({message: 'Incorrect password'})}
 
@@ -286,17 +287,17 @@ exports.getAllCompanyStaff = (req, res, next) => {
     } 
 }
 
-// Update user record
-exports.updateUserRecord = (req, res, next) => {
-    const {firstName, lastName, phoneNumber, address, userName,} = req.body
+// Update company record
+exports.updateCompanyRecord = (req, res, next) => {
+    const {companyAdjective, companyType, currency} = req.body
     const {id} = req.params
-
+    // =====================================================================
+    // ******************** CHANGE PERMISSION ******************************
+    // =====================================================================
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
         if(permitDetails.staffID == id){
-            image = req.file.path.replace("/\\/g", "//")
-            connection.query(`UPDATE staff SET firstName = '${firstName}', lastName='${lastName}', phoneNumber =  '${phoneNumber}', address = '${address}', 
-            userName = '${userName}', image = '${image}', lastUpdated = '${new Date()}' WHERE staffID = ${id}`,
+            connection.query(`UPDATE staff SET companyType = '${companyType}', companyAdjective='${companyAdjective}', lastUpdated = NOW() WHERE companyID = ${id}`,
             (err, resp) => {
                 if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
     
@@ -308,8 +309,69 @@ exports.updateUserRecord = (req, res, next) => {
                 } 
             })
         }
-    }
+    }  
+}
+
+// Add department
+exports.addDepartment = (req, res, next) => {
+    const {departmentName, currency} = req.body
+    const {id} = req.params
+    // =====================================================================
+    // ******************** CHANGE PERMISSION ******************************
+    // =====================================================================
+    permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    if(permitDetails.permit === 'allowed'){
+        if(permitDetails.staffID == id){
+            connection.query(`INSERT INTO staff (departmentName, companyID, currency) VALUES(${departmentName}, ${id}, ${currency})`,
+            (err, resp) => {
+                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
     
+                if(resp){
+                    return res.json({
+                        status : 'success',
+                        data : req.body
+                    })
+                } 
+            })
+        }
+    }  
+}
+
+// Update user record
+exports.updateUserRecord = (req, res, next) => {
+    const {firstName, lastName, phoneNumber, address, userName,} = req.body
+    const {id} = req.params
+
+    image = req.file.path.replace("/\\/g", "//")
+    connection.query(`UPDATE staff SET firstName = '${firstName}', lastName='${lastName}', phoneNumber =  '${phoneNumber}', address = '${address}', 
+    userName = '${userName}', image = '${image}', lastUpdated = NOW() WHERE staffID = ${id}`,
+    (err, resp) => {
+        if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+        if(resp){
+            return res.json({
+                status : 'success',
+                data : req.body
+            })
+        } 
+    })
+}
+
+// read company
+exports.viewCompanyProfile = (req, res, next) => {
+    const {id} = req.params
+    if(req.respData.response[0].staffID == id){
+        connection.query(`select * from company where staffID = ${id}`, (err, resp) => {
+            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+            if(resp){
+                return res.json({
+                    status : 'success',
+                    data : resp
+                })
+            }
+        })
+    }
 }
 
 // read User
@@ -356,13 +418,13 @@ exports.changePassword = (req, res, next) => {
 
 // edit employee time and billing
 exports.timeAndBilling = (req, res, next) => {
-    const {expectedWorkHours, billRateCharge} = req.body
+    const {expectedWorkHours, billRateCharge, departmentID} = req.body
     const {id} = req.params
 
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
         connection.query(`UPDATE staff SET expectedWorkHours = '${expectedWorkHours}', 
-        billRateCharge ='${billRateCharge}', lastUpdated = NOW'
+        billRateCharge ='${billRateCharge}', departmentID = '${departmentID}' lastUpdated = NOW()'
         where staffID = ${id} and companyID = ${permitDetails.companyID}`,
         (err, resp) => {
             if(err) {return res.status(500).json({message: 'There has been an error, try again'})}

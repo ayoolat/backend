@@ -7,33 +7,33 @@ const app = express()
 app.use(bodyParser.json())
 
 // exported modules
-let usersRoute = require('./Routes/usersRoute')
-let notificationsRoute = require('./Routes/notificationsRoute')
-let taskRoute = require('./Routes/tasksRoute')
+const usersRoute = require('./Routes/usersRoute')
+const notificationsRoute = require('./Routes/notificationsRoute')
+const taskRoute = require('./Routes/tasksRoute')
 // let todoControllers = require('./controllers/todoController')
 // let feedback = require('./controllers/feedback')
-// const timeSheetController = require('./controllers/timesheetController')
-// const calendarController = require('./controllers/calenderContol')
-// const eScheduleController = require('./controllers/e-schedule')
+const calendarRoute = require('./Routes/calendarRoute')
+const eScheduleRoute = require('./Routes/e-scheduleRoute')
+const taskSheetRoute = require('./Routes/taskSheetRoute')
 
 
-// app.use((error, req, res, next) => {
-//     if (req.file){
-//         fs.unlink(req.file.path, (err) => {
-//             console.log(err)
-//         })
-//     }
-// })
+app.use((error, req, res, next) => {
+    if (req.file){
+        fs.unlink(req.file.path, (err) => {
+            console.log(err)
+        })
+    }
+})
 
 // instantiate controllers
-app.use('/api/companyName/users', usersRoute)
+app.use('/api/users', usersRoute)
 app.use('/api/companyName/notifications', notificationsRoute)
 app.use('/api/companyName/tasks', taskRoute)
 // todoControllers(app)
 // feedback(app)
-// calendarController(app)
-// eScheduleController(app)
-// timeSheetController(app)
+app.use('/api/companyName/calendar', calendarRoute)
+app.use('/api/companyName/E-schedule', eScheduleRoute)
+app.use('/api/companyName/taskSheet', taskSheetRoute)
 
 // app.use((req, res, next) => {
 //     throw new error('This route does not exist')

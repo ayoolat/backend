@@ -20,11 +20,23 @@ router.post('/login', userController.userLogin);
 // sign up employees
 router.post('/signUp/companyName/addUser', authenticateToken, userController.employeeSignUp);
 
+// // Employees second stage signup
+router.put('/companyName/confirmation/:id', authenticateToken, userController.confirmSignUp);
+
 // Get all users
 router.get('/companyName/employee/:companyID',authenticateToken, userController.getAllCompanyStaff)
 
+// Update company details
+router.put('/companyName/companyProfile/updateProfile/:id', authenticateToken, userController.updateCompanyRecord)
+
+// Add department
+router.put('/companyName/companyProfile/addDepartment/:id', authenticateToken, userController.addDepartment)
+
 // Update user details
 router.put('/companyName/userProfile/updateProfile/:id', authenticateToken, fileUpload.uploadImage.single('image'), userController.updateUserRecord)
+
+// view company profile
+router.get('/companyName/companyProfile/:id',authenticateToken, userController.viewCompanyProfile)
 
 // view personal profile
 router.get('/companyName/userProfile/:id',authenticateToken, userController.viewProfile)
@@ -39,11 +51,7 @@ router.put('/companyName/employee/timeAndBilling/:id', authenticateToken, userCo
 router.post('/companyName/userProfile/forgot-password', userController.resetPassword)
 router.put('/companyName/userProfile/passwordReset/:token/:id', authenticateToken, userController.setNewPassword)
 
-// // Employees second stage signup
-// router.put('/companyName/signUp');
 
-// //Change company settings
-// router.put('/companyName/settings',authenticateToken, authorize, userController.updateCompanySettings)
 
 module.exports = router;
 
