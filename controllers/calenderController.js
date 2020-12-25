@@ -1,99 +1,100 @@
-let calendarController = (app) => {
-    let connection = require('../modules/db')
-    const authenticateToken = require('../middleware/authentication')
+const connection = require('../modules/db')
+const notificationControl = require('./notificationControl')
 
-    // add to Calendar (internal and admin only)
-    app.post("/pace-time-sheet/calendar", authenticateToken, (req, res) => {
-        permitDetails = req.respData.data.find(x => x.permitItem == 'Add and edit Company calendar')
-        if(!!permitDetails){
-            if(permitDetails.permit === 'allowed'){
-                connection.query(`INSERT INTO calendar (eventName, eventDateAndTime, staffID) VALUE('${req.body.eventName}', '${req.body.eventDateAndTime}', '${permitDetails.staffID}')`, (err, resp) => {
-                    if(err){
-                        res.send(err)
-                    }
-                    if(resp){
-                        connection.query(`SELECT staffID from staff WHERE companyID = ${permitDetails.companyID}`, (err, response) => {
-                            console.log(response)
-                            let allStaff = response
-                            allStaff.forEach(element => {
-                                let notified = {
-                                    'staffID' : element.staffID,
-                                    'heading' : `${permitDetails.firstName} added and event on ${req.body.eventDateAndTime}`,
-                                    'body' :  req.body.eventName,
-                                    'status' : 'false'
-                                }
-                                logNotification(notified, res)
-                            });
-                            
-                            res.send('Calendar added')
-                        })
-                       
-                    }
-                })
-            }
-        }
-    })
+// add to Calendar (internal and admin only)
+exports.NewEvent = (req, res, next) => {
+    const {eventName, eventDateAndTime} =  req.body
+    const {data} = req.respData
 
-    // read calendar
-    app.get('/pace-time-sheet/calendar/events', authenticateToken, (req, res) => {
-        connection.query(`select * from calendar`, (err, resp) => {
-            if(err){
-                res.statusCode(401).end()
-            }
+    const permitDetails = data.find(x => x.permitItem == 'Add and edit Company calendar')
+    if(permitDetails.permit === 'allowed'){
+        connection.query(`INSERT INTO calendar (eventName, eventDateAndTime, staffID) VALUE('${eventName}', '${eventDateAndTime}', '${permitDetails.staffID}')`, (err, resp) => {
+            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
             if(resp){
-                res.send(resp)
+                connection.query(`SELECT staffID from staff WHERE companyID = ${permitDetails.companyID}`, (err, response) => {
+                    let allStaff = response
+                    allStaff.forEach(element => {
+                        let notified = {
+                            'staffID' : element.staffID,
+                            'heading' : `${permitDetails.firstName} added and event on ${eventDateAndTime}`,
+                            'body' :  eventName,
+                            'status' : 'false'
+                        }
+                        logNotification(notified, res)
+                    });
+                    
+                    return res.json({
+                        status : 'success',
+                        data : req.body
+                    })
+                }) 
             }
         })
-    })
+    }
+}
 
-    // update
-    app.put('/pace-time-sheet/calendar/update/:id/:eventID', authenticateToken, (req, res) => {
-        permitDetails = req.respData.data.find(x => x.permitItem == 'Add and edit Company calendar')
-        if(!!permitDetails){
-            if(permitDetails.permit === 'allowed'){
-                connection.query(`UPDATE calendar SET eventName = '${req.body.eventName}', 
-                eventDateAndTime = '${req.body.eventDateAndTime}', lastUpdated = '${Date.now()}' WHERE staffID = ${req.params.id} AND eventID = ${req.params.eventID}`, (err, resp) => {
-                    if(err){
-                        return res.statusCode(401).end()
-                    }
-                    if(resp){
-                        connection.query(`SELECT staffID from staff WHERE companyID = ${permitDetails.companyID}`, (err, response) => {
-                            let allStaff = response
-                            allStaff.forEach(element => {
-                                let notified = {
-                                    'staffID' : element.staffID,
-                                    'heading' : `${req.respData.data.firstName} added and event on ${req.body.eventDateAndTime}`,
-                                    'body' :  req.body.eventName,
-                                    'status' : 'false'
-                                }
-                                logNotification(notified, res)
-                            });
-                            
-                            return res.send("Updated")
-                        })
-                    }
-                })
-            }
-        }else {res.send('You do not have permission to edit calendar')}
-    })
+exports.getEvents = (req, res, next) => {
+    connection.query(`select * from calendar`, (err, resp) => {
+        if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
-    // delete
-    app.delete('/pace-time-sheet/calendar/delete/:id', authenticateToken, (req, res) => {
-        permitDetails = req.respData.data.find(x => x.permitItem == 'Add and edit Company calendar')
-        if(!!permitDetails){
-            if(permitDetails.permit === 'allowed'){
-                connection.query(`DELETE from calendar where eventID = ${req.params.id}`, (err, resp) => {
-                    if(err){
-                        res.statusCode(401).end()
-                    }
-                    if(resp){
-                        res.send('calendar deleted')
-                    }
-                })
-            }
+        if(resp){
+            return res.json({
+                status : 'success',
+                data : resp
+            })
         }
     })
 }
 
+exports.editEvent = (res, req, next) => {
+    const {eventDateAndTime, eventName} = req.body
+    const{eventID, id} = req.params
+    const{firstName, lastName} = req.respData.data
 
-module.exports = calendarController
+    permitDetails = req.respData.data.find(x => x.permitItem == 'Add and edit Company calendar')
+    if(permitDetails.permit === 'allowed'){
+        connection.query(`UPDATE calendar SET eventName = '${eventName}', 
+        eventDateAndTime = '${eventDateAndTime}', lastUpdated = NOW() WHERE staffID = ${id} AND eventID = ${eventID}`, (err, resp) => {
+            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+            if(resp){
+                connection.query(`SELECT staffID from staff WHERE companyID = ${permitDetails.companyID}`, (err, response) => {
+                    const allStaff = response
+                    allStaff.forEach(element => {
+                        const notified = {
+                            'staffID' : element.staffID,
+                            'heading' : `${firstName}, ${lastName} has scheduled an event`,
+                            'body' :  `${eventDateAndTime} on ${eventName}`,
+                            'status' : 'false'
+                        }
+                        notificationControl.logNotification(notified, res)
+                    });
+                    
+                    return res.json({
+                        status : 'success',
+                        data : req.body
+                    })
+                })
+            }
+        })
+    }else {res.send('You do not have permission to edit calendar')}
+}
+
+exports.deleteEVent = (req, res, next) => {
+    const{id} = req.params
+
+    permitDetails = req.respData.data.find(x => x.permitItem == 'Add and edit Company calendar')
+    if(permitDetails.permit === 'allowed'){
+        connection.query(`DELETE from calendar where eventID = ${id}`, (err, resp) => {
+            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+            if(resp){
+                return res.json({
+                    status : 'success',
+                    data : req.body
+                })
+            }
+        })
+    }
+}
