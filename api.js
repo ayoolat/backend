@@ -10,15 +10,15 @@ app.use(bodyParser.json())
 const usersRoute = require('./Routes/usersRoute')
 const notificationsRoute = require('./Routes/notificationsRoute')
 const taskRoute = require('./Routes/tasksRoute')
-// let todoControllers = require('./controllers/todoController')
-// let feedback = require('./controllers/feedback')
+const todoRoute = require('./Routes/todoRoute')
+const feedbackRoute = require('./Routes/feedbackRoute')
 const calendarRoute = require('./Routes/calendarRoute')
 const eScheduleRoute = require('./Routes/e-scheduleRoute')
 const taskSheetRoute = require('./Routes/taskSheetRoute')
 
 
 app.use((error, req, res, next) => {
-    if (req.file){
+    if (req.file) {
         fs.unlink(req.file.path, (err) => {
             console.log(err)
         })
@@ -29,8 +29,8 @@ app.use((error, req, res, next) => {
 app.use('/api/users', usersRoute)
 app.use('/api/companyName/notifications', notificationsRoute)
 app.use('/api/companyName/tasks', taskRoute)
-// todoControllers(app)
-// feedback(app)
+app.use('/todo', todoRoute)
+app.use('/feedback', feedbackRoute)
 app.use('/api/companyName/calendar', calendarRoute)
 app.use('/api/companyName/E-schedule', eScheduleRoute)
 app.use('/api/companyName/taskSheet', taskSheetRoute)
