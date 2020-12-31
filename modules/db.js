@@ -7,11 +7,13 @@ var connection = mysql.createConnection({
     // user: 'toluwanimi',
     // password: 'password',
     // database: 'pacetimesheet_'
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'pacetimesheet'
+    host: '@us-cdbr-east-02.cleardb.com',
+    user: 'b726afb036f0bd',
+    password: '3fdf3077',
+    database: 'heroku_ec0bd4ee53407d5'    
 })
+
+// [mysql://b726afb036f0bd:3fdf3077@us-cdbr-east-02.cleardb.com/heroku_ec0bd4ee53407d5?reconnect=true]
 
 connection.connect((err, res) => {
     if (err) throw err
