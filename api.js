@@ -17,13 +17,13 @@ const eScheduleRoute = require('./Routes/e-scheduleRoute')
 const taskSheetRoute = require('./Routes/taskSheetRoute')
 
 
-app.use((error, req, res, next) => {
-    if (req.file) {
-        fs.unlink(req.file.path, (err) => {
-            console.log(err)
-        })
-    }
-})
+// app.use((error, req, res, next) => {
+//     if (req.file) {
+//         fs.unlink(req.file.path, (err) => {
+//             console.log(err)
+//         })
+//     }
+// })
 
 // instantiate controllers
 app.use('/api/users', usersRoute)
