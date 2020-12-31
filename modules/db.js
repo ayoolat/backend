@@ -7,7 +7,7 @@ var connection = mysql.createConnection({
     // user: 'toluwanimi',
     // password: 'password',
     // database: 'pacetimesheet_'
-    host: '@us-cdbr-east-02.cleardb.com',
+    host: 'us-cdbr-east-02.cleardb.com',
     user: 'b726afb036f0bd',
     password: '3fdf3077',
     database: 'heroku_ec0bd4ee53407d5'    
