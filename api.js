@@ -1,5 +1,5 @@
 // npm packages
-let port = process.env.PORT || 8000
+let port = process.env.PORT
 let express = require('express')
 let bodyParser = require('body-parser')
 let fs = require('fs')
@@ -50,4 +50,4 @@ app.use('/api/companyName/taskSheet', taskSheetRoute)
 
 
 app.listen(port)
-console.log('Listening on port 8000')
+console.log('Listening on port' + port)
