@@ -1,6 +1,6 @@
 const Joi = require('joi'); 
 
-const schemas = { 
+const schema = { 
   signUp: Joi.object().keys({ 
     companyName: Joi.string().alphanum().min(3).max(15).required, 
     companyType: Joi.string().required(),
@@ -21,4 +21,4 @@ const schemas = {
   })
 };
 
-module.exports = schemas;
+module.exports = schema;

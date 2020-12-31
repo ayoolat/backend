@@ -12,10 +12,12 @@ const router = express.Router();
 router.post('/newE-schedule', authenticateToken, calendarController.NewEvent);
 
 // get events
-router.get('/', authenticateToken, e_ScheduleController.getEvents);
+router.get('/', authenticateToken, calendarController.getEvents);
 
 // Edit e-schedule
-router.put('/edit', authenticateToken, e_ScheduleController.editEvent);
+router.put('/edit', authenticateToken, calendarController.editEvent);
 
 // Edit e-schedule
-router.delete('/delete', authenticateToken, e_ScheduleController.deleteEVent);
+router.delete('/delete', authenticateToken, calendarController.deleteEVent);
+
+module.exports = router;
