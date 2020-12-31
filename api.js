@@ -1,4 +1,5 @@
 // npm packages
+let port = process.env.PORT || 8000
 let express = require('express')
 let bodyParser = require('body-parser')
 let fs = require('fs')
@@ -30,7 +31,7 @@ app.use('/api/users', usersRoute)
 app.use('/api/companyName/notifications', notificationsRoute)
 app.use('/api/companyName/tasks', taskRoute)
 // app.use('/todo', todoRoute)
-// app.use('/feedback', feedbackRoute)
+// app.use('/feedback', feedbac kRoute)
 app.use('/api/companyName/calendar', calendarRoute)
 app.use('/api/companyName/E-schedule', eScheduleRoute)
 app.use('/api/companyName/taskSheet', taskSheetRoute)
@@ -48,5 +49,5 @@ app.use('/api/companyName/taskSheet', taskSheetRoute)
 // })
 
 
-app.listen(8000)
+app.listen(port)
 console.log('Listening on port 8000')
