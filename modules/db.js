@@ -8,11 +8,14 @@ var connection = mysql.createConnection({
     user: 'toluwanimi',
     password: 'password',
     database: 'pacetimesheet_'
-    
+   
 })
 
 // [mysql://b726afb036f0bd:3fdf3077@us-cdbr-east-02.cleardb.com/heroku_ec0bd4ee53407d5?reconnect=true]
 
-
+// connection.connect((err, res) => {
+//     if (err) throw err
+//     console.log('DB connected')
+// })
 
 module.exports = connection
