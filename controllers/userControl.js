@@ -233,13 +233,16 @@ exports.userLogin = (req, res, next) => {
     WHERE email = '${email}'`, 
     (err, resp) => {
 
-        if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+        // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+        if(err){
+            res.send(err)
+        }
 
         //if user email not in database
         if(resp === []){
             return res.json({message: 'User does not exist'})
         }
-
+        
         //if user email in database
         if(resp){
             //check if password matches
