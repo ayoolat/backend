@@ -25,7 +25,10 @@ exports.signUp =  (req, res, next) =>{
             VALUES ('${companyName}', '${email}', '${companyType}')`, 
             (err, resp) => {
                 // handle error
-                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                if(err){
+                    res.send(err)
+                }
                 // handle success
                 // Create admin user, add details to staff table
                 if(resp){ 
