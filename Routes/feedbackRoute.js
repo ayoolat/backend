@@ -10,3 +10,5 @@ router.post('/feedback', feedbackController.postFeedback)
 
 // CONTACT-US 
 router.post('/contact', feedbackController.postContact)
+
+module.exports = router

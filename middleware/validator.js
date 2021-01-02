@@ -2,17 +2,13 @@
 const Joi = require('joi'); 
 const middleware = (schema, property) => { 
   return (req, res, next) => { 
-  const { error } = Joi.validate(req.body, schema); 
-  const valid = error == null; 
+  const Validation = schema.validate(req.body)
 
-  if (valid) { 
-    next(); 
-  } else { 
-    const { details } = error; 
-    const message = details.map(i => i.message).join(',');
-
-    console.log("error", message); 
-   res.status(422).json({ error: message }) } 
-  } 
+  if(Validation.error){
+    res.status(422).json({ error: Validation.error.details[0].message})
+  }else{
+    next()
+  }
+}
 } 
 module.exports = middleware;

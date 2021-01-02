@@ -1,21 +1,18 @@
 // require npm packages
 const mysql = require('mysql')
+require('dotenv').config()
 
 //create mysql connection
 var connection = mysql.createConnection({
-    // host: 'localhost',
-    // user: 'toluwanimi',
-    // password: 'password',
-    // database: 'pacetimesheet_'
     host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'pacetimesheet'
+    user: 'toluwanimi',
+    password: 'password',
+    database: 'pacetimesheet_'
+    
 })
 
-connection.connect((err, res) => {
-    if (err) throw err
-    console.log('DB connected')
-})
+// [mysql://b726afb036f0bd:3fdf3077@us-cdbr-east-02.cleardb.com/heroku_ec0bd4ee53407d5?reconnect=true]
+
+
 
 module.exports = connection

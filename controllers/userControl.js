@@ -239,7 +239,7 @@ exports.userLogin = (req, res, next) => {
         if(resp === []){
             return res.json({message: 'User does not exist'})
         }
-
+        
         //if user email in database
         if(resp){
             //check if password matches

@@ -1,11 +1,10 @@
 const Joi = require('joi'); 
-const { changePassword } = require('../controllers/userControl');
+// const { changePassword } = require('../controllers/userControl');
 const schemas = { 
   signUp: Joi.object().keys({ 
-    companyName: Joi.string().alphanum().min(3).max(15).required, 
     companyType: Joi.string().required(),
+    companyName: Joi.string().alphanum().min(3).max(15).required(), 
     password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
-    repeat_password: Joi.ref('password').required(),
     email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required()
   }),
 
@@ -19,6 +18,7 @@ const schemas = {
 
   changePassword: Joi.object().keys({
     password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
-    repeat_password: Joi.ref('password').required()
   })
 };
+
+module.exports = schemas;
