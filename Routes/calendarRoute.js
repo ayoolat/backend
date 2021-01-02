@@ -18,6 +18,7 @@ router.get('/', authenticateToken, calendarController.getEvents);
 router.put('/edit', authenticateToken, calendarController.editEvent);
 
 // Edit e-schedule
-router.delete('/delete', authenticateToken, calendarController.deleteEVent);
+router.delete('/delete', authenticateToken, calendarController.deleteEVent)
 
-module.exports = router;
+module.exports = router
+

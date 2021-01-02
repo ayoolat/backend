@@ -9,7 +9,7 @@ const taskSheetController = require('../controllers/taskSheetController')
 const router = express.Router();
 
 // Add employee permission
-router.post('/', taskSheetController.taskSheetCompany);
+router.post('/', authenticateToken,taskSheetController.taskSheetCompany);
 
+module.exports = router
 
-module.exports = router;

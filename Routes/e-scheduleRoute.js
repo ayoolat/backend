@@ -22,4 +22,4 @@ router.put('/edit', authenticateToken, e_ScheduleController.editE_schedule);
 // Edit e-schedule
 router.delete('/edit', authenticateToken, e_ScheduleController.delete);
 
-module.exports = router;
+module.exports = router
