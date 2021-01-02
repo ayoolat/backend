@@ -27,7 +27,6 @@ exports.signUp =  (req, res, next) =>{
         if (hash){
             createCompanyAndAdmin()
             async function createCompanyAndAdmin() {
-                console.log('hi')
                 await connection.query(`INSERT INTO company (companyName, email, companyType)
                 VALUES ('${companyName}', '${email}', '${companyType}')`, 
                 (err, resp) => {
@@ -41,6 +40,8 @@ exports.signUp =  (req, res, next) =>{
                     if(!resp){
                         return res.status(500).json({message: 'There has been an error, please try again'})
                     }
+                console.log('hi')
+
                 })
 
                 connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
@@ -51,7 +52,7 @@ exports.signUp =  (req, res, next) =>{
                     if(err){
                         return res.send(err)
                     }
-                    if(!resp){
+                    if(resp){
                         connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', @@IDENTITY, '1'), 
                         ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
                         ('1', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('1', @@IDENTITY, '9'), 
