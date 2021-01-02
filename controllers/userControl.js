@@ -290,7 +290,7 @@ exports.getAllCompanyStaff = (req, res, next) => {
 
 // Update company record
 exports.updateCompanyRecord = (req, res, next) => {
-    const {companyAdjective, companyType, currency} = req.body
+    const {companyAdjective, companyType, curreny} = req.body
     const {id} = req.params
     // =====================================================================
     // ******************** CHANGE PERMISSION ******************************
