@@ -43,7 +43,7 @@ exports.signUp =  (req, res, next) =>{
                     }
                 })
 
-                await connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
+                .then( connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
                 VALUES (@@IDENTITY, '${hash}', '${email}', '1', '${email}')
                 `, (err, resp) => {
                 console.log('hii')
@@ -54,9 +54,9 @@ exports.signUp =  (req, res, next) =>{
                     if(!resp){
                         return res.status(500).json({message: 'There has been an error, please try again'})
                     }
-                })
+                }))
 
-                await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', @@IDENTITY, '1'), 
+                .then (await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', @@IDENTITY, '1'), 
                 ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
                 ('1', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('1', @@IDENTITY, '9'), 
                 ('1', @@IDENTITY, '10'), ('1', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
@@ -72,7 +72,7 @@ exports.signUp =  (req, res, next) =>{
                             data : req.body
                         })
                     }
-                })
+                }))
 
             }  
         }
