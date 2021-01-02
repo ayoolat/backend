@@ -12,6 +12,7 @@ const authenticateToken = require('../middleware/authentication')
 const sendMail = require('../middleware/mailer')
 
 const notificationControl = require('./notificationControl')
+const { rejects } = require('assert')
 // sign up Company(post company)
 exports.signUp =  (req, res, next) =>{
     const {companyName, email, companyType, password} = req.body
@@ -24,46 +25,52 @@ exports.signUp =  (req, res, next) =>{
         }
         // handle success
         if (hash){
-            connection.query(`INSERT INTO company (companyName, email, companyType)
-            VALUES ('${companyName}', '${email}', '${companyType}')`, 
-            (err, resp) => {
-                // handle error
+            let addCompany = new promises((resolve, reject) => {
+                connection.query(`INSERT INTO company (companyName, email, companyType)
+                VALUES ('${companyName}', '${email}', '${companyType}')`, 
+                (err, resp) => {
+                    // handle error
+                    // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                    if(err){
+                        return reject(err)
+                    }
+                    // handle success
+                    // Create admin user, add details to staff table
+                    if(resp){
+                        resolve(resp)  
+                    }
+            })
+
+            let addStaff = connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
+                VALUES (@@IDENTITY, '${hash}', '${email}', '1', '${email}')
+                `, (err, resp) => {
+                    // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                    if(err){
+                        res.send(err)
+                    }
+                    if(resp){
+                        // Insert default admin user permissions
+                    }
+                })
+            })
+
+            let addPermission = connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', @@IDENTITY, '1'), 
+            ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
+            ('1', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('1', @@IDENTITY, '9'), 
+            ('1', @@IDENTITY, '10'), ('1', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
+            ('1', @@IDENTITY, '13'), ('1', @@IDENTITY, '14')`, (err, resp) => {
                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                 if(err){
                     res.send(err)
                 }
-                // handle success
-                // Create admin user, add details to staff table
-                if(resp){ 
-                    connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
-                    VALUES (@@IDENTITY, '${hash}', '${email}', '1', '${email}')
-                    `, (err, resp) => {
-                        // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                        if(err){
-                            res.send(err)
-                        }
-                        if(resp){
-                            // Insert default admin user permissions
-                            connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', @@IDENTITY, '1'), 
-                            ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
-                            ('1', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('1', @@IDENTITY, '9'), 
-                            ('1', @@IDENTITY, '10'), ('1', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
-                            ('1', @@IDENTITY, '13'), ('1', @@IDENTITY, '14')`, (err, resp) => {
-                                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                                if(err){
-                                    res.send(err)
-                                }
-                                if(resp){
-                                    return res.json({
-                                        status : 'success',
-                                        data : req.body
-                                    })
-                                }
-                            })
-                        }
+                if(resp){
+                    return res.json({
+                        status : 'success',
+                        data : req.body
                     })
                 }
             })
+            addCompany.then(addStaff())  
         }
     })
 }
