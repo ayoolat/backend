@@ -37,21 +37,23 @@ exports.signUp =  (req, res, next) =>{
                     }
                     // handle success
                     // Create admin user, add details to staff table
+                console.log('hi')
+
                     if(!resp){
                         return res.status(500).json({message: 'There has been an error, please try again'})
                     }
-                console.log('hi')
 
                 })
 
                 await connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
                 VALUES (@@IDENTITY, '${hash}', '${email}', '1', '${email}')
                 `, (err, resp) => {
-                console.log('hii')
                     // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                     if(err){
                         return res.send(err)
                     }
+                console.log('hii')
+
                     if(resp){
                         connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', @@IDENTITY, '1'), 
                         ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
