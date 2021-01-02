@@ -27,7 +27,7 @@ exports.signUp =  (req, res, next) =>{
         if (hash){
             createCompanyAndAdmin()
             async function createCompanyAndAdmin() {
-                await connection.query(`INSERT INTO company (companyName, email, companyType)
+                connection.query(`INSERT INTO company (companyName, email, companyType)
                 VALUES ('${companyName}', '${email}', '${companyType}')`, 
                 (err, resp) => {
                     // handle error
@@ -44,7 +44,7 @@ exports.signUp =  (req, res, next) =>{
 
                 })
 
-                connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
+                await connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
                 VALUES (@@IDENTITY, '${hash}', '${email}', '1', '${email}')
                 `, (err, resp) => {
                 console.log('hii')
