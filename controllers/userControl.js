@@ -25,10 +25,8 @@ exports.signUp =  (req, res, next) =>{
             VALUES ('${companyName}', '${email}', '${companyType}')`, 
             (err, resp) => {
                 // handle error
-                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                if(err){
-                    res.send(err)
-                }
+                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                
                 // handle success
                 // Create admin user, add details to staff table
                 if(resp){ 
@@ -229,7 +227,7 @@ exports.confirmSignUp = (req, res, next) => {
 exports.userLogin = (req, res, next) => {
     const {email, password} = req.body
     // get user with user email
-    connection.query(`SELECT s.firstName, s.lastName, s.password, s.companyID, s.staffID, permit, permitItem, roleID 
+    connection.query(`SELECT s.firstName, s.lastName, s.password, s.expectedWorkHours, s.billRateCharge, s.departmentID s.companyID, s.staffID, permit, permitItem, roleID 
     from permissions p JOIN staff s ON s.staffID = p.staffID 
     JOIN permitItem pi ON pi.permitItemID = p.permitItemID
     JOIN permit pe ON pe.permitID = p.permitID
