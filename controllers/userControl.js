@@ -311,8 +311,7 @@ exports.updateCompanyRecord = (req, res, next) => {
         if(permitDetails.companyID == id){
             connection.query(`UPDATE company SET companyType = '${companyType}', companyAdjective='${companyAdjective}', currency = '${currency}', lastUpdated = NOW() WHERE companyID = ${id}`,
             (err, resp) => {
-                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                if(err) res.send(err)
+                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
                 if(resp){
                     return res.json({
@@ -329,7 +328,7 @@ exports.updateCompanyRecord = (req, res, next) => {
 
 // Add department
 exports.addDepartment = (req, res, next) => {
-    const {departmentName, currency} = req.body
+    const {departmentName} = req.body
     const {id} = req.params
     // =====================================================================
     // ******************** CHANGE PERMISSION ******************************
@@ -339,8 +338,9 @@ exports.addDepartment = (req, res, next) => {
         if(permitDetails.companyID == id){
             connection.query(`INSERT INTO company (departmentName, companyID) VALUES(${departmentName}, ${id})`,
             (err, resp) => {
-                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-    
+                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                if(err) res.send(err)
+
                 if(resp){
                     return res.json({
                         status : 'success',
