@@ -312,8 +312,9 @@ exports.updateCompanyRecord = (req, res, next) => {
         if(permitDetails.companyID == id){
             connection.query(`UPDATE staff SET companyType = '${companyType}', companyAdjective='${companyAdjective}', currency = ${currency} lastUpdated = NOW() WHERE companyID = ${id}`,
             (err, resp) => {
-                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-    
+                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                if(err) res.send(err)
+
                 if(resp){
                     return res.json({
                         status : 'success',
@@ -321,6 +322,8 @@ exports.updateCompanyRecord = (req, res, next) => {
                     })
                 } 
             })
+        }else{
+            return res.status(500).json({message: 'You do not have permission to edit company details'})
         }
     }  
 }
