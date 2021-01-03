@@ -309,7 +309,7 @@ exports.updateCompanyRecord = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     console.log(permitDetails, permitDetails.permit)
     if(permitDetails.permit === 'allowed'){
-        if(permitDetails.staffID == id){
+        if(permitDetails.companyID == id){
             connection.query(`UPDATE staff SET companyType = '${companyType}', companyAdjective='${companyAdjective}', currency = ${currency} lastUpdated = NOW() WHERE companyID = ${id}`,
             (err, resp) => {
                 if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
