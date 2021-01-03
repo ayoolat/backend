@@ -268,31 +268,32 @@ exports.userLogin = (req, res, next) => {
 exports.getAllCompanyStaff = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'View all company users')
     if(permitDetails.permit === 'allowed'){
-        queryDB()
-        async function queryDB() {
-            try{
-                await connection.query(`select * from staff where companyID = ${req.params.companyID} `)
-                return res.json({
-                    status : 'success',
-                    data : resp
-                })
-            }
-            catch(err){
-                res.json({"error" : err[0]})
-                // return res.status(500).json({message: 'There has been an error, please try again'}) 
-            }
-        }
-        
-        // connection.query(`select * from staff where companyID = ${req.params.companyID} `, (err, resp) => {
-        //     if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+        // queryDB()
+        // async function queryDB() {
+        //     try{
+        //         await connection.query(`select * from staff where companyID = ${req.params.companyID} `)
 
-        //     if(resp){
         //         return res.json({
         //             status : 'success',
         //             data : resp
         //         })
         //     }
-        // })
+        //     catch(err){
+        //         res.json({"error" : err[0]})
+        //         // return res.status(500).json({message: 'There has been an error, please try again'}) 
+        //     }
+        // }
+        
+        connection.query(`select * from staff where companyID = ${req.params.companyID} `, (err, resp) => {
+            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+            if(resp){
+                return res.json({
+                    status : 'success',
+                    data : resp
+                })
+            }
+        })
     }else{
         return res.status(403).json({message: 'You do not have permission to view all staff'})
     } 
