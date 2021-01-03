@@ -77,7 +77,8 @@ exports.signUp =  (req, res, next) =>{
                        })
                 
             }catch(err){
-                return res.status(500).json({message: 'There has been an error, please try again'})
+                res.send(err)
+                // return res.status(500).json({message: 'There has been an error, please try again'})
             }
             }
             
