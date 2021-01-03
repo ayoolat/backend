@@ -41,13 +41,9 @@ exports.signUp =  (req, res, next) =>{
                     // Create admin user, add details to staff table
                 console.log('hi')
 
-                    if(!resp){
-                        return res.status(500).json({message: 'There has been an error, please try again'})
-                    }
-
-                })
-
-                .then(connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
+                    if(resp){
+                        
+                connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
                 VALUES (@@IDENTITY, '${hash}', '${email}', '1', '${email}')
                 `, (err, resp) => {
                     // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
@@ -75,9 +71,10 @@ exports.signUp =  (req, res, next) =>{
                             }
                         })
                     }
-                }))
+                }) 
+                    }
 
-                
+                })
 
             }  
         }
