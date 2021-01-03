@@ -11,7 +11,10 @@ var connection = mysql.createPool({
     host: process.env.db_host,
     user: process.env.db_user,
     password: process.env.db_password,
-    database: process.env.db_database   
+    database: process.env.db_database,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 })
 
 // [mysql://b726afb036f0bd:3fdf3077@us-cdbr-east-02.cleardb.com/heroku_ec0bd4ee53407d5?reconnect=true]

@@ -38,14 +38,10 @@ exports.signUp =  (req, res, next) =>{
                 // handle success
                 // Create admin user, add details to staff table
                 console.log('hi')
-
-                if(resp){
-                    next()
-                }
             })
 
             connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
-            VALUES (@@IDENTITY, '${hash}', '${email}', '1', '${email}')
+            VALUES (LAST_INSERT_ID(), '${hash}', '${email}', '1', '${email}')
             `, (err, resp) => {
                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                 if(err){
@@ -54,11 +50,11 @@ exports.signUp =  (req, res, next) =>{
                 console.log('hii')
 
                 if(resp){
-                    connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', @@IDENTITY, '1'), 
-                    ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
-                    ('1', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('1', @@IDENTITY, '9'), 
-                    ('1', @@IDENTITY, '10'), ('1', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
-                    ('1', @@IDENTITY, '13'), ('1', @@IDENTITY, '14')`, (err, resp) => {
+                    connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', LAST_INSERT_ID(), '1'), 
+                    ('1', LAST_INSERT_ID(), '2'), ('1', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
+                    ('1', LAST_INSERT_ID(), '7'), ('1', LAST_INSERT_ID(), '8'), ('1', LAST_INSERT_ID(), '9'), 
+                    ('1', LAST_INSERT_ID(), '10'), ('1', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
+                    ('1', LAST_INSERT_ID(), '13'), ('1', LAST_INSERT_ID(), '14')`, (err, resp) => {
                     console.log('hiii')
                         // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                         if(err){
