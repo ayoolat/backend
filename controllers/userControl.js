@@ -310,7 +310,7 @@ exports.updateCompanyRecord = (req, res, next) => {
     console.log(permitDetails, permitDetails.permit)
     if(permitDetails.permit === 'allowed'){
         if(permitDetails.companyID == id){
-            connection.query(`UPDATE staff SET companyType = '${companyType}', companyAdjective='${companyAdjective}', currency = ${currency} lastUpdated = NOW() WHERE companyID = ${id}`,
+            connection.query(`UPDATE staff SET companyType = '${companyType}', companyAdjective='${companyAdjective}', currency = '${currency}' lastUpdated = NOW() WHERE companyID = ${id}`,
             (err, resp) => {
                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                 if(err) res.send(err)
