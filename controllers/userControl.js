@@ -15,7 +15,7 @@ const sendMail = require('../middleware/mailer')
 const notificationControl = require('./notificationControl')
 const { rejects } = require('assert')
 // sign up Company(post company)
-exports.pool.signUp =  (req, res, next) =>{
+exports.signUp =  (req, res, next) =>{
     const {companyName, email, companyType, password} = req.body
     // hash password
     bcrypt.hash(password, 10, (err, hash) => {
