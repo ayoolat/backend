@@ -42,8 +42,8 @@ exports.signUp =  (req, res, next) =>{
                     ('1', LAST_INSERT_ID(), '13'), ('1', LAST_INSERT_ID(), '14')`)
 
                     return res.json({
-                            status : 'success',
-                            data : req.body
+                        status : 'success',
+                        data : req.body
                     })
                 
                 }catch(err){
@@ -268,6 +268,7 @@ exports.userLogin = (req, res, next) => {
 exports.getAllCompanyStaff = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'View all company users')
     if(permitDetails.permit === 'allowed'){
+        queryDB()
         async function queryDB() {
             try{
                 await connection.query(`select * from staff where companyID = ${req.params.companyID} `)
@@ -277,7 +278,7 @@ exports.getAllCompanyStaff = (req, res, next) => {
                 })
             }
             catch(err){
-                return res.status(500).json({message: 'There has been an error, please try again'})
+                return res.status(500).json({message: 'There has been an error, please try again'}) 
             }
         }
         
