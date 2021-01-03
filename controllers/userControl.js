@@ -25,12 +25,12 @@ exports.signUp =  (req, res, next) =>{
         }
         // handle success
         if (hash){
-            connection = util.promisify(connection);
-
+            // connection = util.promisify(connection);
+            connectionPool = connection.promise()
             queryDB()
             async function  queryDB() {
                 try{
-                await connection.execute(`INSERT INTO company (companyName, email, companyType)
+                await connectionPool.execute(`INSERT INTO company (companyName, email, companyType)
             VALUES ('${companyName}', '${email}', '${companyType}')`
                 // handle error
                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
@@ -42,7 +42,7 @@ exports.signUp =  (req, res, next) =>{
                 // console.log('hi')
             )
 
-            await connection.execute(`INSERT INTO staff (companyID, password, email, roleID, username)
+            await connectionPool.execute(`INSERT INTO staff (companyID, password, email, roleID, username)
             VALUES (LAST_INSERT_ID(), '${hash}', '${email}', '1', '${email}')
             `
                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
@@ -54,7 +54,7 @@ exports.signUp =  (req, res, next) =>{
                 
             ) 
             
-            await connection.execute(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', LAST_INSERT_ID(), '1'), 
+            await connectionPool.execute(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', LAST_INSERT_ID(), '1'), 
                 ('1', LAST_INSERT_ID(), '2'), ('1', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
                 ('1', LAST_INSERT_ID(), '7'), ('1', LAST_INSERT_ID(), '8'), ('1', LAST_INSERT_ID(), '9'), 
                 ('1', LAST_INSERT_ID(), '10'), ('1', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
