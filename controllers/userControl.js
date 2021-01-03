@@ -18,7 +18,7 @@ connection.query = util.promisify(connection.query);
 
 // sign up Company(post company)
 exports.signUp =  (req, res, next) =>{
-    const {companyName, email, companyType, password} = req.body
+    const {companyName, email, password} = req.body
     // hash password
     bcrypt.hash (password, 10, (err, hash) => {
         // handle error
@@ -29,8 +29,8 @@ exports.signUp =  (req, res, next) =>{
             queryDB()
             async function  queryDB() {
                 try{
-                    await connection.query(`INSERT INTO company (companyName, email, companyType)
-                    VALUES ('${companyName}', '${email}', '${companyType}')`)
+                    await connection.query(`INSERT INTO company (companyName, email)
+                    VALUES ('${companyName}', '${email}')`)
 
                     await connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
                     VALUES (LAST_INSERT_ID(), '${hash}', '${email}', '1', '${email}')`) 
@@ -362,7 +362,7 @@ exports.getDepartment = (res, req, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
         if(permitDetails.companyID == id){
-            connection.query(`SELECT * FROM department WHERE companyID = '${id}')`, (err, resp) => {
+            connection.query(`SELECT departmentName FROM department WHERE companyID = '${id}')`, (err, resp) => {
                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                 if(err) res.send(err)
 
@@ -387,7 +387,7 @@ exports.updateUserRecord = (req, res, next) => {
     const {firstName, lastName, phoneNumber, address, userName,} = req.body
     const {id} = req.params
 
-    image = req.file.path.replace("/\\/g", "//")
+    // image = req.file.path.replace("/\\/g", "//")
     connection.query(`UPDATE staff SET firstName = '${firstName}', lastName='${lastName}', phoneNumber =  '${phoneNumber}', address = '${address}', 
     userName = '${userName}', image = '${image}', lastUpdated = NOW() WHERE staffID = ${id}`,
     (err, resp) => {
@@ -405,18 +405,21 @@ exports.updateUserRecord = (req, res, next) => {
 // read company
 exports.viewCompanyProfile = (req, res, next) => {
     const {id} = req.params
-    if(req.respData.response[0].staffID == id){
-        connection.query(`select * from company where staffID = ${id}`, (err, resp) => {
-            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    if(permitDetails.permit === 'allowed'){
+        if(permitDetails.permit.companyID == id){
+            connection.query(`select * from company where companyID = ${id}`, (err, resp) => {
+                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
-            if(resp){
-                return res.json({
-                    status : 'success',
-                    data : resp
-                })
-            }
-        })
-    }
+                if(resp){
+                    return res.json({
+                        status : 'success',
+                        data : resp
+                    })
+                }
+            })
+        }
+    }   
 }
 
 // read User
