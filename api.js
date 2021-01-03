@@ -3,9 +3,12 @@ let port = process.env.PORT
 let express = require('express')
 let bodyParser = require('body-parser')
 let fs = require('fs')
+var cors = require('cors')
 
 const app = express()
 app.use(bodyParser.json())
+
+app.use(cors())
 
 // exported modules
 const usersRoute = require('./Routes/usersRoute')

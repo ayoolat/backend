@@ -13,6 +13,9 @@ const authenticateToken = require('../middleware/authentication')
 const sendMail = require('../middleware/mailer')
 
 const notificationControl = require('./notificationControl')
+
+connection.query = util.promisify(connection.query);
+
 // sign up Company(post company)
 exports.signUp =  (req, res, next) =>{
     const {companyName, email, companyType, password} = req.body
@@ -25,64 +28,30 @@ exports.signUp =  (req, res, next) =>{
         }
         // handle success
         if (hash){
-            connection.query = util.promisify(connection.query);
-
             queryDB()
             async function  queryDB() {
                 try{
-                await connection.query(`INSERT INTO company (companyName, email, companyType)
-            VALUES ('${companyName}', '${email}', '${companyType}')`
-                // handle error
-                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                // if(err){
-                //     return res.send(err)
-                // }
-                // handle success
-                // Create admin user, add details to staff table
-                // console.log('hi')
-            )
+                    await connection.query(`INSERT INTO company (companyName, email, companyType)
+                    VALUES ('${companyName}', '${email}', '${companyType}')`)
 
-            await connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
-            VALUES (LAST_INSERT_ID(), '${hash}', '${email}', '1', '${email}')
-            `
-                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                // if(err){
-                //     return res.send(err)
-                // }
-                // console.log('hii')
+                    await connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
+                    VALUES (LAST_INSERT_ID(), '${hash}', '${email}', '1', '${email}')`) 
+                    
+                    await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', LAST_INSERT_ID(), '1'), 
+                    ('1', LAST_INSERT_ID(), '2'), ('1', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
+                    ('1', LAST_INSERT_ID(), '7'), ('1', LAST_INSERT_ID(), '8'), ('1', LAST_INSERT_ID(), '9'), 
+                    ('1', LAST_INSERT_ID(), '10'), ('1', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
+                    ('1', LAST_INSERT_ID(), '13'), ('1', LAST_INSERT_ID(), '14')`)
 
-                
-            ) 
-            
-            await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', LAST_INSERT_ID(), '1'), 
-                ('1', LAST_INSERT_ID(), '2'), ('1', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
-                ('1', LAST_INSERT_ID(), '7'), ('1', LAST_INSERT_ID(), '8'), ('1', LAST_INSERT_ID(), '9'), 
-                ('1', LAST_INSERT_ID(), '10'), ('1', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
-                ('1', LAST_INSERT_ID(), '13'), ('1', LAST_INSERT_ID(), '14')`
-                // console.log('hiii')
-                    // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                    // if(err){
-                    //     return res.send(err)
-                    // }
-                    // if(resp){
-                    //     return res.json({
-                    //         status : 'success',
-                    //         data : req.body
-                    //     })
-                    // }
-                )
-                return res.json({
+                    return res.json({
                             status : 'success',
                             data : req.body
-                       })
+                    })
                 
-            }catch(err){
-                res.send(err)
-                // return res.status(500).json({message: 'There has been an error, please try again'})
-            }
-            }
-            
-            
+                }catch(err){
+                    return res.status(500).json({message: 'This email already exists'})
+                }
+            }   
         }
     })
 }
