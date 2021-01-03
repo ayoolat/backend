@@ -403,7 +403,6 @@ exports.updateUserRecord = (req, res, next) => {
 exports.viewCompanyProfile = (req, res, next) => {
     const {id} = req.params
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
-    console.log(permitDetails, permitDetails.permit, permitDetails.permit.companyID, id)
     if(permitDetails.permit === 'allowed'){
         if(permitDetails.companyID == id){
             connection.query(`select * from company where companyID = ${id}`, (err, resp) => {
