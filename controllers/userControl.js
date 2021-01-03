@@ -405,7 +405,7 @@ exports.viewCompanyProfile = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     console.log(permitDetails, permitDetails.permit, permitDetails.permit.companyID, id)
     if(permitDetails.permit === 'allowed'){
-        if(permitDetails.permit.companyID == id){
+        if(permitDetails.companyID == id){
             connection.query(`select * from company where companyID = ${id}`, (err, resp) => {
                 if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
