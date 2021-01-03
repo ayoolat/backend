@@ -34,6 +34,9 @@ router.put('/companyName/companyProfile/updateProfile/:id', authenticateToken, u
 // Add department
 router.put('/companyName/companyProfile/addDepartment/:id', authenticateToken, userController.addDepartment)
 
+// view department
+router.get('/companyName/companyProfile/department/:id', authenticateToken, userController.addDepartment)
+
 // Update user details
 router.put('/companyName/userProfile/updateProfile/:id', authenticateToken, fileUpload.uploadImage.single('image'), userController.updateUserRecord)
 
