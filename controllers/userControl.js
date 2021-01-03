@@ -14,10 +14,10 @@ const sendMail = require('../middleware/mailer')
 
 const notificationControl = require('./notificationControl')
 // sign up Company(post company)
-exports.signUp =  async(req, res, next) =>{
+exports.signUp =  (req, res, next) =>{
     const {companyName, email, companyType, password} = req.body
     // hash password
-    bcrypt.hash(password, 10, (err, hash) => {
+    bcrypt.hash (password, 10, async(err, hash) => {
         // handle error
         // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
         if(err){
