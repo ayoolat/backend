@@ -338,8 +338,7 @@ exports.addDepartment = (req, res, next) => {
         if(permitDetails.companyID == id){
             connection.query(`INSERT INTO department (departmentName, companyID) VALUES('${departmentName}', '${id}')`,
             (err, resp) => {
-                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                if(err) res.send(err)
+                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
                 if(resp){
                     return res.json({
@@ -356,15 +355,13 @@ exports.addDepartment = (req, res, next) => {
 
 // get department
 exports.getDepartment = (res, req, next) => {
-    const {departmentName} = req.body
     const {id} = req.params
 
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
         if(permitDetails.companyID == id){
             connection.query(`SELECT departmentName FROM department WHERE companyID = '${id}')`, (err, resp) => {
-                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                if(err) res.send(err)
+                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
                 if(resp){
                     return res.json({
@@ -406,6 +403,7 @@ exports.updateUserRecord = (req, res, next) => {
 exports.viewCompanyProfile = (req, res, next) => {
     const {id} = req.params
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    console.log(permitDetails, permitDetails.permit, permitDetails.permit.companyID == id)
     if(permitDetails.permit === 'allowed'){
         if(permitDetails.permit.companyID == id){
             connection.query(`select * from company where companyID = ${id}`, (err, resp) => {
@@ -418,7 +416,11 @@ exports.viewCompanyProfile = (req, res, next) => {
                     })
                 }
             })
+        }else{
+            return res.status(500).json({message: 'You do not have permission to edit company details'})
         }
+    }else{
+        return res.status(500).json({message: 'You do not have permission to edit company details'})
     }   
 }
 
