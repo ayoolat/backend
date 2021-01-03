@@ -3,6 +3,7 @@ const mysql = require('mysql')
 require('dotenv').config()
 
 //create mysql connection
+<<<<<<< HEAD
 var connection = mysql.createPool({
     // host: 'localhost',
     // user: 'toluwanimi',
@@ -15,6 +16,14 @@ var connection = mysql.createPool({
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
+=======
+var connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'toluwanimi',
+    password: 'password',
+    database: 'pacetimesheet_'
+   
+>>>>>>> 7cd19922bf7d71617deba910af92936141631a5a
 })
 
 // [mysql://b726afb036f0bd:3fdf3077@us-cdbr-east-02.cleardb.com/heroku_ec0bd4ee53407d5?reconnect=true]
