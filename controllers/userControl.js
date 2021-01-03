@@ -17,7 +17,7 @@ const notificationControl = require('./notificationControl')
 exports.signUp =  (req, res, next) =>{
     const {companyName, email, companyType, password} = req.body
     // hash password
-    bcrypt.hash (password, 10, async(err, hash) => {
+    bcrypt.hash (password, 10, (err, hash) => {
         // handle error
         // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
         if(err){
@@ -26,50 +26,62 @@ exports.signUp =  (req, res, next) =>{
         // handle success
         if (hash){
             connection.query = util.promisify(connection.query);
-            
-            await connection.query(`INSERT INTO company (companyName, email, companyType)
-            VALUES ('${companyName}', '${email}', '${companyType}')`, 
-            (err, resp) => {
+
+            queryDB()
+            async function  queryDB() {
+                try{
+                await connection.execute(`INSERT INTO company (companyName, email, companyType)
+            VALUES ('${companyName}', '${email}', '${companyType}')`
                 // handle error
                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                if(err){
-                    return res.send(err)
-                }
+                // if(err){
+                //     return res.send(err)
+                // }
                 // handle success
                 // Create admin user, add details to staff table
-                console.log('hi')
-            })
+                // console.log('hi')
+            )
 
-            connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
+            await connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
             VALUES (LAST_INSERT_ID(), '${hash}', '${email}', '1', '${email}')
-            `, (err, resp) => {
+            `
                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                if(err){
-                    return res.send(err)
-                }
-                console.log('hii')
+                // if(err){
+                //     return res.send(err)
+                // }
+                // console.log('hii')
 
-                if(resp){
-                    connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', LAST_INSERT_ID(), '1'), 
-                    ('1', LAST_INSERT_ID(), '2'), ('1', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
-                    ('1', LAST_INSERT_ID(), '7'), ('1', LAST_INSERT_ID(), '8'), ('1', LAST_INSERT_ID(), '9'), 
-                    ('1', LAST_INSERT_ID(), '10'), ('1', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
-                    ('1', LAST_INSERT_ID(), '13'), ('1', LAST_INSERT_ID(), '14')`, (err, resp) => {
-                    console.log('hiii')
-                        // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                        if(err){
-                            return res.send(err)
-                        }
-                        if(resp){
-                            return res.json({
-                                status : 'success',
-                                data : req.body
-                            })
-                        }
-                    })
-                }
-            }) 
-
+                
+            ) 
+            
+            await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', LAST_INSERT_ID(), '1'), 
+                ('1', LAST_INSERT_ID(), '2'), ('1', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
+                ('1', LAST_INSERT_ID(), '7'), ('1', LAST_INSERT_ID(), '8'), ('1', LAST_INSERT_ID(), '9'), 
+                ('1', LAST_INSERT_ID(), '10'), ('1', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
+                ('1', LAST_INSERT_ID(), '13'), ('1', LAST_INSERT_ID(), '14')`
+                // console.log('hiii')
+                    // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                    // if(err){
+                    //     return res.send(err)
+                    // }
+                    // if(resp){
+                    //     return res.json({
+                    //         status : 'success',
+                    //         data : req.body
+                    //     })
+                    // }
+                )
+                return res.json({
+                            status : 'success',
+                            data : req.body
+                       })
+                
+            }catch(err){
+                return res.status(500).json({message: 'There has been an error, please try again'})
+            }
+            }
+            
+            
         }
     })
 }
