@@ -39,8 +39,8 @@ exports.signUp =  (req, res, next) =>{
                 // Create admin user, add details to staff table
                 console.log('hi')
 
-                if(!resp){
-                    return res.status(500).json({message: 'There has been an error, please try again'})
+                if(resp){
+                    next()
                 }
             })
 
