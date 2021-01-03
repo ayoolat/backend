@@ -336,7 +336,7 @@ exports.addDepartment = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
         if(permitDetails.companyID == id){
-            connection.query(`INSERT INTO company (departmentName, companyID) VALUES('${departmentName}', '${id}')`,
+            connection.query(`INSERT INTO department (departmentName, companyID) VALUES('${departmentName}', '${id}')`,
             (err, resp) => {
                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                 if(err) res.send(err)
