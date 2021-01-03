@@ -2,6 +2,7 @@ require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const crypto = require('crypto')
+const util = require('util');
 
 // exported modules
 let connection = require('../modules/db')
@@ -14,7 +15,7 @@ const sendMail = require('../middleware/mailer')
 const notificationControl = require('./notificationControl')
 const { rejects } = require('assert')
 // sign up Company(post company)
-exports.signUp =  (req, res, next) =>{
+exports.pool.signUp =  (req, res, next) =>{
     const {companyName, email, companyType, password} = req.body
     // hash password
     bcrypt.hash(password, 10, (err, hash) => {
@@ -25,9 +26,10 @@ exports.signUp =  (req, res, next) =>{
         }
         // handle success
         if (hash){
+            connection.query = util.promisify(connection.query);
             createCompanyAndAdmin()
             async function createCompanyAndAdmin() {
-                connection.query(`INSERT INTO company (companyName, email, companyType)
+                await connection.query(`INSERT INTO company (companyName, email, companyType)
                 VALUES ('${companyName}', '${email}', '${companyType}')`, 
                 (err, resp) => {
                     // handle error
@@ -45,7 +47,7 @@ exports.signUp =  (req, res, next) =>{
 
                 })
 
-                await connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
+                .then(connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
                 VALUES (@@IDENTITY, '${hash}', '${email}', '1', '${email}')
                 `, (err, resp) => {
                     // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
@@ -73,7 +75,7 @@ exports.signUp =  (req, res, next) =>{
                             }
                         })
                     }
-                })
+                }))
 
                 
 

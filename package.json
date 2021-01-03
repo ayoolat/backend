@@ -38,6 +38,7 @@
     "nodemailer-mailgun-transport": "^2.0.2",
     "nodemon": "^2.0.6",
     "path": "^0.12.7",
-    "paystack": "^2.0.1"
+    "paystack": "^2.0.1",
+    "util": "^0.12.3"
   }
 }
