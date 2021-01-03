@@ -307,6 +307,7 @@ exports.updateCompanyRecord = (req, res, next) => {
     // ******************** CHANGE PERMISSION ******************************
     // =====================================================================
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    console.log(permitDetails, permitDetails.permit)
     if(permitDetails.permit === 'allowed'){
         if(permitDetails.staffID == id){
             connection.query(`UPDATE staff SET companyType = '${companyType}', companyAdjective='${companyAdjective}', currency = ${currency} lastUpdated = NOW() WHERE companyID = ${id}`,
