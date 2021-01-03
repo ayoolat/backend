@@ -278,7 +278,7 @@ exports.getAllCompanyStaff = (req, res, next) => {
                 })
             }
             catch(err){
-                res.send(err)
+                res.json({"error" : err[0]})
                 // return res.status(500).json({message: 'There has been an error, please try again'}) 
             }
         }
