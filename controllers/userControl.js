@@ -307,7 +307,6 @@ exports.updateCompanyRecord = (req, res, next) => {
     // ******************** CHANGE PERMISSION ******************************
     // =====================================================================
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
-    console.log(permitDetails, permitDetails.permit)
     if(permitDetails.permit === 'allowed'){
         if(permitDetails.companyID == id){
             connection.query(`UPDATE company SET companyType = '${companyType}', companyAdjective='${companyAdjective}', currency = '${currency}', lastUpdated = NOW() WHERE companyID = ${id}`,
@@ -337,8 +336,8 @@ exports.addDepartment = (req, res, next) => {
     // =====================================================================
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
-        if(permitDetails.staffID == id){
-            connection.query(`INSERT INTO staff (departmentName, companyID, currency) VALUES(${departmentName}, ${id}, ${currency})`,
+        if(permitDetails.companyID == id){
+            connection.query(`INSERT INTO company (departmentName, companyID, currency) VALUES(${departmentName}, ${id}, ${currency})`,
             (err, resp) => {
                 if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
     
@@ -349,6 +348,8 @@ exports.addDepartment = (req, res, next) => {
                     })
                 } 
             })
+        }else{
+            return res.status(500).json({message: 'You do not have permission to edit company details'})
         }
     }  
 }
