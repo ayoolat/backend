@@ -2,7 +2,8 @@ let connection = require('../modules/db')
 
 // Creat new e-schedule
 exports.newE_schedule = (req, res, next) => {
-    connection.query(`INSERT INTO e_schedule (eventName, eventDateAndTime, staffID) VALUES ('${req.body.eventName}', '${req.body.eventDateAndTime}', '${req.respData.response[0].staffID}')`, (err, resp) => {
+    const {eventName, eventDateAndTime} = req.body
+    connection.query(`INSERT INTO e_schedule (eventName, eventDateAndTime, staffID) VALUES ('${eventName}', '${eventDateAndTime}', '${req.respData.response[0].staffID}')`, (err, resp) => {
         // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
         if(err)res.send(err)
         if(resp){
@@ -29,6 +30,7 @@ exports.getE_schedule = (req, res, next) => {
 }
 
 exports.editE_schedule = (req, res, next) => {
+    const {eventName, eventDateAndTime} = req.body
     const {id, eventID} = req.params
     connection.query(`UPDATE e_schedule SET eventName = '${eventName}', 
     eventDateAndTime = '${eventDateAndTime}', lastUpdated = NEW() WHERE staffID = ${id} AND eventID = ${eventID}`, (err, resp) => {
