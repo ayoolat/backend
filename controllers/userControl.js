@@ -87,7 +87,7 @@ exports.employeeSignUp = (req, res, next) => {
                                     'ayoola_toluwanimi@yahoo.com',
                                     'Password reset link',
                                     `<p>Please click the link below to reset you password<p/>
-                                    <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}'>/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}<a/>`,
+                                    <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}<a/>`,
                                     'To reset your password',
                                     (errMail, info) => {
                                         if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
@@ -222,10 +222,11 @@ exports.confirmSignUp = (req, res, next) => {
 exports.userLogin = (req, res, next) => {
     const {email, password} = req.body
     // get user with user email
-    connection.query(`SELECT s.firstName, s.lastName, s.password, s.expectedWorkHours, s.billRateCharge, s.departmentID, s.companyID, s.staffID, permit, permitItem, roleID 
+    connection.query(`SELECT s.firstName, s.lastName, s.password, s.expectedWorkHours, s.billRateCharge, s.departmentID, d.department, s.companyID, s.staffID, permit, permitItem, roleID 
     from permissions p JOIN staff s ON s.staffID = p.staffID 
     JOIN permitItem pi ON pi.permitItemID = p.permitItemID
     JOIN permit pe ON pe.permitID = p.permitID
+    JOIN department d ON d.staffID = p.staffID
     WHERE email = '${email}'`, 
     (err, resp) => {
 
