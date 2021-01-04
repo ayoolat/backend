@@ -47,7 +47,7 @@ exports.getEvents = (req, res, next) => {
     })
 }
 
-exports.editEvent = (res, req, next) => {
+exports.editEvent = (req, res, next) => {
     const {eventName, eventDateAndTime} = req.body
     const{eventID, id} = req.params
     const{firstName, lastName} = req.respData.data
