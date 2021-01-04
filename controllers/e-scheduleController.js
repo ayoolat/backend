@@ -2,7 +2,7 @@ let connection = require('../modules/db')
 
 // Creat new e-schedule
 exports.newE_schedule = (req, res, next) => {
-    connection.query(`INSERT INTO calendar (eventName, eventDateAndTime, staffID) VALUES (${req.body.eventName}, ${req.body.eventDateAndTime}, '${permitDetails.staffID}')`, (req, resp) => {
+    connection.query(`INSERT INTO calendar (eventName, eventDateAndTime, staffID) VALUES ('${req.body.eventName}', '${req.body.eventDateAndTime}', '${req.respData.response.staffID}')`, (req, resp) => {
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
         if(resp){
