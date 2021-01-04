@@ -226,7 +226,6 @@ exports.userLogin = (req, res, next) => {
     from permissions p JOIN staff s ON s.staffID = p.staffID 
     JOIN permitItem pi ON pi.permitItemID = p.permitItemID
     JOIN permit pe ON pe.permitID = p.permitID
-    // JOIN staffDepartment sd ON d.staffID = p.staffID
     WHERE email = '${email}'`, 
     (err, resp) => {
 
