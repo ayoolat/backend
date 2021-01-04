@@ -473,7 +473,7 @@ exports.timeAndBilling = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
         connection.query(`UPDATE staff SET expectedWorkHours = '${expectedWorkHours}', 
-        billRateCharge ='${billRateCharge}', departmentID = '${departmentID}' lastUpdated = NOW()
+        billRateCharge ='${billRateCharge}', departmentID = '${departmentID}', lastUpdated = NOW()
         where staffID = ${id} and companyID = ${permitDetails.companyID}`,
         (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
