@@ -20,7 +20,7 @@ exports.NewEvent = (req, res, next) => {
                             'body' :  eventName,
                             'status' : 'false'
                         }
-                        logNotification(notified, res)
+                        notificationControl.logNotification(notified, res)
                     });
                     
                     return res.json({
