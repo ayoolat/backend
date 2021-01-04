@@ -17,6 +17,11 @@ const schemas = {
 
   changePassword: Joi.object().keys({
     password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+  }),
+
+  addE_schedule: Joi.object().keys({
+    eventName : Joi.string().required(), 
+    eventDateAndTime : Joi.required(),
   })
 };
 
