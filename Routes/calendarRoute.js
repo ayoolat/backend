@@ -9,7 +9,7 @@ const calendarController = require('../controllers/calenderController')
 const router = express.Router();
 
 // Add to Calendar
-router.post('/newE-schedule', authenticateToken, calendarController.NewEvent);
+router.post('/new', authenticateToken, calendarController.NewEvent);
 
 // get events
 router.get('/', authenticateToken, calendarController.getEvents);
