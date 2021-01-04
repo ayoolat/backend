@@ -467,13 +467,13 @@ exports.changePassword = (req, res, next) => {
 
 // edit employee time and billing
 exports.timeAndBilling = (req, res, next) => {
-    const {expectedWorkHours, billRateCharge, departmentID} = req.body
+    const {expectedWorkHours, billRateCharge} = req.body
     const {id} = req.params
 
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
         connection.query(`UPDATE staff SET expectedWorkHours = '${expectedWorkHours}', 
-        billRateCharge ='${billRateCharge}', departmentID = '${departmentID}', lastUpdated = NOW()
+        billRateCharge ='${billRateCharge}', lastUpdated = NOW()
         where staffID = ${id} and companyID = ${permitDetails.companyID}`,
         (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
