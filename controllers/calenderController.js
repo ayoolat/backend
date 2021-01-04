@@ -50,9 +50,9 @@ exports.getEvents = (req, res, next) => {
 exports.editEvent = (req, res, next) => {
     const {eventName, eventDateAndTime} = req.body
     const{eventID, id} = req.params
-    const{firstName, lastName} = req.respData.data
+    const{firstName, lastName} = req.respData.response
 
-    permitDetails = req.respData.data.find(x => x.permitItem == 'Add and edit Company calendar')
+    permitDetails = req.respData.response.find(x => x.permitItem == 'Add and edit Company calendar')
     if(permitDetails.permit === 'allowed'){
         connection.query(`UPDATE calendar SET eventName = '${eventName}', 
         eventDateAndTime = '${eventDateAndTime}', lastUpdated = NOW() WHERE staffID = ${id} AND eventID = ${eventID}`, (err, resp) => {
