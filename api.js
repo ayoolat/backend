@@ -3,11 +3,7 @@ let port = process.env.PORT
 let express = require('express')
 let bodyParser = require('body-parser')
 let fs = require('fs')
-<<<<<<< HEAD
 var cors = require('cors')
-=======
-let port = process.env.PORT || 8000
->>>>>>> 7cd19922bf7d71617deba910af92936141631a5a
 
 const app = express()
 app.use(bodyParser.json())

@@ -456,7 +456,7 @@ exports.changePassword = (req, res, next) => {
                     if(resp){
                         return res.json({
                             status : 'success',
-                            data : resp
+                            data : "password successfully changed"
                         })
                     }
                 })
@@ -493,7 +493,7 @@ exports.timeAndBilling = (req, res, next) => {
                 notificationControl.logNotification(notified, res)
                 return res.json({
                     status : 'success',
-                    data : resp
+                    data : req.body
                 })
             } 
         })
