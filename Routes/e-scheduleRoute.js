@@ -14,12 +14,12 @@ const router = express.Router();
 router.post('/newE-schedule', authenticateToken, e_ScheduleController.newE_schedule);
 
 // get e-schedule
-router.get('/', authenticateToken, e_ScheduleController.getE_schedule);
+router.get('/:id', authenticateToken, e_ScheduleController.getE_schedule);
 
 // Edit e-schedule
-router.put('/edit', authenticateToken, e_ScheduleController.editE_schedule);
+router.put('/edit/:id', authenticateToken, e_ScheduleController.editE_schedule);
 
 // Edit e-schedule
-router.delete('/edit', authenticateToken, e_ScheduleController.delete);
+router.delete('/delete/:id', authenticateToken, e_ScheduleController.delete);
 
 module.exports = router
