@@ -568,12 +568,9 @@ exports.setNewPassword = (req, res, next) => {
                     bcrypt.compare(req.body.password, respQuery[0].password, (hashErr, valid) => {
 
                         if(valid){
-                            if(respQuery[0].password == req.body.password){
-
-                                return res.json({
-                                    message : 'Password cannot be the same',
-                                })
-                            }
+                            return res.json({
+                                message : 'Password cannot be the same',
+                            })
                         }
 
                         if(!valid){

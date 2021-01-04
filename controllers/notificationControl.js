@@ -13,7 +13,7 @@ exports.logNotification = (notification, res) => {
         if(resp){
             return res.json({
                 status : 'success',
-                data : req.body
+                data : notification
             })
         }
     })
