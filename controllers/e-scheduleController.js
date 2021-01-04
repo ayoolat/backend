@@ -33,7 +33,7 @@ exports.editE_schedule = (req, res, next) => {
     const {eventName, eventDateAndTime} = req.body
     const {id, eventID} = req.params
     connection.query(`UPDATE e_schedule SET eventName = '${eventName}', 
-    eventDateAndTime = '${eventDateAndTime}', lastUpdated = NEW() WHERE staffID = ${id} AND eventID = ${eventID}`, (err, resp) => {
+    eventDateAndTime = '${eventDateAndTime}', lastUpdated = NOW() WHERE staffID = ${id} AND eventID = ${eventID}`, (err, resp) => {
         // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
         if(err)res.send(err)
         if(resp){
