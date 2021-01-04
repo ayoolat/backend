@@ -87,7 +87,7 @@ exports.employeeSignUp = (req, res, next) => {
                                     'ayoola_toluwanimi@yahoo.com',
                                     'Password reset link',
                                     `<p>Please click the link below to reset you password<p/>
-                                    <a href = '/api/companyName/users/companyName/confirmation/${resp.insertID}'>/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}<a/>`,
+                                    <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}'>/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}<a/>`,
                                     'To reset your password',
                                     (errMail, info) => {
                                         if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
@@ -268,22 +268,6 @@ exports.userLogin = (req, res, next) => {
 exports.getAllCompanyStaff = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'View all company users')
     if(permitDetails.permit === 'allowed'){
-        // queryDB()
-        // async function queryDB() {
-        //     try{
-        //         await connection.query(`select * from staff where companyID = ${req.params.companyID} `)
-
-        //         return res.json({
-        //             status : 'success',
-        //             data : resp
-        //         })
-        //     }
-        //     catch(err){
-        //         res.json({"error" : err[0]})
-        //         // return res.status(500).json({message: 'There has been an error, please try again'}) 
-        //     }
-        // }
-        
         connection.query(`select * from staff where companyID = ${req.params.companyID} `, (err, resp) => {
             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
@@ -566,7 +550,6 @@ exports.setNewPassword = (req, res, next) => {
                 
                 if(respReset){
                     bcrypt.compare(req.body.password, respQuery[0].password, (hashErr, valid) => {
-
                         if(valid){
                             return res.json({
                                 message : 'Password cannot be the same',
@@ -611,48 +594,17 @@ exports.setNewPassword = (req, res, next) => {
         }
     })
 }
-const userController = (app) =>{
-
-    // update company details
-    app.put('/pace-time-sheet/companyName/companySettings/:id', authenticateToken, (req, res) => {
-        permitDetails = req.respData.data.find(x => x.permitItem == 'Edit company settings')
-        if (!!permitDetails) {
-            if (permitDetails.permit === 'allowed') {
-                // if(permitDetails.companyID === `${req.params.companyID}`){
-                connection.query(`UPDATE staff SET firstName = '${req.body.firstName}', lastName='${req.body.lastName}',
-                    phoneNumber =  '${req.body.phoneNumber}', address = '${req.body.address}', 
-                    userName = '${req.body.userName}' WHERE staffID = ${req.params.id}`,
-                        (err, resp) => {
-                            if (err) {
-                                res.statusCode = 401
-                                res.send(err)
-                            }
-
-                            if (resp) {
-                                res.send('User details have been updated')
-                            }
-                        })
-                    // }
-            } else {
-                res.send('You do not have permission to edit details')
-            }
-        } else {
-            return res.send('You do not have permission to edit details')
-        }
-
-    })
 
     // delete user
-    app.delete('/pace-time-sheet/companyName/deleteUser/:id', authenticateToken, (req, res) => {
-        connection.query(`DELETE from staff WHERE staffID = ${req.params.id}`, (err, resp) => {
-            if (err) {
-                res.statusCode = 401
-                res.send(err)
-            }
+    // app.delete('/pace-time-sheet/companyName/deleteUser/:id', authenticateToken, (req, res) => {
+    //     connection.query(`DELETE from staff WHERE staffID = ${req.params.id}`, (err, resp) => {
+    //         if (err) {
+    //             res.statusCode = 401
+    //             res.send(err)
+    //         }
 
-            if (resp) {
-                res.send('User deleted')
-            }
-        })
-    })
-}
+    //         if (resp) {
+    //             res.send('User deleted')
+    //         }
+    //     })
+    // })
