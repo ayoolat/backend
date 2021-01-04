@@ -50,7 +50,7 @@ exports.getEvents = (req, res, next) => {
 exports.editEvent = (req, res, next) => {
     const {eventName, eventDateAndTime} = req.body
     const{eventID, id} = req.params
-    const{firstName, lastName} = req.respData.response
+    const{firstName, lastName} = req.respData.response[0]
 
     permitDetails = req.respData.response.find(x => x.permitItem == 'Add and edit Company calendar')
     if(permitDetails.permit === 'allowed'){

@@ -83,8 +83,8 @@ exports.employeeSignUp = (req, res, next) => {
 
                             if(respConfirm){
                                 sendMail(
-                                    'ayoola.toluwanimi@lmu.edu.ng',
-                                    'ayoola_toluwanimi@yahoo.com',
+                                    'PACE Time-sheet',
+                                    'adeyemodanointed5@gmail.com',
                                     'Password reset link',
                                     `<p>Please click the link below to reset you password<p/>
                                     <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}<a/>`,
