@@ -8,17 +8,17 @@ exports.newTask = (req, res, next) => {
 
     const {taskName, assignedID, taskDescription, staffID, startDate, endDate} = req.body
     const {id} = req.params
-    // const documentsAttached = req.file.path.replace("/\\/g", "//")
+    const documentsAttached = req.file.path.replace("/\\/g", "//")
 
-    // if(!req.file){
-    //     noFile = "no file attached"
-    //     res.send("no file")
-    // }
+    if(!req.file){
+        noFile = "no file attached"
+        res.send("no file")
+    }
     permitDetails = req.respData.response.find(x => x.permitItem == 'Add and Edit tasks')
     if(permitDetails.permit === 'allowed'){
         connection.query(`INSERT INTO task
-        (taskName, assignedID, taskStatus, taskDescription, staffID, startDate, endDate)
-        VALUES ('${taskName}', '${assignedID}','1', '${taskDescription}', '${id}', '${startDate}', '${endDate}')
+        (taskName, assignedID, taskStatus, taskDescription, documentsAttached, staffID, startDate, endDate)
+        VALUES ('${taskName}', '${assignedID}','1', '${taskDescription}', '${documentsAttached}', '${id}', '${startDate}', '${endDate}')
         `, (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err) return res.send(err)
