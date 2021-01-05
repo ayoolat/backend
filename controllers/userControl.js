@@ -120,11 +120,13 @@ exports.employeeSignUp = (req, res, next) => {
                                 ('2', LAST_INSERT_ID(), '10'), ('2', LAST_INSERT_ID(), '11'), ('2', LAST_INSERT_ID(), '12'), 
                                 ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`)
                         }
-                    }catch(err){
+
                         return res.json({
                             status : 'Success! A confirmation link has been sent to the user',
                             data : req.body
                         })
+                    }catch(err){
+                        res.send(err)
                     }
                 }
 
