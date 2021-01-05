@@ -4,8 +4,6 @@ console.log('tasks')
 const notificationControl = require('./notificationControl')
 
 exports.newTask = (req, res, next) => {
-    console.log(req)
-
     const {taskName, assignedID, taskDescription, staffID, startDate, endDate} = req.body
     const {id} = req.params
     const documentsAttached = req.file.path.replace("/\\/g", "//")
@@ -39,6 +37,24 @@ exports.newTask = (req, res, next) => {
     }else{
         res.send('You do not have permission to edit details')
     }
+}
+
+// read user task by ID
+exports.getAssignedTasks =(req, res, next) => {
+    const {id} = req.params
+
+    if(req.respData.response[0].staffID == id){
+        connection.query(`select * from task where staffID = ${id}`, (err, resp) => {
+            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+            if(resp){
+                return res.json({
+                    status : 'success',
+                    data : resp
+                })
+            }
+        })
+    }else{res.send("invalid request")}
 }
 
 // read user task by ID

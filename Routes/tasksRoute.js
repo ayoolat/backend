@@ -17,6 +17,9 @@ router.post('/newTask/:id', authenticateToken, fileUpload.fileUpload.single('doc
 // get all user tasks
 router.get('/:id', authenticateToken, taskController.getTasks);
 
+// get all assigned tasks
+router.get('assignedTasks/:id', authenticateToken, taskController.getAssignedTasks);
+
 // get all user tasks by status
 router.get('/status/:id/:status', authenticateToken, taskController.getTasksByStatus);
 
