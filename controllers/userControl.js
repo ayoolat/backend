@@ -206,7 +206,7 @@ exports.userLogin = (req, res, next) => {
         if(resp){
             connection.query(`SELECT c.companyName, d.departmentName, d.departmentID from staff s
             JOIN company c ON c.companyID = s.companyID
-            JOIN department d ON d.companyID = s.companyID
+            RIGHT JOIN department d ON d.companyID = s.companyID
             WHERE s.email = "${email}"`,(err, respQuery) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err)res.send(err)
