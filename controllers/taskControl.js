@@ -192,7 +192,8 @@ exports.editTaskStatus = (req, res, next) => {
                     if(err)res.send(err)
                     if(respQuery){
                         connection.query(`SELECT assignedID FROM staff WHERE taskId = ${taskID}`, (err, respQuery1) =>{
-                            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                            if(err) res.send(err)
                             if(respQuery1){
                                 if(taskStatus === 1){
                                     status = "Pending"
