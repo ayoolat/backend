@@ -204,7 +204,7 @@ exports.userLogin = (req, res, next) => {
         }
         //if user email in database
         if(resp){
-            connection.query(`SELECT c.companyName, d.departmentName from staff s
+            connection.query(`SELECT c.companyName, d.departmentName, d.departmentID from staff s
             JOIN company c ON c.companyID = s.companyID
             JOIN department d ON d.companyID = s.companyID
             WHERE s.email = "${email}"`,(err, respQuery) => {
