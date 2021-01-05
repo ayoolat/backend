@@ -210,31 +210,34 @@ exports.userLogin = (req, res, next) => {
             WHERE email = "${email}"`,(err, respQuery) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err)res.send(err)
+
+            if(respQuery){
+                bcrypt.compare(password, resp[0].password, (hashErr, valid) => {
+                    //if password does not match
+                    if(!valid) {return res.status(500).json({message: 'Incorrect password'})}
+    
+                    if(hashErr) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    
+                    // if password matches
+                    let  payload = {'response': resp}
+    
+                    //get token
+                    let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, {expiresIn : '3600000'})
+    
+                    let respData = {
+                        'response' : resp,
+                        'accessToken' : accessToken
+                    }
+                    return res.json({
+                        status : 'success',
+                        data : respData,
+                        data1 : respQuery
+                    })
+                })    
+            }
             })
             //check if password matches
-            bcrypt.compare(password, resp[0].password, (hashErr, valid) => {
-                //if password does not match
-                if(!valid) {return res.status(500).json({message: 'Incorrect password'})}
-
-                if(hashErr) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
-                // if password matches
-                let  payload = {'response': resp}
-
-                //get token
-                let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, {expiresIn : '3600000'})
-
-                let respData = {
-                    'response' : resp,
-                    'accessToken' : accessToken
-                }
-                return res.json({
-                    status : 'success',
-                    data : respData,
-                    data1 : respQuery
-                })
-            })
-        }
+                   }
     })
 }
 
