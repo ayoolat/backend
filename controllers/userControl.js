@@ -2,6 +2,7 @@ require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const crypto = require('crypto')
+const util = require('util');
 
 // exported modules
 let connection = require('../modules/db')
@@ -12,55 +13,50 @@ const authenticateToken = require('../middleware/authentication')
 const sendMail = require('../middleware/mailer')
 
 const notificationControl = require('./notificationControl')
+
+connection.query = util.promisify(connection.query);
+
 // sign up Company(post company)
 exports.signUp =  (req, res, next) =>{
-    const {companyName, email, companyType, password} = req.body
+    const {companyName, email, password} = req.body
     // hash password
-    bcrypt.hash(password, 10, (err, hash) => {
+    bcrypt.hash (password, 10, (err, hash) => {
         // handle error
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+        
         // handle success
         if (hash){
-            connection.query(`INSERT INTO company (companyName, email, companyType)
-            VALUES ('${companyName}', '${email}', '${companyType}')`, 
-            (err, resp) => {
-                // handle error
-                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                // handle success
-                // Create admin user, add details to staff table
-                if(resp){ 
-                    connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
-                    VALUES (@@IDENTITY, '${hash}', '${email}', '1', '${email}')
-                    `, (err, resp) => {
-                        if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            queryDB()
+            async function  queryDB() {
+                try{
+                    await connection.query(`INSERT INTO company (companyName, email)
+                    VALUES ('${companyName}', '${email}')`)
 
-                        if(resp){
-                            // Insert default admin user permissions
-                            connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', @@IDENTITY, '1'), 
-                            ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
-                            ('1', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('1', @@IDENTITY, '9'), 
-                            ('1', @@IDENTITY, '10'), ('1', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
-                            ('1', @@IDENTITY, '13'), ('1', @@IDENTITY, '14')`, (err, resp) => {
-                                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                    await connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
+                    VALUES (LAST_INSERT_ID(), '${hash}', '${email}', '1', '${email}')`) 
+                    
+                    await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', LAST_INSERT_ID(), '1'), 
+                    ('1', LAST_INSERT_ID(), '2'), ('1', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
+                    ('1', LAST_INSERT_ID(), '7'), ('1', LAST_INSERT_ID(), '8'), ('1', LAST_INSERT_ID(), '9'), 
+                    ('1', LAST_INSERT_ID(), '10'), ('1', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
+                    ('1', LAST_INSERT_ID(), '13'), ('1', LAST_INSERT_ID(), '14')`)
 
-                                if(resp){
-                                    return res.json({
-                                        status : 'success',
-                                        data : req.body
-                                    })
-                                }
-                            })
-                        }
+                    return res.json({
+                        status : 'success',
+                        data : req.body
                     })
+                
+                }catch(err){
+                    return res.status(500).json({message: 'This email already exists'})
                 }
-            })
+            }   
         }
     })
 }
 
 // sign up User fromAdmin
 exports.employeeSignUp = (req, res, next) => {
-    const {companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole} = req.body
+    const {companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID} = req.body
     const userName = email.split('@')[0]
     const password = 'password'
 
@@ -69,104 +65,174 @@ exports.employeeSignUp = (req, res, next) => {
         // hash password
         bcrypt.hash(password, 10, (err, hash) => {
             // handle error
-            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            if(err)return res.send(err)
             // handle success
             if(hash){
-                // insert employee details into database
-                connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, tokenUsed)
-                    VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', 'false')`, 
-                    (err, resp) =>{
+                confirmationToken = crypto.randomBytes(20).toString('hex')
+                queryDB()
+                async function queryDB() {
+                    try{
+                        await connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, tokenUsed)
+                        VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', '${departmentID}', 'false')`)
 
-                    if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                    // insert permissions
-                    if(resp){
-                        confirmationToken = crypto.randomBytes(20).toString('hex')
-                        
-                        connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', tokenUsed = 'false' WHERE email = '${email}'`, (err, respConfirm) => {
-                            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                        await connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', tokenUsed = 'false' WHERE email = '${email}'`)
 
-                            if(respConfirm){
-                                sendMail(
-                                    'ayoola.toluwanimi@lmu.edu.ng',
-                                    'ayoola_toluwanimi@yahoo.com',
-                                    'Password reset link',
-                                    `<p>Please click the link below to reset you password<p/>
-                                    <a href = '/api/companyName/users/companyName/confirmation/${resp.insertID}'>/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}<a/>`,
-                                    'To reset your password',
-                                    (errMail, info) => {
-                                        if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
-                                                    
-                                        return res.json({
-                                            message : 'A confirmation link has been sent to the user',
-                                            data : respData
-                                        })
-                                        
-                                    }
-                                )
-                            }
-                            
-                        })
                         if (roleID === 2){
                             // If user role is co-Admin (i.e roleID = 2)
-                            connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '1'), 
-                                ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
-                                ('1', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
-                                ('1', @@IDENTITY, '10'), ('1', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
-                                ('1', @@IDENTITY, '13'), ('1', @@IDENTITY, '13')`, (err, resp) => {
-
-                                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
-                                if(resp){
-                                    return res.json({
-                                        status : 'Success! A confirmation link has been sent to the user',
-                                        data : req.body
-                                    })
-                                }
-                            })
+                            await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '1'), 
+                            ('1', LAST_INSERT_ID(), '2'), ('1', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
+                            ('1', LAST_INSERT_ID(), '7'), ('1', LAST_INSERT_ID(), '8'), ('2', LAST_INSERT_ID(), '9'), 
+                            ('1', LAST_INSERT_ID(), '10'), ('1', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
+                            ('1', LAST_INSERT_ID(), '13'), ('1', LAST_INSERT_ID(), '13')`)
                         }
                         // If user role is internal Admin (i.e roleID = 4)
                         if (roleID === '4'){
-                            connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '1'), 
-                                ('2', @@IDENTITY, '2'), ('2', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
-                                ('2', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
-                                ('1', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
-                                ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
-
-                                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
-                                if(resp){
-                                    return res.json({
-                                        status : 'Success! A confirmation link has been sent to the user',
-                                        data : req.body
-                                    })
-                                }
-                            })
+                            await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '1'), 
+                            ('2', LAST_INSERT_ID(), '2'), ('2', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
+                            ('2', LAST_INSERT_ID(), '7'), ('1', LAST_INSERT_ID(), '8'), ('2', LAST_INSERT_ID(), '9'), 
+                            ('1', LAST_INSERT_ID(), '10'), ('2', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
+                            ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`)
                         }
                         // If user role is employee (i.e roleID = 5)
                         if (roleID === '5'){
-                            connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '2'), 
-                                ('2', @@IDENTITY, '2'), ('2', @@IDENTITY, '5'), ('2', @@IDENTITY, '6'), 
-                                ('2', @@IDENTITY, '7'), ('2', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
-                                ('2', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('2', @@IDENTITY, '12'), 
-                                ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
-
-                                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
-                                if(resp){
-                                    return res.json({
-                                        status : 'Success! A confirmation link has been sent to the user',
-                                        data : req.body
-                                    })
-                                }
-                            })
+                            await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '2'), 
+                            ('2', LAST_INSERT_ID(), '2'), ('2', LAST_INSERT_ID(), '5'), ('2', LAST_INSERT_ID(), '6'), 
+                            ('2', LAST_INSERT_ID(), '7'), ('2', LAST_INSERT_ID(), '8'), ('2', LAST_INSERT_ID(), '9'), 
+                            ('2', LAST_INSERT_ID(), '10'), ('2', LAST_INSERT_ID(), '11'), ('2', LAST_INSERT_ID(), '12'), 
+                            ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`)
                         }
+
+                        // sendMail(
+                        //     'PACE Time-sheet',
+                        //     'adeyemodanointed5@gmail.com',
+                        //     'Password reset link',
+                        //     `<p>Please click the link below to reset you password<p/>
+                        //     <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}<a/>`,
+                        //     'To reset your password',
+                        //     (errMail, info) => {
+                        //         // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
+                        //         if(err) return res.send(errMail)
+                        //     }
+                        // )
+
+                        return res.json({
+                            status : 'Success! A confirmation link has been sent to the user',
+                            data : req.body
+                        })
+                    }catch(err){
+                        res.json({
+                            "error" : err
+                        })
                     }
-                })
+                }
             }
         })
-    }else{
-        return res.status(403).json({message: 'You do not have permission to add users'})
-    }   
+
+    }                // insert employee details into database
+    //             connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, tokenUsed)
+    //                 VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', '${departmentID}', 'false')`, 
+    //                 (err, resp) =>{
+
+    //                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    //                 if(err)res.send(err)
+
+    //                 // insert permissions
+    //                 if(resp){
+    //                     confirmationToken = crypto.randomBytes(20).toString('hex')
+                        
+                        
+    //                 }
+    //             })
+    //         }
+
+    //         connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', tokenUsed = 'false' WHERE email = '${email}'`, (err, respConfirm) => {
+    //             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    //             if(err)res.send(err)
+
+    //             if(respConfirm){
+    //                 sendMail(
+    //                     'PACE Time-sheet',
+    //                     'adeyemodanointed5@gmail.com',
+    //                     'Password reset link',
+    //                     `<p>Please click the link below to reset you password<p/>
+    //                     <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}<a/>`,
+    //                     'To reset your password',
+    //                     (errMail, info) => {
+    //                         // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
+    //                         if(err)res.send(err)
+                                        
+    //                         return res.json({
+    //                             message : 'A confirmation link has been sent to the user',
+    //                             data : respData
+    //                         })
+                            
+    //                     }
+    //                 )
+    //             }
+                
+    //         })
+    //         if (roleID === 2){
+    //             // If user role is co-Admin (i.e roleID = 2)
+    //             connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '1'), 
+    //                 ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
+    //                 ('1', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
+    //                 ('1', @@IDENTITY, '10'), ('1', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
+    //                 ('1', @@IDENTITY, '13'), ('1', @@IDENTITY, '13')`, (err, resp) => {
+
+    //                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    //                 if(err)res.send(err)
+
+    //                 if(resp){
+    //                     return res.json({
+    //                         status : 'Success! A confirmation link has been sent to the user',
+    //                         data : req.body
+    //                     })
+    //                 }
+    //             })
+    //         }
+    //         // If user role is internal Admin (i.e roleID = 4)
+    //         if (roleID === '4'){
+    //             connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '1'), 
+    //                 ('2', @@IDENTITY, '2'), ('2', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
+    //                 ('2', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
+    //                 ('1', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
+    //                 ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
+
+    //                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    //                 if(err)res.send(err)
+
+    //                 if(resp){
+    //                     return res.json({
+    //                         status : 'Success! A confirmation link has been sent to the user',
+    //                         data : req.body
+    //                     })
+    //                 }
+    //             })
+    //         }
+    //         // If user role is employee (i.e roleID = 5)
+    //         if (roleID === '5'){
+    //             connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '2'), 
+    //                 ('2', @@IDENTITY, '2'), ('2', @@IDENTITY, '5'), ('2', @@IDENTITY, '6'), 
+    //                 ('2', @@IDENTITY, '7'), ('2', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
+    //                 ('2', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('2', @@IDENTITY, '12'), 
+    //                 ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
+
+    //                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    //                 if(err)res.send(err)
+
+    //                 if(resp){
+    //                     return res.json({
+    //                         status : 'Success! A confirmation link has been sent to the user',
+    //                         data : req.body
+    //                     })
+    //                 }
+    //             })
+    //         }
+    //     })
+    // }else{
+    //     return res.status(403).json({message: 'You do not have permission to add users'})
+    // }   
 }
 
 // Confirm employee signUp
@@ -226,20 +292,19 @@ exports.confirmSignUp = (req, res, next) => {
 exports.userLogin = (req, res, next) => {
     const {email, password} = req.body
     // get user with user email
-    connection.query(`SELECT s.firstName, s.lastName, s.password, s.companyID, s.staffID, permit, permitItem, roleID 
+    connection.query(`SELECT s.firstName, s.lastName, s.password, s.expectedWorkHours, s.billRateCharge, s.departmentID, s.companyID, s.staffID, permit, permitItem, roleID 
     from permissions p JOIN staff s ON s.staffID = p.staffID 
     JOIN permitItem pi ON pi.permitItemID = p.permitItemID
     JOIN permit pe ON pe.permitID = p.permitID
     WHERE email = '${email}'`, 
     (err, resp) => {
 
-        if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
+        // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+       if(err)res.send(err)
         //if user email not in database
-        if(resp === []){
+        if(!resp){
             return res.json({message: 'User does not exist'})
         }
-
         //if user email in database
         if(resp){
             //check if password matches
@@ -296,11 +361,11 @@ exports.updateCompanyRecord = (req, res, next) => {
     // =====================================================================
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
-        if(permitDetails.staffID == id){
-            connection.query(`UPDATE staff SET companyType = '${companyType}', companyAdjective='${companyAdjective}', lastUpdated = NOW() WHERE companyID = ${id}`,
+        if(permitDetails.companyID == id){
+            connection.query(`UPDATE company SET companyType = '${companyType}', companyAdjective='${companyAdjective}', currency = '${currency}', lastUpdated = NOW() WHERE companyID = ${id}`,
             (err, resp) => {
                 if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-    
+
                 if(resp){
                     return res.json({
                         status : 'success',
@@ -308,24 +373,26 @@ exports.updateCompanyRecord = (req, res, next) => {
                     })
                 } 
             })
+        }else{
+            return res.status(500).json({message: 'You do not have permission to edit company details'})
         }
     }  
 }
 
 // Add department
 exports.addDepartment = (req, res, next) => {
-    const {departmentName, currency} = req.body
+    const {departmentName} = req.body
     const {id} = req.params
     // =====================================================================
     // ******************** CHANGE PERMISSION ******************************
     // =====================================================================
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
-        if(permitDetails.staffID == id){
-            connection.query(`INSERT INTO staff (departmentName, companyID, currency) VALUES(${departmentName}, ${id}, ${currency})`,
+        if(permitDetails.companyID == id){
+            connection.query(`INSERT INTO department (departmentName, companyID) VALUES('${departmentName}', '${id}')`,
             (err, resp) => {
                 if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-    
+
                 if(resp){
                     return res.json({
                         status : 'success',
@@ -333,18 +400,46 @@ exports.addDepartment = (req, res, next) => {
                     })
                 } 
             })
+        }else{
+            return res.status(500).json({message: 'You do not have permission to edit company details'})
         }
     }  
 }
+
+// get department
+exports.getDepartment = (res, req, next) => {
+    const {id} = req.params
+
+    permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    if(permitDetails.permit === 'allowed'){
+        if(permitDetails.companyID == id){
+            connection.query(`SELECT departmentName FROM department WHERE companyID = '${id}')`, (err, resp) => {
+                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+                if(resp){
+                    return res.json({
+                        status : 'success',
+                        data : resp
+                    })
+                } 
+            })
+        }else{
+            return res.status(500).json({message: 'You do not have permission to edit company details'})
+        }
+    }else{
+        return res.status(500).json({message: 'You do not have permission to edit company details'})
+    } 
+}
+
 
 // Update user record
 exports.updateUserRecord = (req, res, next) => {
     const {firstName, lastName, phoneNumber, address, userName,} = req.body
     const {id} = req.params
 
-    image = req.file.path.replace("/\\/g", "//")
+    // image = req.file.path.replace("/\\/g", "//")
     connection.query(`UPDATE staff SET firstName = '${firstName}', lastName='${lastName}', phoneNumber =  '${phoneNumber}', address = '${address}', 
-    userName = '${userName}', image = '${image}', lastUpdated = NOW() WHERE staffID = ${id}`,
+    userName = '${userName}', image = '', lastUpdated = NOW() WHERE staffID = ${id}`,
     (err, resp) => {
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
@@ -360,18 +455,25 @@ exports.updateUserRecord = (req, res, next) => {
 // read company
 exports.viewCompanyProfile = (req, res, next) => {
     const {id} = req.params
-    if(req.respData.response[0].staffID == id){
-        connection.query(`select * from company where staffID = ${id}`, (err, resp) => {
-            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    if(permitDetails.permit === 'allowed'){
+        if(permitDetails.companyID == id){
+            connection.query(`select * from company where companyID = ${id}`, (err, resp) => {
+                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
-            if(resp){
-                return res.json({
-                    status : 'success',
-                    data : resp
-                })
-            }
-        })
-    }
+                if(resp){
+                    return res.json({
+                        status : 'success',
+                        data : resp
+                    })
+                }
+            })
+        }else{
+            return res.status(500).json({message: 'You do not have permission to edit company details'})
+        }
+    }else{
+        return res.status(500).json({message: 'You do not have permission to edit company details'})
+    }   
 }
 
 // read User
@@ -407,7 +509,7 @@ exports.changePassword = (req, res, next) => {
                     if(resp){
                         return res.json({
                             status : 'success',
-                            data : resp
+                            data : "password successfully changed"
                         })
                     }
                 })
@@ -418,18 +520,18 @@ exports.changePassword = (req, res, next) => {
 
 // edit employee time and billing
 exports.timeAndBilling = (req, res, next) => {
-    const {expectedWorkHours, billRateCharge, departmentID} = req.body
+    const {expectedWorkHours, billRateCharge} = req.body
     const {id} = req.params
 
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
         connection.query(`UPDATE staff SET expectedWorkHours = '${expectedWorkHours}', 
-        billRateCharge ='${billRateCharge}', departmentID = '${departmentID}' lastUpdated = NOW()'
+        billRateCharge ='${billRateCharge}', lastUpdated = NOW()
         where staffID = ${id} and companyID = ${permitDetails.companyID}`,
         (err, resp) => {
-            if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
-
-            if(resp == []){
+            // if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
+            if(err)res.send(err)
+            if(!resp){
                 return res.json({
                     status : 'User does not exist in this company',
                 })
@@ -444,7 +546,7 @@ exports.timeAndBilling = (req, res, next) => {
                 notificationControl.logNotification(notified, res)
                 return res.json({
                     status : 'success',
-                    data : resp
+                    data : req.body
                 })
             } 
         })
@@ -517,14 +619,10 @@ exports.setNewPassword = (req, res, next) => {
                 
                 if(respReset){
                     bcrypt.compare(req.body.password, respQuery[0].password, (hashErr, valid) => {
-
                         if(valid){
-                            if(respQuery[0].password == req.body.password){
-
-                                return res.json({
-                                    message : 'Password cannot be the same',
-                                })
-                            }
+                            return res.json({
+                                message : 'Password cannot be the same',
+                            })
                         }
 
                         if(!valid){
@@ -565,48 +663,17 @@ exports.setNewPassword = (req, res, next) => {
         }
     })
 }
-const userController = (app) =>{
-
-    // update company details
-    app.put('/pace-time-sheet/companyName/companySettings/:id', authenticateToken, (req, res) => {
-        permitDetails = req.respData.data.find(x => x.permitItem == 'Edit company settings')
-        if (!!permitDetails) {
-            if (permitDetails.permit === 'allowed') {
-                // if(permitDetails.companyID === `${req.params.companyID}`){
-                connection.query(`UPDATE staff SET firstName = '${req.body.firstName}', lastName='${req.body.lastName}',
-                    phoneNumber =  '${req.body.phoneNumber}', address = '${req.body.address}', 
-                    userName = '${req.body.userName}' WHERE staffID = ${req.params.id}`,
-                        (err, resp) => {
-                            if (err) {
-                                res.statusCode = 401
-                                res.send(err)
-                            }
-
-                            if (resp) {
-                                res.send('User details have been updated')
-                            }
-                        })
-                    // }
-            } else {
-                res.send('You do not have permission to edit details')
-            }
-        } else {
-            return res.send('You do not have permission to edit details')
-        }
-
-    })
 
     // delete user
-    app.delete('/pace-time-sheet/companyName/deleteUser/:id', authenticateToken, (req, res) => {
-        connection.query(`DELETE from staff WHERE staffID = ${req.params.id}`, (err, resp) => {
-            if (err) {
-                res.statusCode = 401
-                res.send(err)
-            }
+    // app.delete('/pace-time-sheet/companyName/deleteUser/:id', authenticateToken, (req, res) => {
+    //     connection.query(`DELETE from staff WHERE staffID = ${req.params.id}`, (err, resp) => {
+    //         if (err) {
+    //             res.statusCode = 401
+    //             res.send(err)
+    //         }
 
-            if (resp) {
-                res.send('User deleted')
-            }
-        })
-    })
-}
+    //         if (resp) {
+    //             res.send('User deleted')
+    //         }
+    //     })
+    // })

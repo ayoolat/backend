@@ -16,3 +16,5 @@ router.get('/addPermission', authenticateToken, managePermissionsController.getU
 
 // get all company permission
 router.get('/addPermission', authenticateToken, managePermissionsController.getAllPermissions);
+
+module.exports = router

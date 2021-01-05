@@ -1,10 +1,14 @@
 // npm packages
+let port = process.env.PORT
 let express = require('express')
 let bodyParser = require('body-parser')
 let fs = require('fs')
+var cors = require('cors')
 
 const app = express()
 app.use(bodyParser.json())
+
+app.use(cors())
 
 // exported modules
 const usersRoute = require('./Routes/usersRoute')
@@ -14,16 +18,16 @@ const todoRoute = require('./Routes/todoRoute')
 const contactRoute = require('./Routes/contactRoute')
 const calendarRoute = require('./Routes/calendarRoute')
 const eScheduleRoute = require('./Routes/e-scheduleRoute')
-const taskSheetRoute = require('./Routes/taskSheetRoute')
+    // const taskSheetRoute = require('./Routes/taskSheetRoute')
 
 
-app.use((error, req, res, next) => {
-    if (req.file) {
-        fs.unlink(req.file.path, (err) => {
-            console.log(err)
-        })
-    }
-})
+// app.use((error, req, res, next) => {
+//     if (req.file) {
+//         fs.unlink(req.file.path, (err) => {
+//             console.log(err)
+//         })
+//     }
+// })
 
 // instantiate controllers
 app.use('/api/users', usersRoute)
@@ -33,7 +37,7 @@ app.use('/todo', todoRoute)
 app.use('/contact-us', contactRoute)
 app.use('/api/companyName/calendar', calendarRoute)
 app.use('/api/companyName/E-schedule', eScheduleRoute)
-app.use('/api/companyName/taskSheet', taskSheetRoute)
+    // app.use('/api/companyName/taskSheet', taskSheetRoute)
 
 // app.use((req, res, next) => {
 //     throw new error('This route does not exist')
@@ -48,5 +52,5 @@ app.use('/api/companyName/taskSheet', taskSheetRoute)
 // })
 
 
-app.listen(8000)
+app.listen(port)
 console.log('Listening on port 8000')

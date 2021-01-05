@@ -4,7 +4,8 @@
   "description": "1.0.0",
   "main": "nody.js",
   "scripts": {
-    "test": "anything"
+    "start": "node api.js",
+    "test": "node test.js"
   },
   "repository": {
     "type": "git",
@@ -24,17 +25,21 @@
   "dependencies": {
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "formidable": "^1.2.2",
     "fs": "0.0.1-security",
+    "joi": "^17.3.0",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.2",
     "mysql": "^2.18.1",
     "nodemailer": "^6.4.15",
     "nodemailer-mailgun-transport": "^2.0.2",
     "nodemon": "^2.0.6",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "paystack": "^2.0.1",
+    "util": "^0.12.3"
   }
 }
