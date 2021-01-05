@@ -1,7 +1,7 @@
 let connection = require('../modules/db')
 console.log('tasks')
 
-const notificationControl = require('./notificationControl')
+// const notificationControl = require('./notificationControl')
 
 exports.newTask = (req, res, next) => {
     res.send(req)
