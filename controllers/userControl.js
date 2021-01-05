@@ -56,7 +56,7 @@ exports.signUp =  (req, res, next) =>{
 
 // sign up User fromAdmin
 exports.employeeSignUp = (req, res, next) => {
-    const {companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole} = req.body
+    const {companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID} = req.body
     const userName = email.split('@')[0]
     const password = 'password'
 
@@ -65,21 +65,25 @@ exports.employeeSignUp = (req, res, next) => {
         // hash password
         bcrypt.hash(password, 10, (err, hash) => {
             // handle error
-            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            if(err)res.send(err)
             // handle success
             if(hash){
                 // insert employee details into database
                 connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, tokenUsed)
-                    VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', 'false')`, 
+                    VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', '${departmentID}', 'false')`, 
                     (err, resp) =>{
 
-                    if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                    // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            if(err)res.send(err)
+
                     // insert permissions
                     if(resp){
                         confirmationToken = crypto.randomBytes(20).toString('hex')
                         
                         connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', tokenUsed = 'false' WHERE email = '${email}'`, (err, respConfirm) => {
-                            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                            if(err)res.send(err)
 
                             if(respConfirm){
                                 sendMail(
@@ -90,7 +94,8 @@ exports.employeeSignUp = (req, res, next) => {
                                     <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}<a/>`,
                                     'To reset your password',
                                     (errMail, info) => {
-                                        if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
+                                        // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
+            if(err)res.send(err)
                                                     
                                         return res.json({
                                             message : 'A confirmation link has been sent to the user',
@@ -110,7 +115,8 @@ exports.employeeSignUp = (req, res, next) => {
                                 ('1', LAST_INSERT_ID(), '10'), ('1', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
                                 ('1', LAST_INSERT_ID(), '13'), ('1', LAST_INSERT_ID(), '13')`, (err, resp) => {
 
-                                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                                if(err)res.send(err)
 
                                 if(resp){
                                     return res.json({
@@ -128,7 +134,8 @@ exports.employeeSignUp = (req, res, next) => {
                                 ('1', LAST_INSERT_ID(), '10'), ('2', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
                                 ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`, (err, resp) => {
 
-                                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                                if(err)res.send(err)
 
                                 if(resp){
                                     return res.json({
@@ -146,7 +153,8 @@ exports.employeeSignUp = (req, res, next) => {
                                 ('2', LAST_INSERT_ID(), '10'), ('2', LAST_INSERT_ID(), '11'), ('2', LAST_INSERT_ID(), '12'), 
                                 ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`, (err, resp) => {
 
-                                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                                if(err)res.send(err)
 
                                 if(resp){
                                     return res.json({
