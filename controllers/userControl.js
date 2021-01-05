@@ -103,7 +103,7 @@ exports.employeeSignUp = (req, res, next) => {
                             ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`)
                         }
 
-                        await sendMail(
+                        sendMail(
                             'PACE Time-sheet',
                             'adeyemodanointed5@gmail.com',
                             'Password reset link',
