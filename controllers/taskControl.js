@@ -6,9 +6,10 @@ const notificationControl = require('./notificationControl')
 exports.newTask = (req, res, next) => {
     const {taskName, assignedID, taskDescription, staffID, startDate, endDate} = req.body
     const documentsAttached = req.file.path.replace("/\\/g", "//")
-    console.log(req)
+    console.log("hiiiiiiiii" +req)
     if(!req.file){
         noFile = "no file attached"
+        res.send("no file")
     }
     permitDetails = req.respData.response.find(x => x.permitItem == 'Add and Edit tasks')
     if(permitDetails.permit === 'allowed'){
