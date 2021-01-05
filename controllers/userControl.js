@@ -75,7 +75,7 @@ exports.employeeSignUp = (req, res, next) => {
                     try{
                         await connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, tokenUsed)
                         VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', '${departmentID}', 'false')`)
-                        
+
                         await connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', tokenUsed = 'false' WHERE email = '${email}'`)
 
                         await sendMail(
@@ -87,7 +87,7 @@ exports.employeeSignUp = (req, res, next) => {
                             'To reset your password',
                             (errMail, info) => {
                                 // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
-                                if(err) return res.send(err)
+                                if(err) return res.send(errMail)
                             }
                         )
 
