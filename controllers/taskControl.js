@@ -32,7 +32,7 @@ exports.newTask = (req, res, next) => {
                 notificationControl.logNotification(notified, res)
                 return res.json({
                     status : 'success',
-                    data : req.body, noFile
+                    data : req.body
                 })
             }
         })
