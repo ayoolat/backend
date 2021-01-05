@@ -128,7 +128,7 @@ exports.getCompanyTasksByStatus = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'read all company tasks')
     if(permitDetails.permit === 'allowed' && permitDetails.companyID == id){
         connection.query(`select t.taskName, t.assignedID, t.documentsAttached, t.taskStatus, t.taskDescription, t.startDate, t.endDate, t.dateCreated 
-        from task t JOIN status s ON s.statusID = t.taskStatus JOIN staff st ON st.staffID = t.staffID
+        from task t JOIN status s ON s.statusID = t.taskStatus LEFT JOIN staff st ON st.staffID = t.staffID
         where st.companyID = ${id} AND t.taskStatus = ${status}`, (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err){res.send(err)}
@@ -188,8 +188,8 @@ exports.editTaskStatus = (req, res, next) => {
            
             if(resp){
                 connection.query(`SELECT firstName, lastName FROM staff WHERE assigned ID = ${id}`, (err, respQuery) => {
-                    if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
+                    // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                    if(err)res.send(err)
                     if(respQuery){
                         if(taskStatus === 1){
                             status = "Pending"
