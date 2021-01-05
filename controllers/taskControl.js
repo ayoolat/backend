@@ -7,8 +7,8 @@ exports.newTask = (req, res, next) => {
     console.log("hiiiiiiiii" +req)
 
     const {taskName, assignedID, taskDescription, staffID, startDate, endDate} = req.body
-    // const documentsAttached = req.file.path.replace("/\\/g", "//")
-    // console.log("hiiiiiiiii" +req)
+    const documentsAttached = req.file.path.replace("/\\/g", "//")
+
     if(!req.file){
         noFile = "no file attached"
         res.send("no file")
