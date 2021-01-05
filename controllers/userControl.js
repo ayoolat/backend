@@ -70,7 +70,7 @@ exports.employeeSignUp = (req, res, next) => {
             // handle success
             if(hash){
                 // insert employee details into database
-                connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, tokenUsed)
+                connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, tokenUsed)
                     VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', '${departmentID}', 'false')`, 
                     (err, resp) =>{
 
