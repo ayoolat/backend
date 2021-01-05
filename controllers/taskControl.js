@@ -7,6 +7,7 @@ exports.newTask = (req, res, next) => {
     console.log(req)
 
     const {taskName, assignedID, taskDescription, staffID, startDate, endDate} = req.body
+    const {id} = req.params
     // const documentsAttached = req.file.path.replace("/\\/g", "//")
 
     // if(!req.file){
@@ -17,7 +18,7 @@ exports.newTask = (req, res, next) => {
     if(permitDetails.permit === 'allowed'){
         connection.query(`INSERT INTO task
         (taskName, assignedID, taskStatus, taskDescription, staffID, startDate, endDate)
-        VALUES ('${taskName}', '${assignedID}','1', '${taskDescription}', '${staffID}', '${startDate}', '${endDate}')
+        VALUES ('${taskName}', '${assignedID}','1', '${taskDescription}', '${id}', '${startDate}', '${endDate}')
         `, (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err) return res.send(err)
