@@ -4,40 +4,40 @@ console.log('tasks')
 const notificationControl = require('./notificationControl')
 
 exports.newTask = (req, res, next) => {
-    console.log("hiiiiiiiii" +req)
+    res.send(req)
 
-    const {taskName, assignedID, taskDescription, staffID, startDate, endDate} = req.body
-    // const documentsAttached = req.file.path.replace("/\\/g", "//")
-    // console.log("hiiiiiiiii" +req)
-    if(!req.file){
-        noFile = "no file attached"
-        res.send("no file")
-    }
-    permitDetails = req.respData.response.find(x => x.permitItem == 'Add and Edit tasks')
-    if(permitDetails.permit === 'allowed'){
-        connection.query(`INSERT INTO task
-        (taskName, assignedID, documentsAttached, taskStatus, taskDescription, staffID, startDate, endDate)
-        VALUES ('${taskName}', '${assignedID}','${documentsAttached}','1', '${taskDescription}', '${staffID}', '${startDate}', '${endDate}')
-        `, (err, resp) => {
-            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    // const {taskName, assignedID, taskDescription, staffID, startDate, endDate} = req.body
+    // // const documentsAttached = req.file.path.replace("/\\/g", "//")
+    // // console.log("hiiiiiiiii" +req)
+    // if(!req.file){
+    //     noFile = "no file attached"
+    //     res.send("no file")
+    // }
+    // permitDetails = req.respData.response.find(x => x.permitItem == 'Add and Edit tasks')
+    // if(permitDetails.permit === 'allowed'){
+    //     connection.query(`INSERT INTO task
+    //     (taskName, assignedID, documentsAttached, taskStatus, taskDescription, staffID, startDate, endDate)
+    //     VALUES ('${taskName}', '${assignedID}','${documentsAttached}','1', '${taskDescription}', '${staffID}', '${startDate}', '${endDate}')
+    //     `, (err, resp) => {
+    //         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
-            if(resp){
-                let notified = {
-                    'staffID' : assignedID,
-                    'heading' : 'New Task',
-                    'body' : taskName,
-                    'status' : 'false'
-                }
-                notificationControl.logNotification(notified, res)
-                return res.json({
-                    status : 'success',
-                    data : req.body, noFile
-                })
-            }
-        })
-    }else{
-        res.send('You do not have permission to edit details')
-    }
+    //         if(resp){
+    //             let notified = {
+    //                 'staffID' : assignedID,
+    //                 'heading' : 'New Task',
+    //                 'body' : taskName,
+    //                 'status' : 'false'
+    //             }
+    //             notificationControl.logNotification(notified, res)
+    //             return res.json({
+    //                 status : 'success',
+    //                 data : req.body, noFile
+    //             })
+    //         }
+    //     })
+    // }else{
+    //     res.send('You do not have permission to edit details')
+    // }
 }
 
 // read user task by ID
