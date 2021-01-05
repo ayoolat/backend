@@ -183,7 +183,7 @@ exports.editTaskStatus = (req, res, next) => {
     let status
 
     if(response[0].staffID == id){
-        connection.query(`UPDATE task SET taskStatus = ${taskStatus}, lastUpdated = NEW() WHERE assignedID = ${id} and taskId = ${taskID}`, (err, resp) => {
+        connection.query(`UPDATE task SET taskStatus = ${taskStatus}, lastUpdated = NOW() WHERE assignedID = ${id} and taskId = ${taskID}`, (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
            if(err) return res.send(err)
             if(resp){
