@@ -12,7 +12,9 @@ const schemas = {
     roleID : Joi.string().required(),
     expectedWorkHours : Joi.string().required(),
     billRateCharge : Joi.string().required(),
-    email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required()
+    email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
+    departmentID: Joi.string(),
+    staffRole: Joi.string().required()
   }),
 
   changePassword: Joi.object().keys({
