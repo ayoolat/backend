@@ -78,19 +78,6 @@ exports.employeeSignUp = (req, res, next) => {
 
                         await connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', tokenUsed = 'false' WHERE email = '${email}'`)
 
-                        await sendMail(
-                            'PACE Time-sheet',
-                            'adeyemodanointed5@gmail.com',
-                            'Password reset link',
-                            `<p>Please click the link below to reset you password<p/>
-                            <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}<a/>`,
-                            'To reset your password',
-                            (errMail, info) => {
-                                // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
-                                if(err) return res.send(errMail)
-                            }
-                        )
-
                         if (roleID === 2){
                             // If user role is co-Admin (i.e roleID = 2)
                             await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '1'), 
@@ -115,6 +102,19 @@ exports.employeeSignUp = (req, res, next) => {
                             ('2', LAST_INSERT_ID(), '10'), ('2', LAST_INSERT_ID(), '11'), ('2', LAST_INSERT_ID(), '12'), 
                             ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`)
                         }
+
+                        await sendMail(
+                            'PACE Time-sheet',
+                            'adeyemodanointed5@gmail.com',
+                            'Password reset link',
+                            `<p>Please click the link below to reset you password<p/>
+                            <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}<a/>`,
+                            'To reset your password',
+                            (errMail, info) => {
+                                // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
+                                if(err) return res.send(errMail)
+                            }
+                        )
 
                         return res.json({
                             status : 'Success! A confirmation link has been sent to the user',
