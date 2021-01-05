@@ -69,108 +69,173 @@ exports.employeeSignUp = (req, res, next) => {
             if(err)res.send(err)
             // handle success
             if(hash){
-                // insert employee details into database
-                connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, tokenUsed)
-                    VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', '${departmentID}', 'false')`, 
-                    (err, resp) =>{
+                queryDB()
+                async function queryDB() {
+                    try{
+                        await connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, tokenUsed)
+                        VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', '${departmentID}', 'false')`)
 
-                    // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-            if(err)res.send(err)
-
-                    // insert permissions
-                    if(resp){
                         confirmationToken = crypto.randomBytes(20).toString('hex')
-                        
-                        connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', tokenUsed = 'false' WHERE email = '${email}'`, (err, respConfirm) => {
-                            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                            if(err)res.send(err)
+                    }catch(err){
+                        if(err)res.send(err)
+                    }
 
-                            if(respConfirm){
-                                sendMail(
-                                    'PACE Time-sheet',
-                                    'adeyemodanointed5@gmail.com',
-                                    'Password reset link',
-                                    `<p>Please click the link below to reset you password<p/>
-                                    <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}<a/>`,
-                                    'To reset your password',
-                                    (errMail, info) => {
-                                        // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
-            if(err)res.send(err)
-                                                    
-                                        return res.json({
-                                            message : 'A confirmation link has been sent to the user',
-                                            data : respData
-                                        })
-                                        
-                                    }
-                                )
+                    try{
+                        await connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', tokenUsed = 'false' WHERE email = '${email}'`)
+
+                        await sendMail(
+                            'PACE Time-sheet',
+                            'adeyemodanointed5@gmail.com',
+                            'Password reset link',
+                            `<p>Please click the link below to reset you password<p/>
+                            <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}<a/>`,
+                            'To reset your password',
+                            (errMail, info) => {
+                                // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
+                                if(err)res.send(err)
                             }
-                            
-                        })
+                        )
+
                         if (roleID === 2){
                             // If user role is co-Admin (i.e roleID = 2)
-                            connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '1'), 
-                                ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
-                                ('1', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
-                                ('1', @@IDENTITY, '10'), ('1', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
-                                ('1', @@IDENTITY, '13'), ('1', @@IDENTITY, '13')`, (err, resp) => {
-
-                                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                                if(err)res.send(err)
-
-                                if(resp){
-                                    return res.json({
-                                        status : 'Success! A confirmation link has been sent to the user',
-                                        data : req.body
-                                    })
-                                }
-                            })
+                            await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '1'), 
+                                ('1', LAST_INSERT_ID(), '2'), ('1', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
+                                ('1', LAST_INSERT_ID(), '7'), ('1', LAST_INSERT_ID(), '8'), ('2', LAST_INSERT_ID(), '9'), 
+                                ('1', LAST_INSERT_ID(), '10'), ('1', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
+                                ('1', LAST_INSERT_ID(), '13'), ('1', LAST_INSERT_ID(), '13')`)
                         }
                         // If user role is internal Admin (i.e roleID = 4)
                         if (roleID === '4'){
-                            connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '1'), 
-                                ('2', @@IDENTITY, '2'), ('2', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
-                                ('2', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
-                                ('1', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
-                                ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
-
-                                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                                if(err)res.send(err)
-
-                                if(resp){
-                                    return res.json({
-                                        status : 'Success! A confirmation link has been sent to the user',
-                                        data : req.body
-                                    })
-                                }
-                            })
+                            await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '1'), 
+                                ('2', LAST_INSERT_ID(), '2'), ('2', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
+                                ('2', LAST_INSERT_ID(), '7'), ('1', LAST_INSERT_ID(), '8'), ('2', LAST_INSERT_ID(), '9'), 
+                                ('1', LAST_INSERT_ID(), '10'), ('2', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
+                                ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`)
                         }
                         // If user role is employee (i.e roleID = 5)
                         if (roleID === '5'){
-                            connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '2'), 
-                                ('2', @@IDENTITY, '2'), ('2', @@IDENTITY, '5'), ('2', @@IDENTITY, '6'), 
-                                ('2', @@IDENTITY, '7'), ('2', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
-                                ('2', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('2', @@IDENTITY, '12'), 
-                                ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
-
-                                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                                if(err)res.send(err)
-
-                                if(resp){
-                                    return res.json({
-                                        status : 'Success! A confirmation link has been sent to the user',
-                                        data : req.body
-                                    })
-                                }
-                            })
+                            await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '2'), 
+                                ('2', LAST_INSERT_ID(), '2'), ('2', LAST_INSERT_ID(), '5'), ('2', LAST_INSERT_ID(), '6'), 
+                                ('2', LAST_INSERT_ID(), '7'), ('2', LAST_INSERT_ID(), '8'), ('2', LAST_INSERT_ID(), '9'), 
+                                ('2', LAST_INSERT_ID(), '10'), ('2', LAST_INSERT_ID(), '11'), ('2', LAST_INSERT_ID(), '12'), 
+                                ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`)
                         }
+                    }catch(err){
+                        return res.json({
+                            status : 'Success! A confirmation link has been sent to the user',
+                            data : req.body
+                        })
                     }
-                })
+                }
+
             }
+
         })
-    }else{
-        return res.status(403).json({message: 'You do not have permission to add users'})
-    }   
+
+    }                // insert employee details into database
+    //             connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, tokenUsed)
+    //                 VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', '${departmentID}', 'false')`, 
+    //                 (err, resp) =>{
+
+    //                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    //                 if(err)res.send(err)
+
+    //                 // insert permissions
+    //                 if(resp){
+    //                     confirmationToken = crypto.randomBytes(20).toString('hex')
+                        
+                        
+    //                 }
+    //             })
+    //         }
+
+    //         connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', tokenUsed = 'false' WHERE email = '${email}'`, (err, respConfirm) => {
+    //             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    //             if(err)res.send(err)
+
+    //             if(respConfirm){
+    //                 sendMail(
+    //                     'PACE Time-sheet',
+    //                     'adeyemodanointed5@gmail.com',
+    //                     'Password reset link',
+    //                     `<p>Please click the link below to reset you password<p/>
+    //                     <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}<a/>`,
+    //                     'To reset your password',
+    //                     (errMail, info) => {
+    //                         // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
+    //                         if(err)res.send(err)
+                                        
+    //                         return res.json({
+    //                             message : 'A confirmation link has been sent to the user',
+    //                             data : respData
+    //                         })
+                            
+    //                     }
+    //                 )
+    //             }
+                
+    //         })
+    //         if (roleID === 2){
+    //             // If user role is co-Admin (i.e roleID = 2)
+    //             connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '1'), 
+    //                 ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
+    //                 ('1', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
+    //                 ('1', @@IDENTITY, '10'), ('1', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
+    //                 ('1', @@IDENTITY, '13'), ('1', @@IDENTITY, '13')`, (err, resp) => {
+
+    //                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    //                 if(err)res.send(err)
+
+    //                 if(resp){
+    //                     return res.json({
+    //                         status : 'Success! A confirmation link has been sent to the user',
+    //                         data : req.body
+    //                     })
+    //                 }
+    //             })
+    //         }
+    //         // If user role is internal Admin (i.e roleID = 4)
+    //         if (roleID === '4'){
+    //             connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '1'), 
+    //                 ('2', @@IDENTITY, '2'), ('2', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
+    //                 ('2', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
+    //                 ('1', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
+    //                 ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
+
+    //                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    //                 if(err)res.send(err)
+
+    //                 if(resp){
+    //                     return res.json({
+    //                         status : 'Success! A confirmation link has been sent to the user',
+    //                         data : req.body
+    //                     })
+    //                 }
+    //             })
+    //         }
+    //         // If user role is employee (i.e roleID = 5)
+    //         if (roleID === '5'){
+    //             connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '2'), 
+    //                 ('2', @@IDENTITY, '2'), ('2', @@IDENTITY, '5'), ('2', @@IDENTITY, '6'), 
+    //                 ('2', @@IDENTITY, '7'), ('2', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
+    //                 ('2', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('2', @@IDENTITY, '12'), 
+    //                 ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
+
+    //                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    //                 if(err)res.send(err)
+
+    //                 if(resp){
+    //                     return res.json({
+    //                         status : 'Success! A confirmation link has been sent to the user',
+    //                         data : req.body
+    //                     })
+    //                 }
+    //             })
+    //         }
+    //     })
+    // }else{
+    //     return res.status(403).json({message: 'You do not have permission to add users'})
+    // }   
 }
 
 // Confirm employee signUp
@@ -240,10 +305,9 @@ exports.userLogin = (req, res, next) => {
         // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
        if(err)res.send(err)
         //if user email not in database
-        if(resp === []){
+        if(!resp){
             return res.json({message: 'User does not exist'})
         }
-        console.log(resp)
         //if user email in database
         if(resp){
             //check if password matches
