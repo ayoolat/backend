@@ -191,26 +191,32 @@ exports.editTaskStatus = (req, res, next) => {
                     // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                     if(err)res.send(err)
                     if(respQuery){
-                        if(taskStatus === 1){
-                            status = "Pending"
-                        }else if(taskStatus === 2){
-                            status = "Accepted"
-                        }else if(taskStatus === 2){
-                            status = "Completed"
-                        }else if(taskStatus === 2){
-                            status = "Overdue"
-                        }
-                        let notified = {
-                            'staffID' : assignedID,
-                            'heading' : `${respQuery[0].firstName, respQuery[0].firstName}'s task is now ${status}`,
-                            'body' : taskName,
-                            'status' : 'false'
-                        }
-                        notificationControl.logNotification(notified, res)
-                        return res.json({
-                            status : 'success',
-                            data : resp
+                        connection.query(`SELECT assignedID FROM staff WHERE taskId = ${taskID}`, (err, respQuery1) =>{
+                            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                            if(respQuery1){
+                                if(taskStatus === 1){
+                                    status = "Pending"
+                                }else if(taskStatus === 2){
+                                    status = "Accepted"
+                                }else if(taskStatus === 2){
+                                    status = "Completed"
+                                }else if(taskStatus === 2){
+                                    status = "Overdue"
+                                }
+                                let notified = {
+                                    'staffID' : respQuery1[0].assignedID,
+                                    'heading' : `${respQuery[0].firstName, respQuery[0].firstName}'s task is now ${status}`,
+                                    'body' : taskName,
+                                    'status' : 'false'
+                                }
+                                notificationControl.logNotification(notified, res)
+                                return res.json({
+                                    status : 'success',
+                                    data : resp
+                                })
+                            }
                         })
+                        
                     }
                 })  
             }
