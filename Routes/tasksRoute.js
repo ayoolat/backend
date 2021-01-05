@@ -12,7 +12,7 @@ const fileUpload = require('../middleware/fileUpload')
 const router = express.Router();
 
 // Create new task
-router.post('/newTask', authenticateToken, fileUpload.fileUpload.single('documentsAttached'), taskController.newTask);
+router.post('/newTask/:id', authenticateToken, fileUpload.fileUpload.single('documentsAttached'), taskController.newTask);
 
 // get all user tasks
 router.get('/:id', authenticateToken, taskController.getTasks);
