@@ -19,8 +19,8 @@ exports.newTask = (req, res, next) => {
         (taskName, assignedID, taskStatus, taskDescription, staffID, startDate, endDate)
         VALUES ('${taskName}', '${assignedID}','1', '${taskDescription}', '${staffID}', '${startDate}', '${endDate}')
         `, (err, resp) => {
-            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
+            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            if(err) return res.send(err)
             if(resp){
                 let notified = {
                     'staffID' : assignedID,
