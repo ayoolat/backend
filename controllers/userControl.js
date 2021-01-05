@@ -99,7 +99,7 @@ exports.employeeSignUp = (req, res, next) => {
                                                     
                                         return res.json({
                                             message : 'A confirmation link has been sent to the user',
-                                            data : resp
+                                            data : respData
                                         })
                                         
                                     }
@@ -110,10 +110,10 @@ exports.employeeSignUp = (req, res, next) => {
                         if (roleID === 2){
                             // If user role is co-Admin (i.e roleID = 2)
                             connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '1'), 
-                                ('1', LAST_INSERT_ID(), '2'), ('1', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
-                                ('1', LAST_INSERT_ID(), '7'), ('1', LAST_INSERT_ID(), '8'), ('2', LAST_INSERT_ID(), '9'), 
-                                ('1', LAST_INSERT_ID(), '10'), ('1', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
-                                ('1', LAST_INSERT_ID(), '13'), ('1', LAST_INSERT_ID(), '13')`, (err, resp) => {
+                                ('1', @@IDENTITY, '2'), ('1', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
+                                ('1', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
+                                ('1', @@IDENTITY, '10'), ('1', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
+                                ('1', @@IDENTITY, '13'), ('1', @@IDENTITY, '13')`, (err, resp) => {
 
                                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                                 if(err)res.send(err)
@@ -128,11 +128,11 @@ exports.employeeSignUp = (req, res, next) => {
                         }
                         // If user role is internal Admin (i.e roleID = 4)
                         if (roleID === '4'){
-                            connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '1'), 
-                                ('2', LAST_INSERT_ID(), '2'), ('2', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
-                                ('2', LAST_INSERT_ID(), '7'), ('1', LAST_INSERT_ID(), '8'), ('2', LAST_INSERT_ID(), '9'), 
-                                ('1', LAST_INSERT_ID(), '10'), ('2', LAST_INSERT_ID(), '11'), ('1', LAST_INSERT_ID(), '12'), 
-                                ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`, (err, resp) => {
+                            connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '1'), 
+                                ('2', @@IDENTITY, '2'), ('2', @@IDENTITY, '5'), ('1', @@IDENTITY, '6'), 
+                                ('2', @@IDENTITY, '7'), ('1', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
+                                ('1', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('1', @@IDENTITY, '12'), 
+                                ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
 
                                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                                 if(err)res.send(err)
@@ -147,11 +147,11 @@ exports.employeeSignUp = (req, res, next) => {
                         }
                         // If user role is employee (i.e roleID = 5)
                         if (roleID === '5'){
-                            connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '2'), 
-                                ('2', LAST_INSERT_ID(), '2'), ('2', LAST_INSERT_ID(), '5'), ('2', LAST_INSERT_ID(), '6'), 
-                                ('2', LAST_INSERT_ID(), '7'), ('2', LAST_INSERT_ID(), '8'), ('2', LAST_INSERT_ID(), '9'), 
-                                ('2', LAST_INSERT_ID(), '10'), ('2', LAST_INSERT_ID(), '11'), ('2', LAST_INSERT_ID(), '12'), 
-                                ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`, (err, resp) => {
+                            connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', @@IDENTITY, '2'), 
+                                ('2', @@IDENTITY, '2'), ('2', @@IDENTITY, '5'), ('2', @@IDENTITY, '6'), 
+                                ('2', @@IDENTITY, '7'), ('2', @@IDENTITY, '8'), ('2', @@IDENTITY, '9'), 
+                                ('2', @@IDENTITY, '10'), ('2', @@IDENTITY, '11'), ('2', @@IDENTITY, '12'), 
+                                ('2', @@IDENTITY, '13'), ('2', @@IDENTITY, '13')`, (err, resp) => {
 
                                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                                 if(err)res.send(err)
