@@ -4,7 +4,7 @@ console.log('tasks')
 const notificationControl = require('./notificationControl')
 
 exports.newTask = (req, res, next) => {
-    console.log("hiiiiiiiii" +req)
+    console.log(req)
 
     const {taskName, assignedID, taskDescription, staffID, startDate, endDate} = req.body
     const documentsAttached = req.file.path.replace("/\\/g", "//")
