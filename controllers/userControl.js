@@ -99,7 +99,7 @@ exports.employeeSignUp = (req, res, next) => {
                                                     
                                         return res.json({
                                             message : 'A confirmation link has been sent to the user',
-                                            data : respData
+                                            data : resp
                                         })
                                         
                                     }
