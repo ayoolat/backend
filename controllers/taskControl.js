@@ -6,6 +6,10 @@ const notificationControl = require('./notificationControl')
 exports.newTask = (req, res, next) => {
     const {taskName, assignedID, taskDescription, staffID, startDate, endDate} = req.body
     const documentsAttached = req.file.path.replace("/\\/g", "//")
+    console.log(req)
+    if(!req.file){
+        noFile = "no file attached"
+    }
     permitDetails = req.respData.response.find(x => x.permitItem == 'Add and Edit tasks')
     if(permitDetails.permit === 'allowed'){
         connection.query(`INSERT INTO task
@@ -24,7 +28,7 @@ exports.newTask = (req, res, next) => {
                 notificationControl.logNotification(notified, res)
                 return res.json({
                     status : 'success',
-                    data : req.body
+                    data : req.body, noFile
                 })
             }
         })
