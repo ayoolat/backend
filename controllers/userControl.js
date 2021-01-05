@@ -349,8 +349,8 @@ exports.updateUserRecord = (req, res, next) => {
     connection.query(`UPDATE staff SET firstName = '${firstName}', lastName='${lastName}', phoneNumber =  '${phoneNumber}', address = '${address}', 
     userName = '${userName}', image = '', lastUpdated = NOW() WHERE staffID = ${id}`,
     (err, resp) => {
-        if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
+        // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+        if(err)res.send(err)
         if(resp){
             return res.json({
                 status : 'success',

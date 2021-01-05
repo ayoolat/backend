@@ -187,7 +187,7 @@ exports.editTaskStatus = (req, res, next) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
            if(err) return res.send(err)
             if(resp){
-                connection.query(`SELECT firstName, lastName FROM staff WHERE assigned staffID = ${id}`, (err, respQuery) => {
+                connection.query(`SELECT firstName, lastName FROM staff WHERE staffID = ${id}`, (err, respQuery) => {
                     // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                     if(err)res.send(err)
                     if(respQuery){
