@@ -66,21 +66,16 @@ exports.employeeSignUp = (req, res, next) => {
         bcrypt.hash(password, 10, (err, hash) => {
             // handle error
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-            if(err)res.send(err)
+            if(err)return res.send(err)
             // handle success
             if(hash){
+                confirmationToken = crypto.randomBytes(20).toString('hex')
                 queryDB()
                 async function queryDB() {
                     try{
                         await connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, tokenUsed)
                         VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', '${departmentID}', 'false')`)
-
-                        confirmationToken = crypto.randomBytes(20).toString('hex')
-                    }catch(err){
-                        if(err)res.send(err[0])
-                    }
-
-                    try{
+                        
                         await connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', tokenUsed = 'false' WHERE email = '${email}'`)
 
                         await sendMail(
@@ -92,7 +87,7 @@ exports.employeeSignUp = (req, res, next) => {
                             'To reset your password',
                             (errMail, info) => {
                                 // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
-                                if(err)res.send(err)
+                                if(err) return res.send(err)
                             }
                         )
 
@@ -126,7 +121,7 @@ exports.employeeSignUp = (req, res, next) => {
                             data : req.body
                         })
                     }catch(err){
-                        res.send(err[0])
+                        res.send(err)
                     }
                 }
             }
