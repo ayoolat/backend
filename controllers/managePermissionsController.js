@@ -45,7 +45,7 @@ exports.addPermission = (req, res, next) => {
 // read user permission
 exports.getUserPermissions = (req, res, next) => {
     const {id} = req.params
-    connection.query(`select PI.permitItem, P.permitID FROM permissions P JOIN staff S ON P.staffID = S.staffID JOIN permitItem PI ON PI.permitItemID = p.permitItemID WHERE permitID = 1 AND staffID = ${id}`, (err, resp) => {
+    connection.query(`select PI.permitItem, P.permitID FROM permissions P JOIN staff S ON P.staffID = S.staffID JOIN permitItem PI ON PI.permitItemID = p.permitItemID WHERE permitID = 1 AND s.staffID = ${id}`, (err, resp) => {
         // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
         if(err)res.send(err)
         
