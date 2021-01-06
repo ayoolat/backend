@@ -50,12 +50,12 @@ exports.taskSheetDepartment = (req, res, next) => {
 }
 
 exports.taskSheetFilter = (req, res, next) => {
-    const {id, dept} = req.params
+    const {id, date} = req.params
 
     permitDetails = req.respData.data.find(x => x.permitItem == 'View department timesheet and billing report')
     if(permitDetails.permit === 'allowed'){
         connection.query(`SELECT t.taskName, S.firstName, S.lastName, T.startDate, T.endDate, ST.taskStatus, t.lastUpdated FROM task T 
-        JOIN staff S ON T.staffID = S.staffID JOIN status ST ON T.taskStatus = ST.statusID WHERE companyID = ${id} AND departmentID = ${dept} AND `, (err, resp) => {
+        JOIN staff S ON T.staffID = S.staffID JOIN status ST ON T.taskStatus = ST.statusID WHERE companyID = ${id} AND dateCreated = ${date} AND `, (err, resp) => {
 
             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
