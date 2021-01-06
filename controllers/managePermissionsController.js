@@ -3,8 +3,8 @@ const connection = require('../modules/db')
 exports.addPermission = (req, res, next) => {
     const {permit} = req.body
     const {id, staffID} = req.params
-    const permitHeading
-    const permitBody
+    let permitHeading =""
+    let permitBody = ""
     permitDetails = req.respData.data.find(x => x.permitItem == 'manage permissions')
     if(permitDetails.permit === 'allowed'){
         connection.query(`UPDATE permissions SET permit = '${permit}' WHERE staffID = ${staffID} 
@@ -14,6 +14,7 @@ exports.addPermission = (req, res, next) => {
             if(resp){
                 connection.query(`SELECT PI.permitItem FROM permit P JOIN permitItem PI ON PI.permitItemID = P.permitItemId`, (err, respQuery) => {
                     if(respQuery){
+                        
                         if(permit === 1){
                             permitHeading = `You have been given a new permission`
                             permitBody = `You have now have the permission to ${respQuery[0].permitItem} by an Admin`
@@ -28,10 +29,6 @@ exports.addPermission = (req, res, next) => {
                             'status' : 'false'
                         }
                         notificationControl.logNotification(notified, res)
-                        return res.json({
-                            status : 'success',
-                            data : req.body
-                        })
                     }
                 })
             }
