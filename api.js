@@ -15,7 +15,7 @@ let corsOption ={
     exposedHeaders: ['x-auth-token']
 }
 
-app.use(cors(corsOptions))
+app.use(cors())
 
 // exported modules
 const usersRoute = require('./Routes/usersRoute')
