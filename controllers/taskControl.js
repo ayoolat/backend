@@ -207,14 +207,13 @@ exports.editTaskStatus = (req, res, next) => {
                                 let notified = {
                                     'staffID' : respQuery1[0].assignedID,
                                     'heading' : `${respQuery[0].firstName, respQuery[0].firstName}'s task is now ${status}`,
-                                    'body' : respQuery1[0].taskName,
-                                    'status' : 'false'
+                                    'body' : respQuery1[0].taskName
                                 }
                                 notificationControl.logNotification(notified, res)
-                                return res.json({
-                                    status : 'success',
-                                    data : req.body
-                                })
+                                // return res.json({
+                                //     status : 'success',
+                                //     data : req.body
+                                // })
                             }
                         })
                         

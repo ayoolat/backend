@@ -16,7 +16,7 @@ exports.logNotification = (notification, res) => {
 
             return res.json({
                 status : 'success',
-                data : req.body
+                data : notification
             })
         }catch(err){
             // if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
