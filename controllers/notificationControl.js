@@ -1,17 +1,22 @@
 
-    let connection = require('../modules/db')
+let connection = require('../modules/db')
+const util = require('util');
+
 
     console.log('notifications connected')
+    connection.query = util.promisify(connection.query);
 
 // create notification
 exports.logNotification = (notification, res) => {
-    connection.query(`INSERT INTO notification (staffID, heading, body, status) 
-    VALUES ('${notification.staffID}', '${notification.heading}', '${notification.body}', false)`
-    , (err, resp) => {
-        // if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
-        if(err)return send(err)
-
-    })
+    async function queryDB() {
+        try{
+            await connection.query(`INSERT INTO notification (staffID, heading, body, status) 
+            VALUES ('${notification.staffID}', '${notification.heading}', '${notification.body}', '${notification.status}')`)
+        }catch(err){
+            // if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
+            if(err)return send(err)
+        }       
+    }
 }
 
     // get notifications
