@@ -195,7 +195,7 @@ exports.editTaskStatus = (req, res, next) => {
                             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                             if(err) res.send(err)
                             if(respQuery1){
-                                const status = ""
+                                let status = ""
                                 
                                 if(taskStatus === "2"){
                                     status = "Accepted"
