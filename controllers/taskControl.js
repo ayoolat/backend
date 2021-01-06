@@ -154,7 +154,7 @@ exports.editTask = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'Add and Edit tasks')
     if(permitDetails.permit === 'allowed' && permitDetails.staffID == id){
         connection.query(`UPDATE task SET taskName = '${taskName}', assignedID = '${assignedID}', taskDescription = '${taskDescription}', 
-        startDate = '${startDate}', endDate = '${endDate}', lastUpdated = NOW() WHERE taskID = ${taskID} AND staffID = ${id}`, 
+        startDate = '${startDate}', endDate = '${endDate}', lastUpdated = NOW() WHERE taskId = ${taskID} AND staffID = ${id}`, 
         (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err){res.send(err)}
