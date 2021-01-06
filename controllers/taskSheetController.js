@@ -7,7 +7,7 @@ exports.taskSheetCompany = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'View company timesheet and billing report')
     if(permitDetails.permit === 'allowed'){
         connection.query(`SELECT t.taskName, S.firstName, S.lastName, T.startDate, T.endDate, ST.taskStatus, t.lastUpdated FROM task T 
-        JOIN staff S ON T.staffID = S.staffID 
+        JOIN staff S ON T.assignedID = S.staffID 
         JOIN status ST ON T.taskStatus = ST.statusID 
         WHERE companyID = ${id}`, (err, resp) => {
 
