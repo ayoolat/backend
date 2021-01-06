@@ -8,6 +8,7 @@ const util = require('util');
 
 // create notification
 exports.logNotification = (notification, res) => {
+    queryDB()
     async function queryDB() {
         try{
             await connection.query(`INSERT INTO notification (staffID, heading, body, status) 
