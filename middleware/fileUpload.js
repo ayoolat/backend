@@ -5,7 +5,7 @@ const path = require('path')
 const storage = multer.diskStorage({
     destination : (req, file, cb) => {
         try{
-            cb(null, './../paceImages/')
+            cb(null, '../paceImages/')
         }catch(err){
             res.send(err)
         }

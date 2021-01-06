@@ -11,14 +11,14 @@ const fileUpload = require('../middleware/fileUpload')
 
 const router = express.Router();
 
-// Create new task
+// Create new task//
 router.post('/newTask/:id', authenticateToken, fileUpload.fileUpload.single('documentsAttached'), taskController.newTask);
 
-// get all user tasks
+// get all user tasks//
 router.get('/:id', authenticateToken, taskController.getTasks);
 
 // get all assigned tasks
-router.get('assignedTasks/:id', authenticateToken, taskController.getAssignedTasks);
+router.get('/assignedTasks/:id', authenticateToken, taskController.getAssignedTasks);
 
 // get all user tasks by status
 router.get('/status/:id/:status', authenticateToken, taskController.getTasksByStatus);
@@ -29,10 +29,10 @@ router.get('/allTasks/:id', authenticateToken, taskController.getCompanyTasks);
 // get all company tasks by status
 router.get('/allTasks/:status/:id', authenticateToken, taskController.getCompanyTasksByStatus);
 
-// update company tasks 
+// update company tasks //
 router.put('/editTask/:id', authenticateToken, fileUpload.fileUpload.single('documentsAttached'), taskController.editTask);
 
-// Update task status 
+// Update task status //
 router.put('/editTaskStatus/:id', authenticateToken, taskController.editTaskStatus);
 
 // Delete Tasks 
