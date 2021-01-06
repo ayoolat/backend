@@ -191,7 +191,7 @@ exports.editTaskStatus = (req, res, next) => {
                     // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                     if(err)res.send(err)
                     if(respQuery){
-                        connection.query(`SELECT assignedID FROM task WHERE taskId = ${taskID}`, (err, respQuery1) =>{
+                        connection.query(`SELECT assignedID, taskName FROM task WHERE taskId = ${taskID}`, (err, respQuery1) =>{
                             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                             if(err) res.send(err)
                             if(respQuery1){
@@ -207,7 +207,7 @@ exports.editTaskStatus = (req, res, next) => {
                                 let notified = {
                                     'staffID' : respQuery1[0].assignedID,
                                     'heading' : `${respQuery[0].firstName, respQuery[0].firstName}'s task is now ${status}`,
-                                    'body' : taskName,
+                                    'body' : respQuery1[0].taskName,
                                     'status' : 'false'
                                 }
                                 notificationControl.logNotification(notified, res)
