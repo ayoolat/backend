@@ -5,8 +5,8 @@
 
 // create notification
 exports.logNotification = (notification, res) => {
-    connection.query(`INSERT INTO notification (staffID, heading, body) 
-    VALUES ('${notification.staffID}', '${notification.heading}', '${notification.body}')`
+    connection.query(`INSERT INTO notification (staffID, heading, body, status) 
+    VALUES ('${notification.staffID}', '${notification.heading}', '${notification.body}', false)`
     , (err, resp) => {
         // if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
         if(err)return send(err)
