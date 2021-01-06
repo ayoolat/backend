@@ -9,13 +9,13 @@ const taskSheetController = require('../controllers/taskSheetController')
 const router = express.Router();
 
 // Add company task-sheet
-router.get('/', authenticateToken,taskSheetController.taskSheetCompany);
+router.get('/:id', authenticateToken,taskSheetController.taskSheetCompany);
 
 // Add department task-sheet
-router.get('/departments', authenticateToken,taskSheetController.taskSheetDepartment);
+router.get('/departments/:id/:departmentID', authenticateToken,taskSheetController.taskSheetDepartment);
 
 // filter by month
-router.get('/departments', authenticateToken,taskSheetController.taskSheetFilter);
+router.get('/filter-Month', authenticateToken,taskSheetController.taskSheetFilter);
 
 module.exports = router
 
