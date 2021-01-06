@@ -196,19 +196,19 @@ exports.editTaskStatus = (req, res, next) => {
                             if(err) res.send(err)
                             if(respQuery1){
                                 const status = ""
-                                if(taskStatus === 1){
+                                if(taskStatus === "1"){
                                     status = "Pending"
-                                }else if(taskStatus === 2){
+                                }else if(taskStatus === "2"){
                                     status = "Accepted"
-                                }else if(taskStatus === 3){
+                                }else if(taskStatus === "3"){
                                     status = "Completed"
-                                }else if(taskStatus === 4){
+                                }else if(taskStatus === "4"){
                                     status = "Overdue"
                                 }
                                 let notified = {
                                     'staffID' : respQuery1[0].assignedID,
                                     'heading' : `${respQuery1[0].taskName} status ${status}` ,
-                                    'body' : `${respQuery[0].firstName}, ${respQuery[0].lastName}'s task is now ${status}`,
+                                    'body' : `${respQuery[0].firstName}, ${respQuery[0].lastName}\'s task is now ${status}`,
                                     'status' : "false"
                                 }
                                 notificationControl.logNotification(notified, res)
