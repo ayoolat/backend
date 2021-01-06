@@ -9,7 +9,7 @@ const managePermissionsController = require('../controllers/managePermissionsCon
 const router = express.Router();
 
 // Add employee permission
-router.post('/addPermission/:id/:permitID', authenticateToken, managePermissionsController.addPermission);
+router.post('/addPermission/:id/:staffID', authenticateToken, managePermissionsController.addPermission);
 
 // get user permission
 router.get('/:id', authenticateToken, managePermissionsController.getUserPermissions);

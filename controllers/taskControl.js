@@ -146,8 +146,8 @@ exports.getCompanyTasksByStatus = (req, res, next) => {
 
 // Update tasks
 exports.editTask = (req, res, next) => {
-    const {id, taskID} = req.params
-    const {taskName, assignedID, taskDescription, startDate, endDate} = req.body
+    const {id} = req.params
+    const {taskName, assignedID, taskDescription, startDate, endDate, taskID} = req.body
 
     // const documentsAttached = req.file.path.replace("/\\/g", "//")
 
