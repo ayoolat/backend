@@ -213,7 +213,7 @@ exports.editTaskStatus = (req, res, next) => {
                                 notificationControl.logNotification(notified, res)
                                 return res.json({
                                     status : 'success',
-                                    data : resp
+                                    data : req.body
                                 })
                             }
                         })

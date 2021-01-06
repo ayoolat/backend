@@ -8,7 +8,8 @@ exports.logNotification = (notification, res) => {
     connection.query(`INSERT INTO notification (staffID, heading, body) 
     VALUES ('${notification.staffID}', '${notification.heading}', '${notification.body}')`
     , (err, resp) => {
-        if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
+        // if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
+        if(err)return send(err)
 
     })
 }
