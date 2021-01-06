@@ -20,7 +20,7 @@ exports.logNotification = (notification, res) => {
             })
         }catch(err){
             // if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
-            if(err)return send(err)
+            if(err)return res.send(err)
         }       
     }
 }
