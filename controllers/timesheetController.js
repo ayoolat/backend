@@ -1,46 +1,130 @@
-let timeSheetController = (app) => {
-    let connection = require('../modules/db')
-    const authenticateToken = require('../middleware/authentication')
-    seconds = 0
-    minutes = 0
-    hours = 0
-    app.get("/pace-time-sheet/timeSheet/personal", authenticateToken, (req, res) => {
-        connection.query(`SELECT * from timer where staffId = ${req.respData.data.staffID}`, (err, resp) => {
+
+let connection = require('../modules/db')
+const authenticateToken = require('../middleware/authentication')
+const util = require('util');
+
+connection.query = util.promisify(connection.query);
+
+
+exports.IncludeDateAndTime =  (req, res, next) => {
+    const allUsers
+    getAllStaffTime()
+    async function getAllStaffTime() {
+        await connection.query(`SELECT staffID from staff`, (err, resp) => {
+            if(err){}
+
+            if(resp){
+                allUsers = resp[0]
+            }
+        })
+
+        sendDate()
+    }
+
+    function sendDate() {
+        allUsers.forEach(element => {
+            connection.query(`INSERT INTO (staffID) where staffId = ${element}`, (err, resp) => {
+                if(err){
+                    res.statusCode(401).send('error')
+                }
+                if(resp){
+                    res.send('success')
+                }
+            })
+        });
+    }
+    
+}    
+    
+exports.startTime = (req, res, next) => {
+    const {id} = req.params
+    connection.query(`UPDATE timer SET loginTime = NOW() WHERE staffID = ${id}`, (err, resp) => {
+        if(err){
+            res.send(err)
+        }
+        if(resp){
+            res.send('timer counting')
+        }
+    })
+}
+   
+exports.stopTime = (req, res, next) => {
+    const {id} = req.params
+    const {millSecs} = req.body
+    connection.query(`UPDATE timer SET logoutTime = NOW(), seconds = '${millSecs}' WHERE staffID = ${id} ,`, (err, res) => {
+        if(err){
+            res.send('oops! something happened, your time wasn\'t saved')
+        }
+        if(resp){
+            const seconds
+            const hours 
+            seconds = millSecs / 1000
+            hours =  seconds / 3600
+            connection.query(`INSERT INTO billingSheet (staffID, payableAmount) VALUES ('${id}', '${req.respData.response.billRateCharge * hours}')`, (err, resp) => {
+                if(err){
+                    res.statusCode(401).send('error')
+                }
+                if(resp){
+                    res.send(resp)
+                }
+            })
+            res.send('your time has been saved')
+        }
+    })
+}
+    
+exports.getUserTimeSheet = (req, res, next) => {
+    const {id} = req.params
+    const {startDate, endDate} = req.params
+
+    connection.query(`SELECT s.firstName, s.lastName, t.seconds, s.expectedWOrkHours, t.loginTime, t.logoutTime, t.date FROM staff 
+    JOIN timer ON s.staffID = t.staffID 
+    WHERE staffId = ${id} AND date BETWEEN '${startDate}' AND '${endDate}' = ${id}`, (err, resp) => {
+        if(err){
+            res.statusCode(401).send('error')
+        }
+        if(resp){
+            res.send(resp)
+        }
+    })
+}
+    
+exports.getAllStaffTimeSheet = (req, res, next) => {
+    const {id} = req.params
+    const {startDate, endDate} = req.params
+
+    permitDetails = req.respData.response.find(x => x.permitItem == 'View company timesheet and billing report')
+    if(permitDetails.permit === 'allowed'){
+        connection.query(`SELECT s.firstName, s.departmentId, s.lastName, t.seconds, s.expectedWOrkHours, t.loginTime, t.logoutTime, t.date FROM staff 
+        JOIN timer ON s.staffID = t.staffID 
+        WHERE companyId = ${id} AND date BETWEEN '${startDate}' AND '${endDate}' = ${id}`, (err, resp) => {
             if(err){
                 res.statusCode(401).send('error')
             }
             if(resp){
-                res.send('success')
+                res.send(resp)
             }
         })
-    })
+    }
 
-    // on start time
-    app.post("/pace-time-sheet/timeSheet/start/:id", (req, res) => {
-        connection.query(`INSERT INTO timer (hours, minutes, seconds, staffID) 
-        VALUES ('${hours}', '${minutes}', '${seconds}', '${req.params.id}')`, (err, resp) => {
+}
+
+exports.getAllDepartmentTimeSheet = (req, res, next) => {
+    permitDetails = req.respData.response.find(x => x.permitItem == 'View department timesheet and billing report')
+    if(permitDetails.permit === 'allowed'){
+        connection.query(`SELECT s.firstName, s.lastName, t.seconds, s.expectedWOrkHours, t.loginTime, t.logoutTime, t.date FROM staff 
+        JOIN timer ON s.staffID = t.staffID 
+        WHERE departmentId = ${id} AND date BETWEEN '${startDate}' AND '${endDate}' = ${id}`, (err, resp) => {
             if(err){
-                res.send(err)
+                res.statusCode(401).send('error')
             }
             if(resp){
-                startTime()
-                res.send('timer counting')
+                res.send(resp)
             }
         })
-    })
+    }
 
-    app.post("/pace-time-sheet/timeSheet/end", (req, res) => {
-        connection.query(`INSERT INTO timer (logoutTime) VALUES (${Date.now()}),`, (err, res) => {
-            if(err){
-                res.send('oops! something happened, your time wasn\'t saved')
-            }
-            if(resp){
-                stopTime()
-                res.send('your time has been saved')
-            }
-        })
-    })
-
+}
     function setSecs(){
         if(seconds < 60){
             seconds++
@@ -82,17 +166,4 @@ let timeSheetController = (app) => {
     
     }
 
-    app.get("/pace-time-sheet/timeSheet/company/id", authenticateToken, (req, res) => {
-        connection.query(`SELECT s.firstName, s.lastName, t.hours, t.minutes, t.seconds, s.expectedWOrkHours, t.loginTime, t.logoutTime, t.date 
-        from staff JOIN timer ON s.staffID = t.staffID where staffId = ${req.respData.data.staffID}`, (err, resp) => {
-            if(err){
-                res.statusCode(401).send('error')
-            }
-            if(resp){
-                res.send(resp)
-            }
-        })
-    })
-}
-
-module.exports = timeSheetController
+    

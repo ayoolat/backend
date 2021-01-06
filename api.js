@@ -3,12 +3,19 @@ let port = process.env.PORT
 let express = require('express')
 let bodyParser = require('body-parser')
 let fs = require('fs')
-var cors = require('cors')
+let cors = require('cors')
 
 const app = express()
 app.use(bodyParser.json())
 
-app.use(cors())
+let corsOption ={
+    origin : true,
+    methods : 'GET,HEAD,PUT,PATCH,POST,DELETE,',
+    credentials: true,
+    exposedHeaders: ['x-auth-token']
+}
+
+app.use(cors(options))
 
 // exported modules
 const usersRoute = require('./Routes/usersRoute')
@@ -45,13 +52,13 @@ app.use((req, res, next) => {
     throw new error('This route does not exist')
 })
 
-app.use((error, req, res, next) => {
-    if(res.headerSent){
-        return next(error)
-    }
-    res.status(error.code || 500)
-    res.json({message: error.message || 'Unknown error occurred'})
-})
+// app.use((error, req, res, next) => {
+//     if(res.headerSent){
+//         return next(error)
+//     }
+//     res.status(error.code || 500)
+//     res.json({message: error.message || 'Unknown error occurred'})
+// })
 
 
 app.listen(port)
