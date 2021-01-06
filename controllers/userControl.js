@@ -189,7 +189,7 @@ exports.confirmSignUp = (req, res, next) => {
 exports.userLogin = (req, res, next) => {
     const {email, password} = req.body
     // get user with user email
-    connection.query(`SELECT s.firstName, s.lastName, s.password, s.expectedWorkHours, s.billRateCharge, s.departmentID, s.companyID, s.staffID, permit, permitItem, roleID 
+    connection.query(`SELECT s.firstName, s.lastName, s.email, s.password, s.expectedWorkHours, s.billRateCharge, s.departmentID, s.companyID, s.staffID, permit, permitItem, roleID 
     from permissions p JOIN staff s ON s.staffID = p.staffID 
     JOIN permitItem pi ON pi.permitItemID = p.permitItemID
     JOIN permit pe ON pe.permitID = p.permitID

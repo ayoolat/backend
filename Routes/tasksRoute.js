@@ -30,7 +30,7 @@ router.get('/allTasks/:id', authenticateToken, taskController.getCompanyTasks);
 router.get('/allTasks/:status/:id', authenticateToken, taskController.getCompanyTasksByStatus);
 
 // update company tasks //
-router.put('/editTask/:id', authenticateToken, fileUpload.fileUpload.single('documentsAttached'), taskController.editTask);
+router.put('/editTask/:id/', authenticateToken, fileUpload.fileUpload.single('documentsAttached'), taskController.editTask);
 
 // Update task status //
 router.put('/editTaskStatus/:id', authenticateToken, taskController.editTaskStatus);
