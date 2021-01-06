@@ -15,6 +15,6 @@ router.post('/addPermission/:id/:permitID', authenticateToken, managePermissions
 router.get('/:id', authenticateToken, managePermissionsController.getUserPermissions);
 
 // get all company permission
-router.get('/:companyID', authenticateToken, managePermissionsController.getAllPermissions);
+router.get('/all-users/:id', authenticateToken, managePermissionsController.getAllPermissions);
 
 module.exports = router
