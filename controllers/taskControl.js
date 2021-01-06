@@ -80,7 +80,7 @@ exports.getTasksByStatus = (req, res, next) => {
     const {id, status} = req.params
 
     if(req.respData.response[0].staffID == id){
-        connection.query(`select s.taskStatus FROM task t JOIN status s
+        connection.query(`select * FROM task t LEFT JOIN status s
         ON s.statusID = t.taskStatus WHERE t.assignedID = ${id} AND t.taskStatus = ${status}`, (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err){res.send(err)}
@@ -166,10 +166,6 @@ exports.editTask = (req, res, next) => {
                     'status' : 'false'
                 }
                 notificationControl.logNotification(notified, res)
-                return res.json({
-                    status : 'success',
-                    data : req.body
-                })
             }
         })
     }else{res.send('You do not have permission to edit this task')}
@@ -211,10 +207,6 @@ exports.editTaskStatus = (req, res, next) => {
                                     'status' : "false"
                                 }
                                 notificationControl.logNotification(notified, res)
-                                // return res.json({
-                                //     status : 'success',
-                                //     data : req.body
-                                // })
                             }
                         })
                         
