@@ -10,10 +10,13 @@ exports.addPermission = (req, res, next) => {
         connection.query(`UPDATE permissions SET permit = '${permit}' WHERE staffID = ${staffID} 
         AND permitItemID = ${id}`, (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-        if(err)res.send(err)
+            if(err)res.send(err)
 
             if(resp){
                 connection.query(`SELECT PI.permitItem FROM permit P JOIN permitItem PI ON PI.permitItemID = P.permitItemId`, (err, respQuery) => {
+                    if(err){
+                        return res.send(err)
+                    }
                     if(respQuery){
                         
                         if(permit === 1){
@@ -45,7 +48,10 @@ exports.addPermission = (req, res, next) => {
 // read user permission
 exports.getUserPermissions = (req, res, next) => {
     const {id} = req.params
-    connection.query(`select PI.permitItem, P.permitID FROM permissions P JOIN staff S ON P.staffID = S.staffID JOIN permitItem PI ON PI.permitItemID = p.permitItemID WHERE permitID = 1 AND s.staffID = ${id}`, (err, resp) => {
+    connection.query(`select PI.permitItem, P.permitID FROM permissions P 
+    JOIN staff S ON P.staffID = S.staffID 
+    JOIN permitItem PI ON PI.permitItemID = p.permitItemID 
+    WHERE permitID = 1 AND s.staffID = ${id}`, (err, resp) => {
         // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
         if(err)res.send(err)
         
