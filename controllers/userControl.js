@@ -197,7 +197,7 @@ exports.userLogin = (req, res, next) => {
     (err, resp) => {
 
         // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-       if(err)res.send(err)
+       if(err)return res.send(err)
         //if user email not in database
         if(!resp){
             return res.json({message: 'User does not exist'})
