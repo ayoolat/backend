@@ -15,7 +15,7 @@ app.use(bodyParser.json())
 //     exposedHeaders: ['x-auth-token']
 // }
 
-// app.use(cors())
+app.use(cors())
 
 // exported modules
 const usersRoute = require('./Routes/usersRoute')
