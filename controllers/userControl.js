@@ -122,7 +122,7 @@ exports.employeeSignUp = (req, res, next) => {
                         })
                     }catch(err){
                         res.json({
-                            "error" : err
+                            "errorssss" : err
                         })
                     }
                 }
