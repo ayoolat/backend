@@ -7,7 +7,7 @@ var connection = mysql.createPool({
     // host: 'localhost',
     // user: 'toluwanimi',
     // password: 'password',
-    // database: 'pacetimesheet_'
+    // database: 'pacetimesheet_',
     host: process.env.db_host,
     user: process.env.db_user,
     password: process.env.db_password,

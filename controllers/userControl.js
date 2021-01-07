@@ -291,9 +291,6 @@ exports.updateCompanyRecord = (req, res, next) => {
 exports.addDepartment = (req, res, next) => {
     const {departmentName} = req.body
     const {id} = req.params
-    // =====================================================================
-    // ******************** CHANGE PERMISSION ******************************
-    // =====================================================================
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
         if(permitDetails.companyID == id){

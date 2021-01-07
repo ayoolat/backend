@@ -1,5 +1,5 @@
 // npm packages
-let port = process.env.PORT
+let port = process.env.PORT || 8000
 let express = require('express')
 let bodyParser = require('body-parser')
 let fs = require('fs')
@@ -15,7 +15,7 @@ app.use(bodyParser.json())
 //     exposedHeaders: ['x-auth-token']
 // }
 
-app.use(cors())
+// app.use(cors())
 
 // exported modules
 const usersRoute = require('./Routes/usersRoute')
