@@ -121,8 +121,8 @@ exports.employeeSignUp = (req, res, next) => {
                             data : req.body
                         })
                     }catch(err){
-                        res.json({
-                            "errorssss" : err
+                        res.status(401).json({
+                            "errors" : err
                         })
                     }
                 }
