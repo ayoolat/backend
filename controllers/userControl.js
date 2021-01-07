@@ -342,9 +342,9 @@ exports.updateUserRecord = (req, res, next) => {
     const {firstName, lastName, phoneNumber, address, userName,} = req.body
     const {id} = req.params
 
-    // image = req.file.path.replace("/\\/g", "//")
+    image = req.file.path.replace("/\\/g", "//")
     connection.query(`UPDATE staff SET firstName = '${firstName}', lastName='${lastName}', phoneNumber =  '${phoneNumber}', address = '${address}', 
-    userName = '${userName}', image = '', lastUpdated = NOW() WHERE staffID = ${id}`,
+    userName = '${userName}', image = '${image}', lastUpdated = NOW() WHERE staffID = ${id}`,
     (err, resp) => {
         // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
         if(err)res.send(err)
