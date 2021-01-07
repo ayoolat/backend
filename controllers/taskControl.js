@@ -149,12 +149,12 @@ exports.editTask = (req, res, next) => {
     const {id} = req.params
     const {taskName, assignedID, taskDescription, startDate, endDate, taskID} = req.body
 
-    // const documentsAttached = req.file.path.replace("/\\/g", "//")
+    const documentsAttached = req.file.path.replace("/\\/g", "//")
 
     permitDetails = req.respData.response.find(x => x.permitItem == 'Add and Edit tasks')
     if(permitDetails.permit === 'allowed' && permitDetails.staffID == id){
         connection.query(`UPDATE task SET taskName = '${taskName}', assignedID = '${assignedID}', taskDescription = '${taskDescription}', 
-        startDate = '${startDate}', endDate = '${endDate}', lastUpdated = NOW() WHERE taskId = ${taskID} AND staffID = ${id}`, 
+        startDate = '${startDate}', endDate = '${endDate}', documentsAttached = "${documentsAttached}" lastUpdated = NOW() WHERE taskId = ${taskID} AND staffID = ${id}`, 
         (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err){res.send(err)}
