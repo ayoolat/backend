@@ -17,7 +17,6 @@ var connection = mysql.createPool({
     queueLimit: 0
 })
 
-// [mysql://b726afb036f0bd:3fdf3077@us-cdbr-east-02.cleardb.com/heroku_ec0bd4ee53407d5?reconnect=true]
 
 // connection.connect((err, res) => {
 //     if (err) throw err

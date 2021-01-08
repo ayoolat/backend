@@ -6,3 +6,5 @@ const router = express.Router();
 
 // CONTACT-US 
 router.post('/contact', feedbackController.postContact)
+
+module.exports = router;

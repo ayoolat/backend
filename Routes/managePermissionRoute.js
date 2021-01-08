@@ -9,12 +9,12 @@ const managePermissionsController = require('../controllers/managePermissionsCon
 const router = express.Router();
 
 // Add employee permission
-router.post('/addPermission', authenticateToken, managePermissionsController.addPermission);
+router.post('/addPermission/:id/:staffID', authenticateToken, managePermissionsController.addPermission);
 
 // get user permission
-router.get('/addPermission', authenticateToken, managePermissionsController.getUserPermissions);
+router.get('/:id', authenticateToken, managePermissionsController.getUserPermissions);
 
 // get all company permission
-router.get('/addPermission', authenticateToken, managePermissionsController.getAllPermissions);
+router.get('/all-users/:id', authenticateToken, managePermissionsController.getAllPermissions);
 
 module.exports = router

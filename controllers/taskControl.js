@@ -5,15 +5,22 @@ const notificationControl = require('./notificationControl')
 
 exports.newTask = (req, res, next) => {
     const {taskName, assignedID, taskDescription, staffID, startDate, endDate} = req.body
+    const {id} = req.params
     const documentsAttached = req.file.path.replace("/\\/g", "//")
+
+    if(!req.file){
+        noFile = "no file attached"
+        res.send("no file")
+    }
+    
     permitDetails = req.respData.response.find(x => x.permitItem == 'Add and Edit tasks')
     if(permitDetails.permit === 'allowed'){
         connection.query(`INSERT INTO task
-        (taskName, assignedID, documentsAttached, taskStatus, taskDescription, staffID, startDate, endDate)
-        VALUES ('${taskName}', '${assignedID}','${documentsAttached}','1', '${taskDescription}', '${staffID}', '${startDate}', '${endDate}')
+        (taskName, assignedID, taskStatus, taskDescription, documentsAttached, staffID, startDate, endDate)
+        VALUES ('${taskName}', '${assignedID}','1', '${taskDescription}', '${documentsAttached}', '${id}', '${startDate}', '${endDate}')
         `, (err, resp) => {
-            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
+            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            if(err) return res.send(err)
             if(resp){
                 let notified = {
                     'staffID' : assignedID,
@@ -31,6 +38,24 @@ exports.newTask = (req, res, next) => {
     }else{
         res.send('You do not have permission to edit details')
     }
+}
+
+// read user task by ID
+exports.getAssignedTasks =(req, res, next) => {
+    const {id} = req.params
+
+    if(req.respData.response[0].staffID == id){
+        connection.query(`select * from task where staffID = ${id}`, (err, resp) => {
+            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+            if(resp){
+                return res.json({
+                    status : 'success',
+                    data : resp
+                })
+            }
+        })
+    }else{res.send("invalid request")}
 }
 
 // read user task by ID
@@ -56,7 +81,7 @@ exports.getTasksByStatus = (req, res, next) => {
     const {id, status} = req.params
 
     if(req.respData.response[0].staffID == id){
-        connection.query(`select s.taskStatus FROM task t JOIN status s
+        connection.query(`select * FROM task t LEFT JOIN status s
         ON s.statusID = t.taskStatus WHERE t.assignedID = ${id} AND t.taskStatus = ${status}`, (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err){res.send(err)}
@@ -104,7 +129,7 @@ exports.getCompanyTasksByStatus = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'read all company tasks')
     if(permitDetails.permit === 'allowed' && permitDetails.companyID == id){
         connection.query(`select t.taskName, t.assignedID, t.documentsAttached, t.taskStatus, t.taskDescription, t.startDate, t.endDate, t.dateCreated 
-        from task t JOIN status s ON s.statusID = t.taskStatus JOIN staff st ON st.staffID = t.staffID
+        from task t JOIN status s ON s.statusID = t.taskStatus LEFT JOIN staff st ON st.staffID = t.staffID
         where st.companyID = ${id} AND t.taskStatus = ${status}`, (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err){res.send(err)}
@@ -129,8 +154,8 @@ exports.editTask = (req, res, next) => {
 
     permitDetails = req.respData.response.find(x => x.permitItem == 'Add and Edit tasks')
     if(permitDetails.permit === 'allowed' && permitDetails.staffID == id){
-        connection.query(`UPDATE task SET taskName = '${taskName}', assignedID = '${assignedID}', documentsAttached = '${documentsAttached}', taskDescription = '${taskDescription}', 
-        startDate = '${startDate}', endDate = '${endDate}', lastUpdated = NEW() WHERE taskID = ${taskID} AND staffID = ${id}`, 
+        connection.query(`UPDATE task SET taskName = '${taskName}', assignedID = '${assignedID}', taskDescription = '${taskDescription}', 
+        startDate = '${startDate}', endDate = '${endDate}', documentsAttached = "${documentsAttached}" lastUpdated = NOW() WHERE taskId = ${taskID} AND staffID = ${id}`, 
         (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err){res.send(err)}
@@ -142,10 +167,6 @@ exports.editTask = (req, res, next) => {
                     'status' : 'false'
                 }
                 notificationControl.logNotification(notified, res)
-                return res.json({
-                    status : 'success',
-                    data : req.body
-                })
             }
         })
     }else{res.send('You do not have permission to edit this task')}
@@ -159,34 +180,37 @@ exports.editTaskStatus = (req, res, next) => {
     let status
 
     if(response[0].staffID == id){
-        connection.query(`UPDATE task SET taskStatus = ${taskStatus}, lastUpdated = NEW() WHERE assignedID = ${id} and taskId = ${taskID}`, (err, resp) => {
-            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-           
+        connection.query(`UPDATE task SET taskStatus = ${taskStatus}, lastUpdated = NOW() WHERE assignedID = ${id} and taskId = ${taskID}`, (err, resp) => {
+            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+           if(err) return res.send(err)
             if(resp){
-                connection.query(`SELECT firstName, lastName FROM staff WHERE assigned ID = ${id}`, (err, respQuery) => {
-                    if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
+                connection.query(`SELECT firstName, lastName FROM staff WHERE staffID = ${id}`, (err, respQuery) => {
+                    // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                    if(err)res.send(err)
                     if(respQuery){
-                        if(taskStatus === 1){
-                            status = "Pending"
-                        }else if(taskStatus === 2){
-                            status = "Accepted"
-                        }else if(taskStatus === 2){
-                            status = "Completed"
-                        }else if(taskStatus === 2){
-                            status = "Overdue"
-                        }
-                        let notified = {
-                            'staffID' : assignedID,
-                            'heading' : `${respQuery[0].firstName, respQuery[0].firstName}'s task is now ${status}`,
-                            'body' : taskName,
-                            'status' : 'false'
-                        }
-                        notificationControl.logNotification(notified, res)
-                        return res.json({
-                            status : 'success',
-                            data : resp
+                        connection.query(`SELECT assignedID, taskName FROM task WHERE taskId = ${taskID}`, (err, respQuery1) =>{
+                            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                            if(err) res.send(err)
+                            if(respQuery1){
+                                let status = ""
+                                
+                                if(taskStatus === "2"){
+                                    status = "Accepted"
+                                }else if(taskStatus === "3"){
+                                    status = "Completed"
+                                }else{
+                                    status = "Overdue"
+                                }
+                                let notified = {
+                                    'staffID' : respQuery1[0].assignedID,
+                                    'heading' : `${respQuery1[0].taskName} status ${status}` ,
+                                    'body' : `${respQuery[0].firstName}, ${respQuery[0].lastName}s task is now ${status}`,
+                                    'status' : "false"
+                                }
+                                notificationControl.logNotification(notified, res)
+                            }
                         })
+                        
                     }
                 })  
             }
