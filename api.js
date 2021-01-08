@@ -7,7 +7,7 @@ let cors = require('cors')
 
 const app = express()
 app.use(bodyParser.json())
-
+    
 // let corsOption ={
 //     origin : true,
 //     methods : 'GET,HEAD,PUT,PATCH,POST,DELETE,',
