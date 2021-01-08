@@ -12,6 +12,7 @@ exports.newTask = (req, res, next) => {
         noFile = "no file attached"
         res.send("no file")
     }
+    
     permitDetails = req.respData.response.find(x => x.permitItem == 'Add and Edit tasks')
     if(permitDetails.permit === 'allowed'){
         connection.query(`INSERT INTO task

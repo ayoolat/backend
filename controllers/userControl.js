@@ -9,7 +9,6 @@ let connection = require('../modules/db')
 console.log('users')
 
 // Middleware import
-const authenticateToken = require('../middleware/authentication')
 const sendMail = require('../middleware/mailer')
 
 const notificationControl = require('./notificationControl')
@@ -264,9 +263,6 @@ exports.getAllCompanyStaff = (req, res, next) => {
 exports.updateCompanyRecord = (req, res, next) => {
     const {companyAdjective, companyType, currency} = req.body
     const {id} = req.params
-    // =====================================================================
-    // ******************** CHANGE PERMISSION ******************************
-    // =====================================================================
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
         if(permitDetails.companyID == id){
@@ -555,7 +551,7 @@ exports.setNewPassword = (req, res, next) => {
                     })
                 }
 
-                if(err){return res.status(500).json({message: 'There has been an error, try again'})}
+                    if(err){return res.status(500).json({message: 'There has been an error, try again'})}
 
                 })
             }
