@@ -3,16 +3,11 @@ require('dotenv').config()
 const jwt = require("jsonwebtoken")
 const auditManager = require("../middleware/auditTrail")
 
-
-// function can(action, data) {
-//     found = data.find(x => x.permissionName == action)
-//     return found
-// }
-
 //Get todo list
 exports.getTodolist = (req, res) => {
-    let mysql = `SELECT  staffID,listName,todolist.lastUpdated, breakdownID, todolistbreakdown.toDoID, description, commentArea, todolistbreakdown.dateCreated 
-        FROM todolistbreakdown INNER JOIN todolist ON todolistbreakdown.toDoID = todolist.todoID`
+    let mysql = `SELECT  staffID,listName,todolist.lastUpdated, breakdownID, todolistbreakdown.toDoID, 
+    description, commentArea, todolistbreakdown.dateCreated 
+    FROM todolistbreakdown INNER JOIN todolist ON todolistbreakdown.toDoID = todolist.todoID`
     connection.query(mysql, (err, respond) => {
         if (err) {
             res.status(400).send(err)
@@ -25,36 +20,38 @@ exports.getTodolist = (req, res) => {
 
 //Insert into TODO-LIST
 exports.insertTodolist = (req, res) => {
-    let mysql = `insert into todolist(staffID,listName,lastUpdated)
-         values ('${req.body.staffID}','${req.body.listName}','${req.body.lastUpdated}')`
-    connection.query(mysql, (err, respond) => {
-        if (err) {
-            trail = {
-                actor: "anonymous",
-                action: `anonymous user ${req.body.email} attempt to add a todo but failed`,
-                type: "danger"
-            }
-            auditManager.logTrail(trail)
-            res.status(400).send(err)
-        } else {
-            let tokenData = { "data": respond }
+    const authenticationHeader = req.headers['authorization']
+    const Token = authenticationHeader && authenticationHeader.split(' ')[1]
 
-            let token = jwt.sign(tokenData, process.env.ACCESS_TOKEN_KEY, { expiresIn: process.env.ACCESS_TOKEN_LIFE });
+    if (Token == null) return res.status(401).send('invalid request')
 
-            let respondData = {
-                "data": respond,
-                "accessToken": token
+    jwt.verify(Token, process.env.ACCESS_TOKEN_KEY, (err, data) => {
+        if (err) return res.send('invalid token or token expired')
+
+        staffID = data.response[0].staffID;
+        let mysql = `insert into todolist(staffID,listName,lastUpdated)
+         values ('${staffID}','${req.body.listName}','${req.body.lastUpdated}')`
+        connection.query(mysql, (err, respond) => {
+            if (err) {
+                trail = {
+                    actor: "anonymous",
+                    action: `anonymous user ${req.body.email} attempt to add a todo but failed`,
+                    type: "danger"
+                }
+                auditManager.logTrail(trail)
+                res.status(400).send(err)
+            } else {
+                res.send("To DO list  added");
+                trail = {
+                    actor: `Staff ID ${staffID}`,
+                    action: `Staff ID ${staffID} successfully added a todolist `,
+                    type: "success"
+                }
+                auditManager.logTrail(trail)
             }
-            res.send(respondData)
-            trail = {
-                actor: `${req.body.email}`,
-                action: `${req.body.email} successfully added a todolist `,
-                type: "success"
-            }
-            auditManager.logTrail(trail)
-                // console.log(respondData)
-        }
+        })
     })
+
 }
 
 //Insert into TODO-LIST-BREAK-DOWN
@@ -78,7 +75,6 @@ exports.insertBreakdown = (req, res) => {
                     type: "success"
                 }
                 auditManager.logTrail(trail)
-                    // console.log(respondData)
             }
         })
     }

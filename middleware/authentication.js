@@ -1,4 +1,4 @@
-authenticateToken = function (req, res, next){
+authenticateToken = function(req, res, next) {
     //require npm package jasonWebToken
     const jwt = require('jsonwebtoken')
 
