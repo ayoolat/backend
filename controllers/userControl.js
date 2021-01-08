@@ -341,8 +341,8 @@ exports.updateUserRecord = (req, res, next) => {
         connection.query(`UPDATE staff SET firstName = '${firstName}', lastName='${lastName}', phoneNumber =  '${phoneNumber}', address = '${address}', 
         userName = '${userName}', lastUpdated = NOW() WHERE staffID = ${id}`,
         (err, resp) => {
-            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-            if(err)res.send(err)
+            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            // if(err)res.send(err)
             if(resp){
                 return res.json({
                     status : 'success',
@@ -355,8 +355,8 @@ exports.updateUserRecord = (req, res, next) => {
         connection.query(`UPDATE staff SET firstName = '${firstName}', lastName='${lastName}', phoneNumber =  '${phoneNumber}', address = '${address}', 
         userName = '${userName}', image = '${image}', lastUpdated = NOW() WHERE staffID = ${id}`,
         (err, resp) => {
-            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-            if(err)res.send(err)
+            if(err) {return res.status(500).json({message: 'This userName has been used before, try another userName'})}
+            // if(err)res.send(err)
             if(resp){
                 return res.json({
                     status : 'success',
