@@ -12,7 +12,6 @@ const auth = {
 const mailer = nodemailer.createTransport(mailGun(auth));
 
 const sendMail = (email, receiver, subject, html, text, cb) => {
-    console.log(html)
     const mailOptions = {
         from : email,
         to : receiver,
@@ -23,11 +22,9 @@ const sendMail = (email, receiver, subject, html, text, cb) => {
     mailer.sendMail(mailOptions, (err, info) => {
         if(err){
             cb(err, null)
-            // console.log(err)
         }
         else{
             cb(null, info)
-            // console.log(info)
         }
     })
 }

@@ -23,7 +23,7 @@ router.post('/login', userController.userLogin);
 router.post('/signUp/companyName/addUser', authenticateToken, validator(schema.employeeSignUp), userController.employeeSignUp);
 
 // // Employees second stage signup
-router.put('/companyName/confirmation/:id', authenticateToken, validator(schema.changePassword), userController.confirmSignUp);
+router.put('/companyName/confirmation/:token/:id', authenticateToken, validator(schema.changePassword), userController.confirmSignUp);
 
 // Get all users
 router.get('/companyName/employee/:companyID',authenticateToken, userController.getAllCompanyStaff)

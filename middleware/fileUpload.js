@@ -1,10 +1,13 @@
 const multer = require('multer')
-const fs = require('fs')
 const path = require('path')
 
 const storage = multer.diskStorage({
     destination : (req, file, cb) => {
-        cb(null, '/Users/Tolu/Desktop/')
+        try{
+            cb(null, 'uploads/paceImages/')
+        }catch(err){
+            res.send(err)
+        }
     },
     filename: (req, file, cb) => {
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
