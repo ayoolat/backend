@@ -1,5 +1,5 @@
 // npm packages
-let port = process.env.PORT
+let port = 8000
 let express = require('express')
 let bodyParser = require('body-parser')
 let fs = require('fs')
