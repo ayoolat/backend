@@ -339,6 +339,20 @@ exports.updateUserRecord = (req, res, next) => {
     const {id} = req.params
     if(!req.file){
         connection.query(`UPDATE staff SET firstName = '${firstName}', lastName='${lastName}', phoneNumber =  '${phoneNumber}', address = '${address}', 
+        userName = '${userName}', lastUpdated = NOW() WHERE staffID = ${id}`,
+        (err, resp) => {
+            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            // if(err)res.send(err)
+            if(resp){
+                return res.json({
+                    status : 'success',
+                    data : req.body
+                })
+            } 
+        })
+    }else{
+        image = req.file.path.replace("/\\/g", "//")
+        connection.query(`UPDATE staff SET firstName = '${firstName}', lastName='${lastName}', phoneNumber =  '${phoneNumber}', address = '${address}', 
         userName = '${userName}', image = '${image}', lastUpdated = NOW() WHERE staffID = ${id}`,
         (err, resp) => {
             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
@@ -351,19 +365,6 @@ exports.updateUserRecord = (req, res, next) => {
             } 
         })
     }
-    image = req.file.path.replace("/\\/g", "//")
-    connection.query(`UPDATE staff SET firstName = '${firstName}', lastName='${lastName}', phoneNumber =  '${phoneNumber}', address = '${address}', 
-    userName = '${userName}', image = '${image}', lastUpdated = NOW() WHERE staffID = ${id}`,
-    (err, resp) => {
-        if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-        // if(err)res.send(err)
-        if(resp){
-            return res.json({
-                status : 'success',
-                data : req.body
-            })
-        } 
-    })
 }
 
 // read company
