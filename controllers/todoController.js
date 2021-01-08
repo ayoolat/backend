@@ -39,7 +39,7 @@ exports.insertTodolist = (req, res) => {
         } else {
             let tokenData = { "data": respond }
 
-            let token = jwt.sign(tokenData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_LIFE });
+            let token = jwt.sign(tokenData, process.env.ACCESS_TOKEN_KEY, { expiresIn: process.env.ACCESS_TOKEN_LIFE });
 
             let respondData = {
                 "data": respond,
