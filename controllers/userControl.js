@@ -304,7 +304,9 @@ exports.addDepartment = (req, res, next) => {
         }else{
             return res.status(500).json({message: 'You do not have permission to edit company details'})
         }
-    }  
+    }else{
+        return res.status(500).json({message: 'You do not have permission to edit company details'})
+    }
 }
 
 // get department
