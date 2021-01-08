@@ -5,7 +5,7 @@ exports.addPermission = (req, res, next) => {
     const {id, staffID} = req.params
     let permitHeading =""
     let permitBody = ""
-    permitDetails = req.respData.data.find(x => x.permitItem == 'manage permissions')
+    permitDetails = req.respData.response.find(x => x.permitItem == 'manage permissions')
     if(permitDetails.permit === 'allowed'){
         connection.query(`UPDATE permissions SET permit = '${permit}' WHERE staffID = ${staffID} 
         AND permitItemID = ${id}`, (err, resp) => {
