@@ -9,7 +9,7 @@ const timeSheetSheetController = require('../controllers/timesheetController')
 const router = express.Router();
 
 // add new date
-router.post('/newDay', authenticateToken,timeSheetSheetController.IncludeDateAndTime);
+router.post('/newDay',timeSheetSheetController.IncludeDateAndTime);
 
 // start time
 router.put('/start-time/:id', authenticateToken,timeSheetSheetController.startTime);

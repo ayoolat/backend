@@ -51,16 +51,21 @@ exports.startTime = (req, res, next) => {
 exports.stopTime = (req, res, next) => {
     const {id} = req.params
     const {millSecs} = req.body
+    const {expectedWorkHours, billRateCharge} = req.respData.response[0]
     connection.query(`UPDATE timer SET logoutTime = NOW(), seconds = '${millSecs}' WHERE staffID = ${id} ,`, (err, res) => {
         if(err){
             res.send('oops! something happened, your time wasn\'t saved')
         }
         if(resp){
-            const seconds
-            const hours 
-            seconds = millSecs / 1000
-            hours =  seconds / 3600
-            connection.query(`INSERT INTO billingSheet (staffID, payableAmount) VALUES ('${id}', '${req.respData.response.billRateCharge * hours}')`, (err, resp) => {
+            let workedMillSecs = expectedWorkHours * 3600000
+            let hours 
+            if(workedMillSecs > millSecs){
+                hours = workedMillSecs * 3600000
+            }else{
+                hours = millSecs * 3600000
+            }
+           
+            connection.query(`INSERT INTO billingSheet (staffID, payableAmount) VALUES ('${id}', '${billRateCharge * hours}')`, (err, resp) => {
                 if(err){
                     res.statusCode(401).send('error')
                 }
