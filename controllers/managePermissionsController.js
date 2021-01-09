@@ -1,7 +1,7 @@
 const connection = require('../modules/db')
 // add permission to staff/employee
 exports.addPermission = (req, res, next) => {
-    const {permit} = req.body
+    const {permitID} = req.body
     const {id, staffID} = req.params
     let permitHeading =""
     let permitBody = ""
@@ -9,7 +9,7 @@ exports.addPermission = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'Manage permissions')
     console.log(req.respData.response,permitDetails)
     if(permitDetails.permit === 'allowed'){
-        connection.query(`UPDATE permissions SET permit = '${permit}' WHERE staffID = ${staffID} 
+        connection.query(`UPDATE permissions SET permitID = '${permitID}' WHERE staffID = ${staffID} 
         AND permitItemID = ${id}`, (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err)res.send(err)
