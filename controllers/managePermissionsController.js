@@ -15,11 +15,11 @@ exports.addPermission = (req, res, next) => {
             if(err)res.send(err)
 
             if(resp){
-                connection.query(`SELECT PI.permitItem FROM permitItem PI JOIN permissions PE ON PI.permitItemID = PE.permitItemId`, (err, respQuery) => {
+                connection.query(`SELECT PI.permitItem, PI.permitID FROM permitItem PI JOIN permissions PE ON PI.permitItemID = PE.permitItemId`, (err, respQuery) => {
                     if(err){
                         return res.send(err)
                     }
-    console.log(respQuery[0].permit)
+                    console.log(respQuery[0].permit)
                     if(respQuery){
                         if(respQuery[0].permit === 1){
                             permitHeading = `You have been given a new permission`
@@ -30,8 +30,8 @@ exports.addPermission = (req, res, next) => {
                         }
                         let notified = {
                             'staffID' : staffID,
-                            'heading' : permitNotification,
-                            'body' : taskName,
+                            'heading' : permitHeading,
+                            'body' : permitBody,
                             'status' : 'false'
                         }
                         notificationControl.logNotification(notified, res)
