@@ -1,4 +1,6 @@
 const connection = require('../modules/db')
+const notificationControl = require('./notificationControl')
+
 // add permission to staff/employee
 exports.addPermission = (req, res, next) => {
     const {permitID} = req.body
@@ -19,12 +21,12 @@ exports.addPermission = (req, res, next) => {
                     if(err){
                         return res.send(err)
                     }
-                    console.log(respQuery[0].permit)
+                    console.log(respQuery[0].permitID)
                     if(respQuery){
-                        if(respQuery[0].permit === 1){
+                        if(respQuery[0].permitID === 1){
                             permitHeading = `You have been given a new permission`
                             permitBody = `You have now have the permission to ${respQuery[0].permitItem} by an Admin`
-                        }else if(respQuery[0].permit === 2){
+                        }else if(respQuery[0].permitID === 2){
                             permitHeading = `You have a removed permission`
                             permitBody = `Your permission to ${respQuery[0].permitItem} has been removed by an Admin`
                         }
