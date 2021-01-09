@@ -7,7 +7,6 @@ exports.addPermission = (req, res, next) => {
     let permitBody = ""
     // permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     permitDetails = req.respData.response.find(x => x.permitItem == 'Manage permissions')
-    console.log(permitDetails, permitDetails.permit)
     if(permitDetails.permit === 'allowed'){
         connection.query(`UPDATE permissions SET permitID = '${permitID}' WHERE staffID = ${staffID} 
         AND permitItemID = ${id}`, (err, resp) => {
@@ -20,12 +19,12 @@ exports.addPermission = (req, res, next) => {
                     if(err){
                         return res.send(err)
                     }
+    console.log(respQuery[0].permit)
                     if(respQuery){
-                        
-                        if(permit === 1){
+                        if(respQuery[0].permit === 1){
                             permitHeading = `You have been given a new permission`
                             permitBody = `You have now have the permission to ${respQuery[0].permitItem} by an Admin`
-                        }else if(permit === 2){
+                        }else if(respQuery[0].permit === 2){
                             permitHeading = `You have a removed permission`
                             permitBody = `Your permission to ${respQuery[0].permitItem} has been removed by an Admin`
                         }
