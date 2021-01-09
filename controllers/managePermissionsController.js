@@ -15,7 +15,7 @@ exports.addPermission = (req, res, next) => {
             if(err)res.send(err)
 
             if(resp){
-                connection.query(`SELECT PI.permitItem FROM permit P JOIN permitItem PI ON PI.permitItemID = P.permitItemId`, (err, respQuery) => {
+                connection.query(`SELECT PI.permitItem FROM permitItem PI JOIN permissions PE ON PI.permitItemID = PE.permitItemId`, (err, respQuery) => {
                     if(err){
                         return res.send(err)
                     }
