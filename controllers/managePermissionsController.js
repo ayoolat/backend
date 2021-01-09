@@ -11,6 +11,7 @@ exports.addPermission = (req, res, next) => {
     if(permitDetails.permit === 'allowed'){
         connection.query(`UPDATE permissions SET permitID = '${permitID}' WHERE staffID = ${staffID} 
         AND permitItemID = ${id}`, (err, resp) => {
+            
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err)res.send(err)
 
