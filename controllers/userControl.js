@@ -198,7 +198,7 @@ exports.userLogin = (req, res, next) => {
         // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
        if(err)return res.send(err)
         //if user email not in database
-        if(!resp){
+        if(resp.length == 0){
             return res.json({message: 'User does not exist'})
         }
         //if user email in database
@@ -308,15 +308,15 @@ exports.addDepartment = (req, res, next) => {
 }
 
 // get department
-exports.getDepartment = (res, req, next) => {
+exports.getDepartment = (req, res, next) => {
     const {id} = req.params
 
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
         if(permitDetails.companyID == id){
-            connection.query(`SELECT departmentName FROM department WHERE companyID = '${id}')`, (err, resp) => {
-                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
+            connection.query(`SELECT departmentName FROM department WHERE companyID = '${id}'`, (err, resp) => {
+                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                if(err)res.send(err)
                 if(resp){
                     return res.json({
                         status : 'success',
