@@ -30,6 +30,7 @@ const schemas = {
         listName: Joi.string().required()
     }),
     insertBreakdown: Joi.object().keys({
+        toDoID: Joi.string().required(),
         description: Joi.string().required(),
         commentArea: Joi.string().required()
     })
