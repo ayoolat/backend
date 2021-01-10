@@ -16,21 +16,21 @@ const router = express.Router();
 router.get('/todolist', authenticateToken, todoController.getTodolist)
 
 //Insert into TODO-LIST
-router.post('/todolist', authenticateToken, validator(schema.insertTodolist), todoController.insertTodolist)
+router.post('/companyName/todolist', authenticateToken, validator(schema.insertTodolist), todoController.insertTodolist)
 
 //Insert into TODO-LIST-BREAK-DOWN
-router.post('/todolistbreakdown', authenticateToken, validator(schema.insertBreakdown), todoController.insertBreakdown)
+router.post('/companyName/todolistbreakdown', authenticateToken, validator(schema.insertBreakdown), todoController.insertBreakdown)
 
 // UPDATE TODO LIST
-router.put('/todolist/:id', authenticateToken, todoController.updateTodolist)
+router.put('/companyName/todolist/:id', authenticateToken, todoController.updateTodolist)
 
 // UPDATE TODO LIST BREAKDOWN
-router.put('/todolistbreakdown/:id', authenticateToken, todoController.updateBreakdown)
+router.put('/companyName/todolistbreakdown/:id', authenticateToken, todoController.updateBreakdown)
 
 //Delete TODO-LIST
-router.delete('/todolist', authenticateToken, todoController.deleteTodolist)
+router.delete('/companyName/todolist', authenticateToken, todoController.deleteTodolist)
 
 // DELETE TODO-LIST
-router.delete('/todolistbreakdown/:id', authenticateToken, todoController.deleteBreakdown)
+router.delete('/companyName/todolistbreakdown/:id', authenticateToken, todoController.deleteBreakdown)
 
 module.exports = router
