@@ -75,7 +75,7 @@ exports.employeeSignUp = (req, res, next) => {
                         await connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, tokenUsed)
                         VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', '${departmentID}', 'false')`)
 
-                        await connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', tokenUsed = 'false' WHERE email = '${email}'`)
+                        await connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', confirmed = 'false' WHERE email = '${email}'`)
 
                         if (roleID === 2){
                             // If user role is co-Admin (i.e roleID = 2)
@@ -135,7 +135,7 @@ exports.employeeSignUp = (req, res, next) => {
 exports.confirmSignUp = (req, res, next) => {
     const {password} = req.body
     const {id} = req.params
-    connection.query(`SELECT tokenUsed FROM staff WHERE staffID = ${id}`, (err, respToken) => {
+    connection.query(`SELECT confirmed FROM staff WHERE staffID = ${id}`, (err, respToken) => {
         if(err){return res.status(500).json({message: 'There has been an error, try again'})}
 
         if(respToken){
@@ -148,7 +148,7 @@ exports.confirmSignUp = (req, res, next) => {
                             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                 
                             if(hash){
-                                connection.query(`UPDATE staff SET password = '${hash}' WHERE `, (err, resp) => {
+                                connection.query(`UPDATE staff SET password = '${hash}', confirmed = 'true' WHERE `, (err, resp) => {
                                     if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
                 
                                     if(resp){
@@ -314,7 +314,7 @@ exports.getDepartment = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
         if(permitDetails.companyID == id){
-            connection.query(`SELECT departmentName FROM department WHERE companyID = '${id}'`, (err, resp) => {
+            connection.query(`SELECT departmentName, departmentID FROM department WHERE companyID = '${id}' ORDER BY departmentID ASC`, (err, resp) => {
                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                 if(err)res.send(err)
                 if(resp){
