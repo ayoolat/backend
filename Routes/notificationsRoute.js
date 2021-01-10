@@ -11,7 +11,7 @@ const notificationController = require('../controllers/notificationControl')
 const router = express.Router();
 
 // Get  notifications
-router.post('/', notificationController.getNotifications);
+router.post('/companyName/', notificationController.getNotifications);
 
 
 

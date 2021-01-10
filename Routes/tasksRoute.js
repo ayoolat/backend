@@ -12,30 +12,30 @@ const fileUpload = require('../middleware/fileUpload')
 const router = express.Router();
 
 // Create new task//
-router.post('/newTask/:id', authenticateToken, fileUpload.fileUpload.single('documentsAttached'), taskController.newTask);
+router.post('/companyName/newTask/:id', authenticateToken, fileUpload.fileUpload.single('documentsAttached'), taskController.newTask);
 
 // get all user tasks//
-router.get('/:id', authenticateToken, taskController.getTasks);
+router.get('/companyName/:id', authenticateToken, taskController.getTasks);
 
 // get all assigned tasks
-router.get('/assignedTasks/:id', authenticateToken, taskController.getAssignedTasks);
+router.get('/companyName/assignedTasks/:id', authenticateToken, taskController.getAssignedTasks);
 
 // get all user tasks by status
-router.get('/status/:id/:status', authenticateToken, taskController.getTasksByStatus);
+router.get('/companyName/status/:id/:status', authenticateToken, taskController.getTasksByStatus);
 
 // get all company tasks 
-router.get('/allTasks/:id', authenticateToken, taskController.getCompanyTasks);
+router.get('/companyName/allTasks/:id', authenticateToken, taskController.getCompanyTasks);
 
 // get all company tasks by status
-router.get('/allTasks/:status/:id', authenticateToken, taskController.getCompanyTasksByStatus);
+router.get('/companyName/allTasks/:status/:id', authenticateToken, taskController.getCompanyTasksByStatus);
 
 // update company tasks //
-router.put('/editTask/:id/', authenticateToken, fileUpload.fileUpload.single('documentsAttached'), taskController.editTask);
+router.put('/companyName/editTask/:id/', authenticateToken, fileUpload.fileUpload.single('documentsAttached'), taskController.editTask);
 
 // Update task status //
-router.put('/editTaskStatus/:id', authenticateToken, taskController.editTaskStatus);
+router.put('/companyName/editTaskStatus/:id', authenticateToken, taskController.editTaskStatus);
 
 // Delete Tasks 
-router.delete('/deleteTask/:id', authenticateToken, taskController.deleteTask);
+router.delete('/companyName/deleteTask/:id', authenticateToken, taskController.deleteTask);
 
 module.exports = router;

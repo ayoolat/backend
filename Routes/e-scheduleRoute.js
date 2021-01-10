@@ -23,6 +23,6 @@ router.get('/:id', authenticateToken, e_ScheduleController.getE_schedule);
 router.put('/edit/:id/:eventID', authenticateToken, e_ScheduleController.editE_schedule);
 
 // Edit e-schedule
-router.delete('/delete/:id/:eventID', authenticateToken, e_ScheduleController.delete);
+router.delete('/companyName/delete/:id/:eventID', authenticateToken, e_ScheduleController.delete);
 
 module.exports = router
