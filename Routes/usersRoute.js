@@ -32,7 +32,7 @@ router.get('/companyName/employee/:companyID',authenticateToken, userController.
 router.put('/companyName/companyProfile/updateProfile/:id', authenticateToken, userController.updateCompanyRecord)
 
 // Add a department
-router.put('/companyName/companyProfile/addDepartment/:id', authenticateToken, userController.addDepartment)
+router.post('/companyName/companyProfile/addDepartment/:id', authenticateToken, userController.addDepartment)
 
 // view department
 router.get('/companyName/companyProfile/department/:id', authenticateToken, userController.getDepartment)

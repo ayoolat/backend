@@ -1,36 +1,40 @@
 const connection = require('../modules/db')
+const notificationControl = require('./notificationControl')
+
 // add permission to staff/employee
 exports.addPermission = (req, res, next) => {
-    const {permit} = req.body
+    const {permitID} = req.body
     const {id, staffID} = req.params
     let permitHeading =""
     let permitBody = ""
-    permitDetails = req.respData.response.find(x => x.permitItem == 'manage permissions')
-    console.log(req.respData.response)
+    // permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    permitDetails = req.respData.response.find(x => x.permitItem == 'Manage permissions')
     if(permitDetails.permit === 'allowed'){
-        connection.query(`UPDATE permissions SET permit = '${permit}' WHERE staffID = ${staffID} 
+        connection.query(`UPDATE permissions SET permitID = '${permitID}' WHERE staffID = ${staffID} 
         AND permitItemID = ${id}`, (err, resp) => {
+
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err)res.send(err)
 
             if(resp){
-                connection.query(`SELECT PI.permitItem FROM permit P JOIN permitItem PI ON PI.permitItemID = P.permitItemId`, (err, respQuery) => {
+                connection.query(`SELECT PI.permitItem, PE.permitID FROM permitItem PI JOIN permissions PE ON PI.permitItemID = PE.permitItemId`, (err, respQuery) => {
                     if(err){
                         return res.send(err)
                     }
+                    console.log(respQuery[0].permitID)
                     if(respQuery){
-                        
-                        if(permit === 1){
+                        if(respQuery[0].permitID === 1){
                             permitHeading = `You have been given a new permission`
-                            permitBody = `You have now have the permission to ${respQuery[0].permitItem} by an Admin`
-                        }else if(permit === 2){
+                            permitBody = `You have now have the permission to ${respQuery[0].permitItem}
+                                        Permission given by an Admin`
+                        }else if(respQuery[0].permitID === 2){
                             permitHeading = `You have a removed permission`
                             permitBody = `Your permission to ${respQuery[0].permitItem} has been removed by an Admin`
                         }
                         let notified = {
                             'staffID' : staffID,
-                            'heading' : permitNotification,
-                            'body' : taskName,
+                            'heading' : permitHeading,
+                            'body' : permitBody,
                             'status' : 'false'
                         }
                         notificationControl.logNotification(notified, res)
