@@ -31,8 +31,8 @@ exports.signUp =  (req, res, next) =>{
                     await connection.query(`INSERT INTO company (companyName, email)
                     VALUES ('${companyName}', '${email}')`)
 
-                    await connection.query(`INSERT INTO staff (companyID, password, email, roleID, username)
-                    VALUES (LAST_INSERT_ID(), '${hash}', '${email}', '1', '${email}')`) 
+                    await connection.query(`INSERT INTO staff (companyID, password, email, roleID, username, confirmed)
+                    VALUES (LAST_INSERT_ID(), '${hash}', '${email}', '1', '${email}', 'true')`) 
                     
                     await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('1', LAST_INSERT_ID(), '1'), 
                     ('1', LAST_INSERT_ID(), '2'), ('1', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
@@ -56,7 +56,6 @@ exports.signUp =  (req, res, next) =>{
 // sign up User fromAdmin
 exports.employeeSignUp = (req, res, next) => {
     const {companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID} = req.body
-    const userName = email.split('@')[0]
     const password = 'password'
 
     permitDetails = req.respData.response.find(x => x.permitItem == 'Add user')
@@ -73,7 +72,7 @@ exports.employeeSignUp = (req, res, next) => {
                 async function queryDB() {
                     try{
                         await connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, tokenUsed)
-                        VALUES ('${hash}', '${userName}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', '${departmentID}', 'false')`)
+                        VALUES ('${hash}', '${email}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', '${departmentID}', 'false')`)
 
                         await connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', confirmed = 'false' WHERE email = '${email}'`)
 
@@ -120,8 +119,9 @@ exports.employeeSignUp = (req, res, next) => {
                             data : req.body
                         })
                     }catch(err){
-                        res.status(401).json({
-                            "errors" : err
+                        res.status(500).json({
+                            status : 'This user already exists in our database. Try another email?',
+                            data : email
                         })
                     }
                 }
@@ -188,7 +188,7 @@ exports.confirmSignUp = (req, res, next) => {
 exports.userLogin = (req, res, next) => {
     const {email, password} = req.body
     // get user with user email
-    connection.query(`SELECT s.firstName, s.lastName, s.email, s.password, s.expectedWorkHours, s.billRateCharge, s.departmentID, s.companyID, s.staffID, permit, permitItem, roleID 
+    connection.query(`SELECT s.firstName, s.lastName, s.email, s.password, s.expectedWorkHours, s.billRateCharge, s.departmentID, s.companyID, s.staffID, s.confirmed, permit, permitItem, roleID 
     from permissions p JOIN staff s ON s.staffID = p.staffID 
     JOIN permitItem pi ON pi.permitItemID = p.permitItemID
     JOIN permit pe ON pe.permitID = p.permitID
@@ -321,6 +321,54 @@ exports.getDepartment = (req, res, next) => {
                     return res.json({
                         status : 'success',
                         data : resp
+                    })
+                } 
+            })
+        }else{
+            return res.status(500).json({message: 'You do not have permission to edit company details'})
+        }
+    }else{
+        return res.status(500).json({message: 'You do not have permission to edit company details'})
+    } 
+}
+
+exports.editDepartment = (req, res, next) => {
+    const{departmentName} = req.body
+    const {id, departmentID} = req.params
+
+    permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    if(permitDetails.permit === 'allowed'){
+        if(permitDetails.companyID == id){
+            connection.query(`UPDATE department SET departmentName = ${departmentName} WHERE companyID = '${id}' AND departmentID = ${departmentID} `, (err, resp) => {
+                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+                if(resp){
+                    return res.json({
+                        status : 'success',
+                        data : req.body
+                    })
+                } 
+            })
+        }else{
+            return res.status(500).json({message: 'You do not have permission to edit company details'})
+        }
+    }else{
+        return res.status(500).json({message: 'You do not have permission to edit company details'})
+    } 
+}
+
+exports.deleteDepartment = (req, res, next) => {
+    const {id, departmentID} = req.params
+
+    permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    if(permitDetails.permit === 'allowed'){
+        if(permitDetails.companyID == id){
+            connection.query(`DELETE from department WHERE WHERE companyID = '${id}' AND departmentID = ${departmentID} `, (err, resp) => {
+                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+                if(resp){
+                    return res.json({
+                        status : 'success'
                     })
                 } 
             })
