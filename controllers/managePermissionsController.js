@@ -25,7 +25,8 @@ exports.addPermission = (req, res, next) => {
                     if(respQuery){
                         if(respQuery[0].permitID === 1){
                             permitHeading = `You have been given a new permission`
-                            permitBody = `You have now have the permission to ${respQuery[0].permitItem} by an Admin`
+                            permitBody = `You have now have the permission to ${respQuery[0].permitItem}
+                                        Permission given by an Admin`
                         }else if(respQuery[0].permitID === 2){
                             permitHeading = `You have a removed permission`
                             permitBody = `Your permission to ${respQuery[0].permitItem} has been removed by an Admin`
