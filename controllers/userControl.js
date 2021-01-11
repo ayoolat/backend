@@ -521,7 +521,7 @@ exports.timeAndBilling = (req, res, next) => {
 // password reset
 exports.resetPassword = (req, res, next) => {
     const {email} = req.body
-    connection.query(`SELECT password, passwordResetExpires, staffID, TIMEDIFF(minute) tokenUsed FROM staff WHERE email = '${email}' `, (errQuery, respQuery) => {
+    connection.query(`SELECT password, passwordResetExpires, staffID, tokenUsed FROM staff WHERE email = '${email}' `, (errQuery, respQuery) => {
         if(errQuery){
             {return res.status(500).json({message: 'There has been an error, try again'})}
         }
