@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const crypto = require('crypto')
 const util = require('util');
+const dateFormat = require( 'dateformat' );
+const time = dateFormat( new Date(), "HH-mm-ii" );
+
 
 // exported modules
 let connection = require('../modules/db')
@@ -46,7 +49,6 @@ exports.signUp =  (req, res, next) =>{
                     })
                 
                 }catch(err){
-                    // res.send(err)
                     return res.status(500).json({message: 'This email already exists'})
                 }
             }   
@@ -239,7 +241,9 @@ exports.userLogin = (req, res, next) => {
 exports.getAllCompanyStaff = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'View all company users')
     if(permitDetails.permit === 'allowed'){
-        connection.query(`select * from company c JOIN staff s ON c.companyID = s.companyID JOIN department d ON c.companyID = d.companyID WHERE companyID = ${req.params.companyID} `, (err, resp) => {
+        connection.query(`select * from company c JOIN staff s ON c.companyID = s.companyID 
+        JOIN department d ON c.companyID = d.companyID WHERE companyID = ${req.params.companyID} `, 
+        (err, resp) => {
             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
             if(resp){
@@ -250,7 +254,8 @@ exports.getAllCompanyStaff = (req, res, next) => {
             }
         })
     }else{
-        return res.status(403).json({message: 'You do not have permission to view all staff'})
+        res.send(err)
+        // return res.status(403).json({message: 'You do not have permission to view all staff'})
     } 
 }
 
@@ -541,9 +546,9 @@ exports.timeAndBilling = (req, res, next) => {
 // password reset
 exports.resetPassword = (req, res, next) => {
     const {email} = req.body
-    connection.query(`SELECT password, passwordResetExpires, staffID, tokenUsed FROM staff WHERE email = '${email}' `, (errQuery, respQuery) => {
+    connection.query(`SELECT password, passwordResetExpires, staffID, TIMEDIFF(minute) tokenUsed FROM staff WHERE email = '${email}' `, (errQuery, respQuery) => {
         if(errQuery){
-            // {return res.status(500).json({message: 'There has been an error, try again'})}
+            {return res.status(500).json({message: 'There has been an error, try again'})}
         }
 
         if(respQuery){
@@ -560,7 +565,6 @@ exports.resetPassword = (req, res, next) => {
                         'Password reset link',
                         `<p>Please click the link below to reset you password<p/>
                         <a href = '/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}'>/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}<a/>`,
-                        'To reset your password',
                         (errMail, info) => {
                             // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
                             

@@ -4,13 +4,14 @@ console.log('tasks')
 const notificationControl = require('./notificationControl')
 
 exports.newTask = (req, res, next) => {
-    const {taskName, assignedID, taskDescription, staffID, startDate, endDate} = req.body
+    console.log("hi")
+    const {taskName, assignedID, taskDescription, startDate, endDate} = req.body
     const {id} = req.params
     if(!req.file){
         permitDetails = req.respData.response.find(x => x.permitItem == 'Add and Edit tasks')
         if(permitDetails.permit === 'allowed'){
             connection.query(`INSERT INTO task
-            (taskName, assignedID, taskStatus, taskDescription, documentsAttached, staffID, startDate, endDate)
+            (taskName, assignedID, taskStatus, taskDescription, staffID, startDate, endDate)
             VALUES ('${taskName}', '${assignedID}','1', '${taskDescription}', '${id}', '${startDate}', '${endDate}')
             `, (err, resp) => {
                 // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
@@ -30,7 +31,7 @@ exports.newTask = (req, res, next) => {
                 }
             })
         }else{
-            res.send('You do not have permission to edit details')
+            res.send('You do not have permission to add a task')
         }
     }else{
         const documentsAttached = req.file.path.replace("/\\/g", "//")
