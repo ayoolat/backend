@@ -371,7 +371,6 @@ exports.editDepartment = (req, res, next) => {
 
 exports.deleteDepartment = (req, res, next) => {
     const {id, departmentID} = req.params
-
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
         connection.query(`DELETE from department WHERE WHERE companyID = '${id}' AND departmentID = ${departmentID} `, (err, resp) => {
@@ -428,30 +427,7 @@ exports.viewCompanyProfile = (req, res, next) => {
     const {id} = req.params
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
-        if(permitDetails.companyID == id){
-            connection.query(`select * from company where companyID = ${id}`, (err, resp) => {
-                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
-                if(resp){
-                    return res.json({
-                        status : 'success',
-                        data : resp
-                    })
-                }
-            })
-        }else{
-            return res.status(500).json({message: 'You do not have permission to edit company details'})
-        }
-    }else{
-        return res.status(500).json({message: 'You do not have permission to edit company details'})
-    }   
-}
-
-// read User
-exports.viewProfile = (req, res, next) => {
-    const {id} = req.params
-    if(req.respData.response[0].staffID == id){
-        connection.query(`select * from staff where staffID = ${id}`, (err, resp) => {
+        connection.query(`select * from company where companyID = ${id}`, (err, resp) => {
             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
             if(resp){
@@ -462,15 +438,29 @@ exports.viewProfile = (req, res, next) => {
             }
         })
     }else{
-        return res.status(500).json({message: 'Permission not granted'})
-    }
+        return res.status(500).json({message: 'You do not have permission to edit company details'})
+    }   
+}
+
+// read User
+exports.viewProfile = (req, res, next) => {
+    const {id} = req.params
+    connection.query(`select * from staff where staffID = ${id}`, (err, resp) => {
+        if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+        if(resp){
+            return res.json({
+                status : 'success',
+                data : resp
+            })
+        }
+    })
 }
 
 // change user password
 exports.changePassword = (req, res, next) => {
     const {id} = req.params
     const {password} = req.body
-    
     if(req.respData.response[0].staffID == id){
         bcrypt.hash(password, 10, (err, hash) => {
             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
