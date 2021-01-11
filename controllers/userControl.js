@@ -225,7 +225,7 @@ exports.userLogin = (req, res, next) => {
                                 let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, {expiresIn : '3600000'})
                 
                                 let respData = {
-                                    'response' : resp,
+                                    'response' : resp1,
                                     'accessToken' : accessToken
                                 }
                                 return res.json({
