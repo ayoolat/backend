@@ -39,7 +39,6 @@ exports.IncludeDateAndTime =  (req, res, next) => {
             }
         }); 
         return res.json({status : "success"})
-
     }   
 }    
     
