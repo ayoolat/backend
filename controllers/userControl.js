@@ -232,7 +232,7 @@ exports.userLogin = (req, res, next) => {
                                     status : 'success',
                                     data : respData,
                                     data1 : respQuery,
-                                    data2 : resp1
+                                    data2 : resp
                                 })
                             })    
                         }
