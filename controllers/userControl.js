@@ -49,7 +49,8 @@ exports.signUp =  (req, res, next) =>{
                     })
                 
                 }catch(err){
-                    return res.status(500).json({message: 'This email already exists'})
+                    res.send(err)
+                    // return res.status(500).json({message: 'This email already exists'})
                 }
             }   
         }
@@ -251,8 +252,7 @@ exports.getAllCompanyStaff = (req, res, next) => {
         connection.query(`select * from company c JOIN staff s ON c.companyID = s.companyID 
         JOIN department d ON c.companyID = d.companyID WHERE c.companyID = ${companyID} `, 
         (err, resp) => {
-            if(err)res.send(err)
-            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
             if(resp){
                 return res.json({
@@ -262,8 +262,7 @@ exports.getAllCompanyStaff = (req, res, next) => {
             }
         })
     }else{
-        res.send(err)
-        // return res.status(403).json({message: 'You do not have permission to view all staff'})
+        return res.status(403).json({message: 'You do not have permission to view all staff'})
     } 
 }
 
