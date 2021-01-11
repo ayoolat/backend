@@ -69,21 +69,18 @@ exports.newTask = (req, res, next) => {
 exports.searchTask = (req, res, next) => {
     const {id} = req.params
     const {search} = req.body
-    permitDetails = req.respData.response.find(x => x.permitItem == 'View all company users')
-    if(permitDetails.permit.companyID == id){
-        connection.query(`select * from task WHERE taskName LIKE '%${search}%' `, (err, resp) => {
-            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+    connection.query(`select taskName from staff s
+    JOIN company c ON c.companyID = c.companyID
+    JOIN task t ON s.staffID = t.staffID WHERE taskName LIKE '%${search}%' AND `, (err, resp) => {
+        if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
-            if(resp){
-                return res.json({
-                    status : 'success',
-                    data : resp
-                })
-            }
-        })
-    }else{
-        return res.status(403).json({message: 'You do not have permission staff'})
-    } 
+        if(resp){
+            return res.json({
+                status : 'success',
+                data : resp
+            })
+        }
+    })
 }
 
 exports.selectTask = (req, res, next) => {
