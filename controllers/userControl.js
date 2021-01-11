@@ -187,64 +187,72 @@ exports.confirmSignUp = (req, res, next) => {
 exports.userLogin = (req, res, next) => {
     const {email, password} = req.body
     // get user with user email
-    connection.query(`SELECT s.firstName, s.lastName, s.email, s.password, s.expectedWorkHours, s.billRateCharge, s.departmentID, s.companyID, s.staffID, s.confirmed, permit, permitItem, roleID 
-    from permissions p JOIN staff s ON s.staffID = p.staffID 
-    JOIN permitItem pi ON pi.permitItemID = p.permitItemID
-    JOIN permit pe ON pe.permitID = p.permitID
-    WHERE email = '${email}'`, 
-    (err, resp) => {
+    connection.query(`SELECT  firstName, lastName, email, password, expectedWorkHours, billRateCharge, departmentID, companyID, staffID, confirmed, roleID FROM staff WHERE email = '${email}'`, (err, resp) => {
+        if(err)res.send(err)
 
-        // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-       if(err)return res.send(err)
-        //if user email not in database
-        if(resp.length == 0){
-            return res.json({message: 'User does not exist'})
-        }
-        //if user email in database
+        if (resp == 0){ return res.json({Message : "User does not exist"})}
+
         if(resp){
-            connection.query(`SELECT c.companyName, d.departmentName, d.departmentID from staff s
-            JOIN company c ON c.companyID = s.companyID
-            LEFT JOIN department d ON d.companyID = s.companyID
-            WHERE s.email = "${email}"`,(err, respQuery) => {
-                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            connection.query(`SELECT permit, permitItem FROM permissions p  
+            JOIN permitItem pi ON pi.permitItemID = p.permitItemID
+            JOIN permit pe ON pe.permitID = p.permitID
+            WHERE staffID = '${resp[0].staffID}'`, 
+            (err, resp1) => {
 
-                if(respQuery){
-                    bcrypt.compare(password, resp[0].password, (hashErr, valid) => {
-                        //if password does not match
-                        if(!valid) {return res.status(500).json({message: 'Incorrect password'})}
-        
-                        if(hashErr) {return res.status(500).json({message: 'There has been an error, please try again'})}
-        
-                        // if password matches
-                        let  payload = {'response': resp}
-        
-                        //get token
-                        let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, {expiresIn : '3600000'})
-        
-                        let respData = {
-                            'response' : resp,
-                            'accessToken' : accessToken
+                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                if(err)return res.send(err)
+                
+                //if user email in database
+                if(resp1){
+                    connection.query(`SELECT c.companyName, d.departmentName, d.departmentID from staff s
+                    JOIN company c ON c.companyID = s.companyID
+                    LEFT JOIN department d ON d.companyID = s.companyID
+                    WHERE s.staffID = "${resp[0].staffID}"`,(err, respQuery) => {
+                        if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+                        if(respQuery){
+                            bcrypt.compare(password, resp[0].password, (hashErr, valid) => {
+                                //if password does not match
+                                if(!valid) {return res.status(500).json({message: 'Incorrect password'})}
+                
+                                if(hashErr) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                
+                                // if password matches
+                                let  payload = {'response': resp1}
+                
+                                //get token
+                                let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, {expiresIn : '3600000'})
+                
+                                let respData = {
+                                    'response' : resp,
+                                    'accessToken' : accessToken
+                                }
+                                return res.json({
+                                    status : 'success',
+                                    data : respData,
+                                    data1 : respQuery,
+                                    data2 : resp1
+                                })
+                            })    
                         }
-                        return res.json({
-                            status : 'success',
-                            data : respData,
-                            data1 : respQuery
-                        })
-                    })    
+                    })
                 }
             })
         }
     })
+    
 }
 
 // get all staff
 exports.getAllCompanyStaff = (req, res, next) => {
+    const {companyID} = req.params
     permitDetails = req.respData.response.find(x => x.permitItem == 'View all company users')
     if(permitDetails.permit === 'allowed'){
         connection.query(`select * from company c JOIN staff s ON c.companyID = s.companyID 
-        JOIN department d ON c.companyID = d.companyID WHERE companyID = ${req.params.companyID} `, 
+        JOIN department d ON c.companyID = d.companyID WHERE c.companyID = ${companyID} `, 
         (err, resp) => {
-            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            if(err)res.send(err)
+            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
             if(resp){
                 return res.json({
