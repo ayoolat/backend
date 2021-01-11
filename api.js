@@ -25,7 +25,7 @@ const timeSheet = require('./Routes/timeSheetRoute')
 // instantiate controllers
 app.use('/api/users', usersRoute)
 app.use('/api/notifications', notificationsRoute)
-app.use('/api/tasks', cors(), taskRoute)
+app.use('/api/tasks', taskRoute)
 app.use('/api/todo', todoRoute)
 app.use('/api/contact-us', contactRoute)
 app.use('/api/calendar', calendarRoute)

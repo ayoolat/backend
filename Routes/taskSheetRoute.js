@@ -7,7 +7,7 @@ const authenticateToken = require('../middleware/authentication')
 const taskSheetController = require('../controllers/taskSheetController')
 
 const router = express.Router();
-/companyName
+
 // Add company task-sheet
 router.get('/companyName/:id', authenticateToken,taskSheetController.taskSheetCompany);
 

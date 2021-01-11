@@ -71,11 +71,11 @@ exports.employeeSignUp = (req, res, next) => {
                 queryDB()
                 async function queryDB() {
                     try{
-                        await connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, tokenUsed)
+                        response = await connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, confirmed)
                         VALUES ('${hash}', '${email}', '${companyID}', '${email}', '${roleID}', '${expectedWorkHours}', '${billRateCharge}', '${staffRole}', '${departmentID}', 'false')`)
-
+                        console.log(response.insertId)
                         await connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', confirmed = 'false' WHERE email = '${email}'`)
-
+                        
                         if (roleID === 2){
                             // If user role is co-Admin (i.e roleID = 2)
                             await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '1'), 
@@ -101,19 +101,15 @@ exports.employeeSignUp = (req, res, next) => {
                             ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`)
                         }
 
-                        // sendMail(
-                        //     'PACE Time-sheet',
-                        //     'adeyemodanointed5@gmail.com',
-                        //     'Password reset link',
-                        //     `<p>Please click the link below to reset you password<p/>
-                        //     <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${resp.insertID}<a/>`,
-                        //     'To reset your password',
-                        //     (errMail, info) => {
-                        //         // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
-                        //         if(err) return res.send(errMail)
-                        //     }
-                        // )
-
+                        sendMail(
+                            'akan.asanga@gmail.com',
+                            'ayoola_toluwanimi@yahoo.com',
+                            'Password reset link',
+                            `<p>Please click the link below to reset you password<p/>
+                            <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${response.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${response.insertID}<a/> to reset your password`,
+                           
+                        )
+                    
                         return res.json({
                             status : 'Success! A confirmation link has been sent to the user',
                             data : req.body
@@ -124,6 +120,7 @@ exports.employeeSignUp = (req, res, next) => {
                             data : email
                         })
                     }
+                   
                 }
             }
         })
@@ -135,22 +132,23 @@ exports.employeeSignUp = (req, res, next) => {
 exports.confirmSignUp = (req, res, next) => {
     const {password} = req.body
     const {id} = req.params
-    connection.query(`SELECT confirmed FROM staff WHERE staffID = ${id}`, (err, respToken) => {
+    connection.query(`SELECT * FROM staff WHERE staffID = ${id}`, (err, respToken) => {
         if(err){return res.status(500).json({message: 'There has been an error, try again'})}
 
         if(respToken){
-            if(respToken[0].tokenUsed == 'false'){
-                connection.query(`UPDATE staff SET tokenUsed = 'true'`,(err, respConfirm) => {
-                    if(err){return res.status(500).json({message: 'There has been an error, try again'})}
-
+            if(respToken[0].confirmed == 'false'){                
+                connection.query(`UPDATE staff SET confirmed = 'true', lastUpdated = NOW() WHERE staffID = '${id}'`,(err, respConfirm) => {
+                    // if(err){return res.status(500).json({message: 'There has been an error, try again'})}
+                    if(err)res.send(err)
                     if(respConfirm){
                         bcrypt.hash(password, 10, (err, hash) => {
+
                             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                
+                            
                             if(hash){
-                                connection.query(`UPDATE staff SET password = '${hash}', confirmed = 'true' WHERE `, (err, resp) => {
+                                connection.query(`UPDATE staff SET password = '${hash}', confirmed = 'true', lastUpdated = NOW() WHERE staffID = '${id}'`, (err, resp) => {
                                     if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
-                
+
                                     if(resp){
                                         let payload = { 'data': resp }
                             
@@ -171,9 +169,7 @@ exports.confirmSignUp = (req, res, next) => {
                         })
                     }
                 })
-            }
-
-            if(respToken[0].tokenUsed == 'true'){
+            }else if(respToken[0].confirmed == 'true'){
                 return res.json({
                     message : 'This link has been used before',
                 })
@@ -242,7 +238,7 @@ exports.userLogin = (req, res, next) => {
 exports.getAllCompanyStaff = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'View all company users')
     if(permitDetails.permit === 'allowed'){
-        connection.query(`select * from staff where companyID = ${req.params.companyID} `, (err, resp) => {
+        connection.query(`select * from company c JOIN staff s ON c.companyID = s.companyID JOIN department d ON c.companyID = d.companyID WHERE companyID = ${req.params.companyID} `, (err, resp) => {
             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
             if(resp){
@@ -254,6 +250,27 @@ exports.getAllCompanyStaff = (req, res, next) => {
         })
     }else{
         return res.status(403).json({message: 'You do not have permission to view all staff'})
+    } 
+}
+
+// search company staff
+exports.searchStaff = (req, res, next) => {
+    const {id} = req.params
+    const {search} = req.body
+    permitDetails = req.respData.response.find(x => x.permitItem == 'View all company users')
+    if(permitDetails.permit.companyID == id){
+        connection.query(`select firstName, lastName from staff WHERE firstName LIKE '%${search}%' `, (err, resp) => {
+            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+            if(resp){
+                return res.json({
+                    status : 'success',
+                    data : resp
+                })
+            }
+        })
+    }else{
+        return res.status(403).json({message: 'You do not have permission staff'})
     } 
 }
 
@@ -628,16 +645,18 @@ exports.setNewPassword = (req, res, next) => {
     })
 }
 
-    // delete user
-    // app.delete('/pace-time-sheet/companyName/deleteUser/:id', authenticateToken, (req, res) => {
-    //     connection.query(`DELETE from staff WHERE staffID = ${req.params.id}`, (err, resp) => {
-    //         if (err) {
-    //             res.statusCode = 401
-    //             res.send(err)
-    //         }
+exports.deleteUser = (req, res, next) => {
+    connection.query(`DELETE from staff WHERE staffID = ${req.params.id}`, (err, resp) => {
+        if (err) {
+            if(err){return res.status(500).json({message: 'There has been an error, try again'})}
+        }
 
-    //         if (resp) {
-    //             res.send('User deleted')
-    //         }
-    //     })
-    // })
+        if (resp) {
+            return res.json({
+                message : 'User has been deleted',
+            })
+        }
+    })
+}
+
+   
