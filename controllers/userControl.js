@@ -46,6 +46,7 @@ exports.signUp =  (req, res, next) =>{
                     })
                 
                 }catch(err){
+                    // res.send(err)
                     return res.status(500).json({message: 'This email already exists'})
                 }
             }   
