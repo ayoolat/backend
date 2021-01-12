@@ -2,7 +2,7 @@
 let port = process.env.PORT || 8000
 let express = require('express')
 let bodyParser = require('body-parser')
-let fs = require('fs')
+// let fs = require('fs')
 let cors = require('cors')
 
 const app = express()
