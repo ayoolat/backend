@@ -40,11 +40,16 @@ const swaggerDocs = swaggerJsdoc(options);
 const app = express()
 app.use(bodyParser.json())
 
+let whiteList = ['https://pacetimesheet.herokuapp.com', 'http://localhost:3000']
+
 const corsOptions = {
-    "origin": "*",
-    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-    "preflightContinue": false,
-    "optionsSuccessStatus": 204
+    origin: function(origin, callback){
+        if(whiteList.indexOf(origin !== -1 || !origin)){
+            callback(null, true)
+        }else{
+            callback(new Error('CORS Not allowed'))
+        }
+    }
   }
 
 app.use(cors(corsOptions))
