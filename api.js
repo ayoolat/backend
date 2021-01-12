@@ -3,7 +3,7 @@ let port = process.env.PORT || 8000
 let express = require('express')
 let bodyParser = require('body-parser')
 // let fs = require('fs')
-// let cors = require('cors')
+let cors = require('cors')
 const swaggerUi = require('swagger-ui-express')
 const swaggerJsdoc = require('swagger-jsdoc');
 
@@ -40,7 +40,7 @@ const swaggerDocs = swaggerJsdoc(options);
 const app = express()
 app.use(bodyParser.json())
 
-// app.use(cors())
+app.use(cors())
 
 
 // exported modules
