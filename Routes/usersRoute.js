@@ -170,7 +170,7 @@ const router = express.Router();
  * @swagger
  *  components:
  *    schemas:
- *      UsersLogin:
+ *      ConfirmPassword:
  *        type: object
  *        required:
  *          - newPassword
@@ -367,6 +367,12 @@ router.put('/companyName/confirmation/:token/:id', validator(schema.changePasswo
  */
 router.get('/companyName/employee/:companyID', authenticateToken, userController.getAllCompanyStaff)
 
+<<<<<<< HEAD
+=======
+// search staff
+router.get('/companyName/search/:search', authenticateToken, userController.searchStaff)
+
+>>>>>>> 6eaf49d376dd2ac2c70688f3da7f3c7b31f5b238
 // Update company details
 /**
  * @swagger
