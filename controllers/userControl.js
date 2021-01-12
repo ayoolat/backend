@@ -521,9 +521,10 @@ exports.timeAndBilling = (req, res, next) => {
 // password reset
 exports.resetPassword = (req, res, next) => {
     const {email} = req.body
-    connection.query(`SELECT password, passwordResetExpires, staffID, tokenUsed FROM staff WHERE email = '${email}' `, (errQuery, respQuery) => {
+    connection.query(`SELECT staffID FROM staff WHERE email = '${email}' `, (errQuery, respQuery) => {
         if(errQuery){
-            {return res.status(500).json({message: 'There has been an error, try again'})}
+                res.send(errQuery)
+            // {return res.status(500).json({message: 'There has been an error, try again'})}
         }
 
         if(respQuery){
@@ -532,37 +533,68 @@ exports.resetPassword = (req, res, next) => {
             // Set expiration time to one hour after crypto code was generated
             passwordResetExpires = Date.now() + 3600000
             // insert code, expiration time and link status to
-            connection.query(`UPDATE staff SET passwordResetToken = "${passwordResetToken}", passwordResetExpires = '${passwordResetExpires}' ,tokenUsed = 'false' , lastUpdated = NOW() WHERE email = '${email}'`, (err, resp) => {
-                if(resp){
-                    sendMail(
-                        'ayoola.toluwanimi@lmu.edu.ng',
-                        'ayoola_toluwanimi@yahoo.com',
-                        'Password reset link',
-                        `<p>Please click the link below to reset you password<p/>
-                        <a href = '/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}'>/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}<a/>`,
-                        (errMail, info) => {
-                            // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
-                            
-                            let payload = { 'response': respQuery }
-                            
-                            let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, { expiresIn: '3600000' })
+            queryDB()
+            async function queryDB(){
+                try{
+                    await connection.query(`UPDATE staff SET passwordResetToken = "${passwordResetToken}", passwordResetExpires = '${passwordResetExpires}' ,tokenUsed = 'false' , lastUpdated = NOW() WHERE email = '${email}'`)
 
-                            let respData = {
-                                'response': respQuery,
-                                'accessToken': accessToken
-                            }
-
-                            return res.json({
-                                message : 'Reset password link has been sent to your email',
-                                data : respData
-                            })
+                    await sendMail(
+                    'ayoola.toluwanimi@lmu.edu.ng',
+                    'ayoola_toluwanimi@yahoo.com',
+                    'Password reset link',
+                    `<p>Please click the link below to reset you password<p/>
+                    <a href = '/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}'>/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}<a/>`)
+                        console.log(`/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}`)
+                    let payload = { 'response': respQuery }
                             
-                        }
-                    )
+                    let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, { expiresIn: '3600000' })
+
+                    let respData = {
+                        'response': respQuery,
+                        'accessToken': accessToken
+                    }
+
+                    return res.json({
+                        message : 'Reset password link has been sent to your email',
+                        data : respData
+                    })
+
+                }catch(err){
+                    if(err){res.send(err)}
+                    // if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
                 }
+            } 
+            // connection.query(`UPDATE staff SET passwordResetToken = "${passwordResetToken}", passwordResetExpires = '${passwordResetExpires}' ,tokenUsed = 'false' , lastUpdated = NOW() WHERE email = '${email}'`, (err, resp) => {
+            //     if(resp){
+            //         sendMail(
+            //             'ayoola.toluwanimi@lmu.edu.ng',
+            //             'ayoola_toluwanimi@yahoo.com',
+            //             'Password reset link',
+            //             `<p>Please click the link below to reset you password<p/>
+            //             <a href = '/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}'>/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}<a/>`,
+            //             (errMail, info) => {
+            //                 // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
+                            
+            //                 let payload = { 'response': respQuery }
+                            
+            //                 let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, { expiresIn: '3600000' })
 
-                if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
-            })
+            //                 let respData = {
+            //                     'response': respQuery,
+            //                     'accessToken': accessToken
+            //                 }
+
+            //                 return res.json({
+            //                     message : 'Reset password link has been sent to your email',
+            //                     data : respData
+            //                 })
+                            
+            //             }
+            //         )
+            //     }
+
+            //     if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
+            // })
         }
     })
 }
@@ -574,45 +606,35 @@ exports.setNewPassword = (req, res, next) => {
         if(respQuery){
             console.log(respQuery[0])
             if( respQuery[0].tokenUsed == 'false'){
+                bcrypt.compare(req.body.password, respQuery[0].password, (hashErr, valid) => {
+                    if(valid){
+                        return res.json({
+                            message : 'Password cannot be the same',
+                        })
+                    }
 
-                connection.query(`UPDATE staff SET tokenUsed = 'true' where staffID = '${req.params.id}'`,(err, respReset) => {
-                if(err){return res.status(500).json({message: 'There has been an error, try again'})}
+                    if(!valid){
+                        bcrypt.hash(req.body.password, 10, (err, hash) => {
+                            if(err){return res.status(500).json({message: 'There has been an error, try again'})}
                 
-                if(respReset){
-                    bcrypt.compare(req.body.password, respQuery[0].password, (hashErr, valid) => {
-                        if(valid){
-                            return res.json({
-                                message : 'Password cannot be the same',
-                            })
-                        }
+                            if(hash){
+                                connection.query(`UPDATE staff SET password = '${hash}', tokenUsed = 'true' WHERE staffID = '${req.params.id}'`, (err, resp) => {
+                                    if(err){
+                                        res.statusCode = 401
+                                        res.send(err)
+                                    }
+                
+                                    if(resp){
+                                        return res.json({
+                                            message : 'Password Updated',
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
 
-                        if(!valid){
-                            bcrypt.hash(req.body.password, 10, (err, hash) => {
-                                if(err){return res.status(500).json({message: 'There has been an error, try again'})}
-                    
-                                if(hash){
-                                    connection.query(`UPDATE staff SET password = '${hash}' WHERE staffID = '${req.params.id}'`, (err, resp) => {
-                                        if(err){
-                                            res.statusCode = 401
-                                            res.send(err)
-                                        }
-                    
-                                        if(resp){
-                                            return res.json({
-                                                message : 'Password Updated',
-                                            })
-                                        }
-                                    })
-                                }
-                            })
-                        }
-
-                        if(hashErr){return res.status(500).json({message: 'There has been an error, try again'})}
-
-                    })
-                }
-
-                    if(err){return res.status(500).json({message: 'There has been an error, try again'})}
+                    if(hashErr){return res.status(500).json({message: 'There has been an error, try again'})}
 
                 })
             }
