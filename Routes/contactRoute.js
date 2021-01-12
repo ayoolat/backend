@@ -45,7 +45,7 @@ const router = express.Router();
 /**
  * @swagger
  *
- *   /api/contact-us/contact:
+ *   /api/contactUs/contact:
  *   post:
  *     tags: [CONTACT]
  *     produces:
