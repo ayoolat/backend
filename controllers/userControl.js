@@ -254,6 +254,10 @@ exports.getAllCompanyStaff = (req, res, next) => {
     const {companyID} = req.params
     permitDetails = req.respData.response.find(x => x.permitItem == 'View all company users')
 
+    if(!permitDetails){
+        if(err) {return res.status(500).json({message: 'Payload is empty'})}
+    }
+
     if(permitDetails.permit === 'allowed'){
         connection.query(`select * from company c JOIN staff s ON c.companyID = s.companyID 
         JOIN department d ON c.companyID = d.companyID WHERE c.companyID = ${companyID} `, 
@@ -278,6 +282,10 @@ exports.updateCompanyRecord = (req, res, next) => {
     const {companyAdjective, companyType, currency} = req.body
     const {id} = req.params
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    if(!permitDetails){
+        if(err) {return res.status(500).json({message: 'Payload is empty'})}
+    }
+
     if(permitDetails.permit === 'allowed'){
         connection.query(`UPDATE company SET companyType = '${companyType}', companyAdjective='${companyAdjective}', currency = '${currency}', lastUpdated = NOW() WHERE companyID = ${id}`,
         (err, resp) => {
@@ -300,6 +308,9 @@ exports.addDepartment = (req, res, next) => {
     const { departmentName } = req.body
     const { id } = req.params
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    if(!permitDetails){
+        if(err) {return res.status(500).json({message: 'Payload is empty'})}
+    }
     if(permitDetails.permit === 'allowed'){
         connection.query(`INSERT INTO department (departmentName, companyID) VALUES('${departmentName}', '${id}')`,
         (err, resp) => {
@@ -322,6 +333,9 @@ exports.getDepartment = (req, res, next) => {
     const { id } = req.params
 
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    if(!permitDetails){
+        if(err) {return res.status(500).json({message: 'Payload is empty'})}
+    }
     if(permitDetails.permit == 'allowed'){
         connection.query(`SELECT departmentName, departmentID FROM department WHERE companyID = '${id}' ORDER BY departmentID ASC`, (err, resp) => {
             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
@@ -342,6 +356,9 @@ exports.editDepartment = (req, res, next) => {
     const{departmentName} = req.body
     const {id, departmentID} = req.params
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    if(!permitDetails){
+        if(err) {return res.status(500).json({message: 'Payload is empty'})}
+    }
     if(permitDetails.permit === 'allowed'){
         connection.query(`UPDATE department SET departmentName = ${departmentName} WHERE companyID = '${id}' AND departmentID = ${departmentID} `, (err, resp) => {
             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
@@ -361,6 +378,9 @@ exports.editDepartment = (req, res, next) => {
 exports.deleteDepartment = (req, res, next) => {
     const {id, departmentID} = req.params
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    if(!permitDetails){
+        if(err) {return res.status(500).json({message: 'Payload is empty'})}
+    }
     if(permitDetails.permit === 'allowed'){
         connection.query(`DELETE from department WHERE companyID = '${id}' AND departmentID = ${departmentID} `, (err, resp) => {
             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
@@ -415,6 +435,9 @@ exports.updateUserRecord = (req, res, next) => {
 exports.viewCompanyProfile = (req, res, next) => {
     const { id } = req.params
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    if(!permitDetails){
+        if(err) {return res.status(500).json({message: 'Payload is empty'})}
+    }
     if(permitDetails.permit === 'allowed'){
         connection.query(`select * from company where companyID = ${id}`, (err, resp) => {
             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
@@ -476,6 +499,9 @@ exports.timeAndBilling = (req, res, next) => {
     const { id } = req.params
 
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
+    if(!permitDetails){
+        if(err) {return res.status(500).json({message: 'Payload is empty'})}
+    }
     if (permitDetails.permit === 'allowed') {
         connection.query(`UPDATE staff SET expectedWorkHours = '${expectedWorkHours}', 
         billRateCharge ='${billRateCharge}', departmentID = '${departmentID}', lastUpdated = NOW()
