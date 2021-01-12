@@ -103,6 +103,12 @@ const router = express.Router();
  */
 router.post('/companyName/newTask/:id', authenticateToken, fileUpload.fileUpload.single('documentsAttached'), taskController.newTask);
 
+// search Task
+router.post('/companyName/search/:id', authenticateToken, taskController.searchTask);
+
+// select Task
+router.post('/companyName/select/:id', authenticateToken, taskController.searchTask);
+
 // get all user tasks//
 /**
  * @swagger

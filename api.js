@@ -55,15 +55,6 @@ const taskSheetRoute = require('./Routes/taskSheetRoute')
 const managePermissions = require('./Routes/managePermissionRoute')
 const timeSheet = require('./Routes/timeSheetRoute')
 
-
-// app.use((error, req, res, next) => {
-//     if (req.file) {
-//         fs.unlink(req.file.path, (err) => {
-//             console.log(err)
-//         })
-//     }
-// })
-
 // instantiate controllers
 app.use('/api/users', usersRoute)
 app.use('/api/notifications', notificationsRoute)
@@ -75,7 +66,17 @@ app.use('/api/E-schedule', eScheduleRoute)
 app.use('/api/taskSheet', taskSheetRoute)
 app.use('/api/permissions', managePermissions)
 app.use('/api/timeSheet', timeSheet)
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+
+// app.use((error, req, res, next) => {
+//     if (req.file) {
+//         fs.unlink(req.file.path, (err) => {
+//             console.log(err)
+//         })
+//     }
+// })
+
 
 // app.use((req, res, next) => {
 //     throw new error('This route does not exist')

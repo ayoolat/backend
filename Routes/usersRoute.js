@@ -314,6 +314,7 @@ router.post('/login', userController.userLogin);
  */
 router.post('/signUp/companyName/addUser', authenticateToken, validator(schema.employeeSignUp), userController.employeeSignUp);
 
+
 // Employees second stage signup
 /**
  * @swagger
@@ -344,6 +345,10 @@ router.post('/signUp/companyName/addUser', authenticateToken, validator(schema.e
  */
 router.put('/companyName/confirmation/:token/:id', authenticateToken, validator(schema.changePassword), userController.confirmSignUp);
 
+// // Employees second stage signup
+router.put('/companyName/confirmation/:token/:id', validator(schema.changePassword), userController.confirmSignUp);
+
+
 // Get all users
 /**
  * @swagger
@@ -361,6 +366,9 @@ router.put('/companyName/confirmation/:token/:id', authenticateToken, validator(
  *          description: successful
  */
 router.get('/companyName/employee/:companyID', authenticateToken, userController.getAllCompanyStaff)
+
+// search staff
+router.get('/companyName/search/:search',authenticateToken, userController.searchStaff)
 
 // Update company details
 /**
@@ -440,8 +448,19 @@ router.post('/companyName/companyProfile/addDepartment/:id', authenticateToken, 
  */
 router.get('/companyName/companyProfile/department/:id', authenticateToken, userController.getDepartment)
 
+
 // // Update user details
 // router.put('/companyName/userProfile/updateProfile/:id', authenticateToken, fileUpload.uploadImage.single('image'), userController.updateUserRecord)
+
+// Edit a department
+router.post('/companyName/companyProfile/editDepartment/:id/:departmentID', authenticateToken, userController.editDepartment)
+
+// delete a department
+router.post('/companyName/companyProfile/deleteDepartment/:id/:departmentID', authenticateToken, userController.deleteDepartment)
+
+// Update user details
+router.put('/companyName/userProfile/updateProfile/:id', authenticateToken, fileUpload.uploadImage.single('image'), userController.updateUserRecord)
+
 
 // view company profile
 /**
