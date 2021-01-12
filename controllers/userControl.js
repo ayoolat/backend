@@ -14,6 +14,7 @@ console.log('users')
 // Middleware import
 const sendMail = require('../middleware/mailer')
 
+// Notifications controller
 const notificationControl = require('./notificationControl')
 
 connection.query = util.promisify(connection.query);
@@ -49,8 +50,7 @@ exports.signUp =  (req, res, next) =>{
                     })
                 
                 }catch(err){
-                    res.send(err)
-                    // return res.status(500).json({message: 'This email already exists'})
+                    return res.status(500).json({message: 'This email already exists'})
                 }
             }   
         }
@@ -67,8 +67,7 @@ exports.employeeSignUp = (req, res, next) => {
         // hash password
         bcrypt.hash(password, 10, (err, hash) => {
             // handle error
-            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-            if(err)return res.send(err)
+            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             // handle success
             if(hash){
                 confirmationToken = crypto.randomBytes(20).toString('hex')
@@ -104,7 +103,7 @@ exports.employeeSignUp = (req, res, next) => {
                             ('2', LAST_INSERT_ID(), '10'), ('2', LAST_INSERT_ID(), '11'), ('2', LAST_INSERT_ID(), '12'), 
                             ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`)
                         }
-
+                        // send confirmation mail to user
                         sendMail(
                             'akan.asanga@gmail.com',
                             'ayoola_toluwanimi@yahoo.com',
@@ -200,8 +199,7 @@ exports.userLogin = (req, res, next) => {
             WHERE staffID = '${resp[0].staffID}'`, 
             (err, resp1) => {
 
-                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-                if(err)return res.send(err)
+                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
                 
                 //if user email in database
                 if(resp1){
@@ -266,24 +264,6 @@ exports.getAllCompanyStaff = (req, res, next) => {
     } 
 }
 
-// search company staff
-exports.searchStaff = (req, res, next) => {
-    const {id} = req.params
-    const {search} = req.body
-    permitDetails = req.respData.response.find(x => x.permitItem == 'View all company users')
-    connection.query(`select firstName, lastName from staff WHERE firstName LIKE '%${search}% AND companyID = ${id}' `, (err, resp) => {
-        if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
-        if(resp){
-            return res.json({
-                status : 'success',
-                data : resp
-            })
-        }
-    })
-    
-}
-
 // Update company record
 exports.updateCompanyRecord = (req, res, next) => {
     const {companyAdjective, companyType, currency} = req.body
@@ -335,8 +315,8 @@ exports.getDepartment = (req, res, next) => {
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit == 'allowed'){
         connection.query(`SELECT departmentName, departmentID FROM department WHERE companyID = '${id}' ORDER BY departmentID ASC`, (err, resp) => {
-            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-            if(err)res.send(err)
+            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            
             if(resp){
                 return res.json({
                     status : 'success',
@@ -373,7 +353,7 @@ exports.deleteDepartment = (req, res, next) => {
     const {id, departmentID} = req.params
     permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
     if(permitDetails.permit === 'allowed'){
-        connection.query(`DELETE from department WHERE WHERE companyID = '${id}' AND departmentID = ${departmentID} `, (err, resp) => {
+        connection.query(`DELETE from department WHERE companyID = '${id}' AND departmentID = ${departmentID} `, (err, resp) => {
             if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
             if(resp){
@@ -490,7 +470,7 @@ exports.timeAndBilling = (req, res, next) => {
     if(permitDetails.permit === 'allowed'){
         connection.query(`UPDATE staff SET expectedWorkHours = '${expectedWorkHours}', 
         billRateCharge ='${billRateCharge}', departmentID = '${departmentID}', lastUpdated = NOW()
-        where staffID = ${id} and companyID = ${permitDetails.companyID}`,
+        where staffID = ${id}`,
         (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
             if(err)res.send(err)
@@ -523,20 +503,17 @@ exports.resetPassword = (req, res, next) => {
     const {email} = req.body
     connection.query(`SELECT staffID FROM staff WHERE email = '${email}' `, (errQuery, respQuery) => {
         if(errQuery){
-                res.send(errQuery)
-            // {return res.status(500).json({message: 'There has been an error, try again'})}
+            {return res.status(500).json({message: 'There has been an error, try again'})}
         }
 
         if(respQuery){
             // generate a crypto code
             passwordResetToken = crypto.randomBytes(20).toString('hex')
-            // Set expiration time to one hour after crypto code was generated
-            passwordResetExpires = Date.now() + 3600000
             // insert code, expiration time and link status to
             queryDB()
             async function queryDB(){
                 try{
-                    await connection.query(`UPDATE staff SET passwordResetToken = "${passwordResetToken}", passwordResetExpires = '${passwordResetExpires}' ,tokenUsed = 'false' , lastUpdated = NOW() WHERE email = '${email}'`)
+                    await connection.query(`UPDATE staff SET passwordResetToken = "${passwordResetToken}",tokenUsed = 'false' , lastUpdated = NOW() WHERE email = '${email}'`)
 
                     await sendMail(
                     'ayoola.toluwanimi@lmu.edu.ng',
@@ -544,7 +521,7 @@ exports.resetPassword = (req, res, next) => {
                     'Password reset link',
                     `<p>Please click the link below to reset you password<p/>
                     <a href = '/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}'>/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}<a/>`)
-                        console.log(`/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}`)
+                        console.log(`/api/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}`)
                     let payload = { 'response': respQuery }
                             
                     let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, { expiresIn: '3600000' })
@@ -560,41 +537,10 @@ exports.resetPassword = (req, res, next) => {
                     })
 
                 }catch(err){
-                    if(err){res.send(err)}
-                    // if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
+                    return res.status(500).json({message: 'There has been an error, try again'})
                 }
             } 
-            // connection.query(`UPDATE staff SET passwordResetToken = "${passwordResetToken}", passwordResetExpires = '${passwordResetExpires}' ,tokenUsed = 'false' , lastUpdated = NOW() WHERE email = '${email}'`, (err, resp) => {
-            //     if(resp){
-            //         sendMail(
-            //             'ayoola.toluwanimi@lmu.edu.ng',
-            //             'ayoola_toluwanimi@yahoo.com',
-            //             'Password reset link',
-            //             `<p>Please click the link below to reset you password<p/>
-            //             <a href = '/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}'>/api/companyName/users/companyName/userProfile/passwordReset/${passwordResetToken}/${respQuery[0].staffID}<a/>`,
-            //             (errMail, info) => {
-            //                 // if(errMail){return res.status(500).json({message: 'There has been an error, try again'})}
-                            
-            //                 let payload = { 'response': respQuery }
-                            
-            //                 let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, { expiresIn: '3600000' })
-
-            //                 let respData = {
-            //                     'response': respQuery,
-            //                     'accessToken': accessToken
-            //                 }
-
-            //                 return res.json({
-            //                     message : 'Reset password link has been sent to your email',
-            //                     data : respData
-            //                 })
-                            
-            //             }
-            //         )
-            //     }
-
-            //     if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
-            // })
+           
         }
     })
 }
@@ -604,7 +550,6 @@ exports.setNewPassword = (req, res, next) => {
         if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
 
         if(respQuery){
-            console.log(respQuery[0])
             if( respQuery[0].tokenUsed == 'false'){
                 bcrypt.compare(req.body.password, respQuery[0].password, (hashErr, valid) => {
                     if(valid){
