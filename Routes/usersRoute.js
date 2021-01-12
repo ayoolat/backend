@@ -367,9 +367,6 @@ router.put('/companyName/confirmation/:token/:id', validator(schema.changePasswo
  */
 router.get('/companyName/employee/:companyID', authenticateToken, userController.getAllCompanyStaff)
 
-// search staff
-router.get('/companyName/search/:search',authenticateToken, userController.searchStaff)
-
 // Update company details
 /**
  * @swagger
