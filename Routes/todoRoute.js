@@ -90,7 +90,7 @@ const router = express.Router();
  *       '200':
  *          description: successful
  */
-router.get('/todolist', authenticateToken, todoController.getTodolist)
+router.get('/companyName/todolist', authenticateToken, todoController.getTodolist)
 
 //Insert into TODO-LIST
 /**
@@ -118,7 +118,7 @@ router.get('/todolist', authenticateToken, todoController.getTodolist)
  *              schema:
  *                $ref: '#/components/schemas/List'
  */
-router.post('/companyName/todolist', authenticateToken, validator(schema.insertTodolist), todoController.insertTodolist)
+router.post('/companyName/todolist/:id', authenticateToken, validator(schema.insertTodolist), todoController.insertTodolist)
 
 //Insert into TODO-LIST-BREAK-DOWN
 /**
@@ -146,7 +146,7 @@ router.post('/companyName/todolist', authenticateToken, validator(schema.insertT
  *              schema:
  *                $ref: '#/components/schemas/ListBreakdown'
  */
-router.post('/companyName/todolistbreakdown', authenticateToken, validator(schema.insertBreakdown), todoController.insertBreakdown)
+router.post('/companyName/todolistbreakdown/:id', authenticateToken, validator(schema.insertBreakdown), todoController.insertBreakdown)
 
 // UPDATE TODO LIST
 /**
