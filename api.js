@@ -4,11 +4,44 @@ let express = require('express')
 let bodyParser = require('body-parser')
 // let fs = require('fs')
 let cors = require('cors')
+const swaggerUi = require('swagger-ui-express')
+const swaggerJsdoc = require('swagger-jsdoc');
+
+// Swagger jsdoc
+const options = {
+    swaggerDefinition: {
+        openapi: '3.0.1',
+        info: {
+            title: 'Pace Time Sheet API',
+            version: '1.0.0',
+            description: 'This is a web base time-sheet that create a convenient and user friendly application that efficiently tracks the amount of time an employee has worked within a certain period of time, whilst maintaining the privacy of its users and creating a steady relationship between the employee and the employers.',
+            contact: {
+                name: 'T-CIRCUIT'
+            },
+            /* servers: ['https://localhost:8000'] */
+            servers: ['https://pacetimesheet.herokuapp.com']
+        },
+        basePath: '/',
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                }
+            }
+        },
+    },
+    apis: ['./Routes/*.js']
+};
+
+const swaggerDocs = swaggerJsdoc(options);
 
 const app = express()
 app.use(bodyParser.json())
-    
+
 app.use(cors())
+
 
 // exported modules
 const usersRoute = require('./Routes/usersRoute')
@@ -33,6 +66,9 @@ app.use('/api/E-schedule', eScheduleRoute)
 app.use('/api/taskSheet', taskSheetRoute)
 app.use('/api/permissions', managePermissions)
 app.use('/api/timeSheet', timeSheet)
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+
 // app.use((error, req, res, next) => {
 //     if (req.file) {
 //         fs.unlink(req.file.path, (err) => {
@@ -40,6 +76,7 @@ app.use('/api/timeSheet', timeSheet)
 //         })
 //     }
 // })
+
 
 // app.use((req, res, next) => {
 //     throw new error('This route does not exist')
