@@ -132,6 +132,13 @@ router.post('/companyName/todolist/:id', authenticateToken, validator(schema.ins
  *     produces:
  *      - application/json
  *     description: Insert into TODO LIST BREAKDOWN
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *           required: true
+ *           description: The todo id
  *     requestBody:
  *       required: true
  *       content:
