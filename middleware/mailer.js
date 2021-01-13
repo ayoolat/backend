@@ -55,36 +55,4 @@ const sendMail = (from, to, subject, html) => {
     });
 }
 
-
-
-
 module.exports = sendMail
-
-// let transporter = nodemailer.createTransport({
-//     host: `${process.env.HOST}`,
-//     port: `${process.env.PORT_NO}`,
-//     auth: {
-//         user: `${process.env.USER}`,
-//         pass: `${process.env.PASSWORD}`
-//     }
-// });
-// const mailOptions = {
-//     from: 'akan.asanga@gmail.com',
-//     to: 'akan.asanga@yahoo.com',
-//     subject: 'From contact',
-//     html: `<h1>Contact-us</h1> \n
-//     '${req.body.contactName}', \n
-//     '${req.body.contactEmail}',\n
-//     '${req.body.message}',\n
-//     '${req.body.date}'`
-// };
-
-// transporter.sendMail(mailOptions, function(error, info) {
-//     if (error) {
-//         console.log(error);
-//     } else {
-//         console.log('Email sent: ' + info.response);
-//     }
-// });
-
-// module.exports = transporter.sendMail

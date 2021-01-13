@@ -24,10 +24,6 @@ exports.newTask = (req, res, next) => {
                         'status' : 'false'
                     }
                     notificationControl.logNotification(notified, res)
-                    return res.json({
-                        status : 'success',
-                        data : req.body
-                    })
                 }
             })
         }else{
@@ -51,10 +47,6 @@ exports.newTask = (req, res, next) => {
                         'status' : 'false'
                     }
                     notificationControl.logNotification(notified, res)
-                    return res.json({
-                        status : 'success',
-                        data : req.body
-                    })
                 }
             })
         }else{

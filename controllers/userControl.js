@@ -168,6 +168,28 @@ exports.confirmSignUp = (req, res, next) => {
                                             'accessToken': accessToken
                                         }
 
+                                        // connection.query(`SELECT staffID from staff s JOIN company c ON c.companyID = s.companyID WHERE companyID = AND roleID = 1`, async (errQuery, respQuery) => {
+                                        //     if(errQuery){}
+
+                                        //     if(respQuery){
+                                        //         const AdminStaff = respQuery
+
+                                        //        try{
+                                        //             await AdminStaff.forEach(element => {
+                                        //                 let notified = {
+                                        //                     'staffID': element,
+                                        //                     'heading': 'Employee confirmation',
+                                        //                     'body': `${respToken.email} has confirmed her/his employee's status`,
+                                        //                     'status': 'false'
+                                        //                 }
+                                        //                 notificationControl.logNotification(notified, res)
+                                        //             });
+                                                
+                                        //        }catch(err){
+                                        //             res.status(500).send(err)                                              }
+                                        //     }
+                                        // })
+
                                         return res.json({
                                             status: 'success',
                                             data: respData

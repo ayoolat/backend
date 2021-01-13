@@ -50,7 +50,7 @@ const corsOptions = {
             callback(new Error('CORS Not allowed'))
         }
     }
-  }
+}
 
 app.use(cors(corsOptions))
 
@@ -72,7 +72,7 @@ app.use('/api/users', usersRoute)
 app.use('/api/notifications', notificationsRoute)
 app.use('/api/tasks', taskRoute)
 app.use('/api/todo', todoRoute)
-app.use('/api/contactUs', contactRoute)
+app.use('/api/contact-us', contactRoute)
 app.use('/api/calendar', calendarRoute)
 app.use('/api/E-schedule', eScheduleRoute)
 app.use('/api/taskSheet', taskSheetRoute)
