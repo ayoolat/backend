@@ -29,6 +29,8 @@ exports.insertTodolist = (req, res) => {
         if (err) return res.send('invalid token or token expired')
 
         staffID = data.response[0].staffID;
+        if (staffID == undefined) { staffID = req.params.id }
+        if (staffID == undefined) { return res.status(404).send('No staff ID') }
         let mysql = `insert into todolist(staffID,listName,lastUpdated)
          values ('${staffID}','${req.body.listName}','${req.body.lastUpdated}')`
         connection.query(mysql, (err, respond) => {
