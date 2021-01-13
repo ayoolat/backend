@@ -69,7 +69,7 @@ const router = express.Router();
  *           taskDescription:
  *           staffID:
  *           startDate:
- *           endDate":
+ *           endDate:
  */
 
 
