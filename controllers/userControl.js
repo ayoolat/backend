@@ -254,15 +254,21 @@ exports.getAllCompanyStaff = (req, res, next) => {
     const {companyID} = req.params
 
     connection.query(`select * from company c JOIN staff s ON c.companyID = s.companyID 
-    JOIN department d ON c.companyID = d.companyID WHERE c.companyID = ${companyID} `, 
+    JOIN department d ON c.companyID = d.companyID WHERE c.companyID = ${companyID}`, 
     (err, resp) => {
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
         
         if (resp) {
-            return res.json({
-                status: 'success',
-                data: resp
-            })
+            connection.query(`select * Department from company ID = ${companyID}`, (err, respQuery) => {
+                if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+
+                if(respQuery){
+                    return res.json({
+                        status: 'success',
+                        data: resp
+                    })
+                }
+            }) 
         }
     })
 }

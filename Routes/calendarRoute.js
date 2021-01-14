@@ -70,7 +70,7 @@ const router = express.Router();
  *              schema:
  *                $ref: '#/components/schemas/Calender'
  */
-router.post('/companyName/new/:id', authenticateToken, authorization.authorize('Add and edit Company calendar'), calendarController.NewEvent);
+router.post('/companyName/new', authenticateToken, authorization.authorize('Add and edit Company calendar'), calendarController.NewEvent);
 
 // get events
 /**
