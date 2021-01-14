@@ -308,24 +308,17 @@ exports.addDepartment = (req, res, next) => {
 exports.getDepartment = (req, res, next) => {
     const { id } = req.params
 
-    permitDetails = req.respData.response.find(x => x.permitItem == 'Edit user billing and time')
-    if(!permitDetails){
-        if(err) {return res.status(500).json({message: 'Payload is empty'})}
-    }
-    if(permitDetails.permit == 'allowed'){
-        connection.query(`SELECT departmentName, departmentID FROM department WHERE companyID = '${id}' ORDER BY departmentID ASC`, (err, resp) => {
-            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-            
-            if(resp){
-                return res.json({
-                    status : 'success',
-                    data : resp
-                })
-            } 
-        })
-    }else{
-        return res.status(500).json({message: 'You do not have permission to edit company details'})
-    } 
+    connection.query(`SELECT departmentName, departmentID FROM department WHERE companyID = '${id}' ORDER BY departmentID ASC`, (err, resp) => {
+        if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+        
+        if(resp){
+            return res.json({
+                status : 'success',
+                data : resp
+            })
+        } 
+    })
+    
 }
 
 exports.editDepartment = (req, res, next) => {
@@ -585,7 +578,7 @@ exports.setNewPassword = (req, res, next) => {
 exports.deleteUser = (req, res, next) => {
     connection.query(`DELETE from staff WHERE staffID = ${req.params.id}`, (err, resp) => {
         if (err) {
-            if(err){return res.status(500).json({message: 'There has been an error, try again'})}
+            return res.status(500).json({message: 'There has been an error, try again'})
         }
 
         if (resp) {

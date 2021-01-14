@@ -21,9 +21,9 @@ router.put('/companyName/stop-time/:id', authenticateToken,timeSheetSheetControl
 router.get('/companyName/:id', authenticateToken,timeSheetSheetController.getUserTimeSheet);
 
 // user company  time-sheet
-router.get('/companyName/company/:id', authenticateToken,timeSheetSheetController.getAllStaffTimeSheet);
+router.get('/companyName/company/:id', authenticateToken, authorization.authorize('View company timesheet and billing report'), timeSheetSheetController.getAllStaffTimeSheet);
 
 // user time-sheet
-router.get('companyName/:id', authenticateToken,timeSheetSheetController.getAllDepartmentTimeSheet);
+router.get('companyName/:id', authenticateToken, authorization.authorize('View company timesheet and billing report'), timeSheetSheetController.getAllDepartmentTimeSheet);
 
 module.exports = router
