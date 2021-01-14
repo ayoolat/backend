@@ -32,14 +32,14 @@ exports.NewEvent = (req, res, next) => {
 
 exports.getEvents = (req, res, next) => {
     const {id} = req.params
-    connection.query(`select * from calendar WHERE companyID = ${id}`, (err, resp) => {
+    connection.query(`select c.eventName, c.eventDateAndTime, c.dateCreated, c.eventID, c.staffID from calendar c JOIN staff s ON s.staffID = C.staffID WHERE companyID = ${id}`, (err, resp) => {
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
         if(resp){
             let newFormat = {
-                title : resp.eventName,
-                start : resp.dateCreated,
-                end : resp.eventDateAndTime
+                'title' : resp.eventName,
+                'start' : resp.dateCreated,
+                'end' : resp.eventDateAndTime
             }
             return res.json({
                 status : 'success',
