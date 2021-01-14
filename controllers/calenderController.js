@@ -40,11 +40,16 @@ exports.getEvents = (req, res, next) => {
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
         if(resp){
-            let newFormat = {
-                'title' : resp[0].eventName,
-                'start' : resp[0].dateCreated,
-                'end' : resp[0].eventDateAndTime
-            }
+            let newFormat
+            resp.forEach(element => {
+                let newForm = {
+                    'title' : element.eventName,
+                    'start' : element.dateCreated,
+                    'end' : element.eventDateAndTime
+                }
+                newFormat.push(newForm)
+            })
+            
             return res.json({
                 status : 'success',
                 data : newFormat
