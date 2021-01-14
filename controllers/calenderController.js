@@ -14,16 +14,20 @@ exports.NewEvent = (req, res, next) => {
                 allStaff.forEach(element => {
                     let notified = {
                         'staffID' : element.staffID,
-                        'heading' : `${permitDetails.firstName} added and event on ${eventDateAndTime}`,
+                        'heading' : `${req.respData.response[0].firstName}, ${req.respData.response[0].lastName} added and event on ${eventDateAndTime}`,
                         'body' :  eventName,
                         'status' : 'false'
                     }
                     notificationControl.logNotification(notified, res)
                 });
-                
+                let newFormat = {
+                    'title' : resp[0].eventName,
+                    'start' : resp[0].dateCreated,
+                    'end' : resp[0].eventDateAndTime
+                }
                 return res.json({
                     status : 'success',
-                    data : req.body
+                    data : newFormat
                 })
             }) 
         }
@@ -41,8 +45,6 @@ exports.getEvents = (req, res, next) => {
                 'start' : resp[0].dateCreated,
                 'end' : resp[0].eventDateAndTime
             }
-            console.log(resp)
-            console.log(newFormat)
             return res.json({
                 status : 'success',
                 data : newFormat
@@ -61,7 +63,7 @@ exports.editEvent = (req, res, next) => {
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
         if(resp){
-            connection.query(`SELECT staffID from staff WHERE companyID = ${permitDetails.companyID}`, (err, response) => {
+            connection.query(`SELECT staffID from staff WHERE companyID = ${req.respData.response[0].companyID}`, (err, response) => {
                 const allStaff = response
                 allStaff.forEach(element => {
                     const notified = {
@@ -72,10 +74,14 @@ exports.editEvent = (req, res, next) => {
                     }
                     notificationControl.logNotification(notified, res)
                 });
-                
+                let newFormat = {
+                    'title' : resp[0].eventName,
+                    'start' : resp[0].dateCreated,
+                    'end' : resp[0].eventDateAndTime
+                }
                 return res.json({
                     status : 'success',
-                    data : req.body
+                    data : newFormat
                 })
             })
         }
