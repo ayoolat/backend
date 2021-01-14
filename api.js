@@ -2,7 +2,7 @@
 let port = process.env.PORT || 8000
 let express = require('express')
 let bodyParser = require('body-parser')
-let fs = require('fs')
+// let fs = require('fs')
 let cors = require('cors')
 const swaggerUi = require('swagger-ui-express')
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -40,7 +40,19 @@ const swaggerDocs = swaggerJsdoc(options);
 const app = express()
 app.use(bodyParser.json())
 
-app.use(cors())
+let whiteList = ['https://pacetimesheet.herokuapp.com', 'http://localhost:3000']
+
+const corsOptions = {
+    origin: function(origin, callback){
+        if(whiteList.indexOf(origin !== -1 || !origin)){
+            callback(null, true)
+        }else{
+            callback(new Error('CORS Not allowed'))
+        }
+    }
+}
+
+app.use(cors(corsOptions))
 
 
 // exported modules
@@ -60,7 +72,7 @@ app.use('/api/users', usersRoute)
 app.use('/api/notifications', notificationsRoute)
 app.use('/api/tasks', taskRoute)
 app.use('/api/todo', todoRoute)
-app.use('/api/contactUs', contactRoute)
+app.use('/api/contact-us', contactRoute)
 app.use('/api/calendar', calendarRoute)
 app.use('/api/E-schedule', eScheduleRoute)
 app.use('/api/taskSheet', taskSheetRoute)

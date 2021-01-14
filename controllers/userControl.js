@@ -14,6 +14,7 @@ console.log('users')
 // Middleware import
 const sendMail = require('../middleware/mailer')
 
+// Notifications controller
 const notificationControl = require('./notificationControl')
 
 connection.query = util.promisify(connection.query);
@@ -50,13 +51,8 @@ exports.signUp = (req, res, next) => {
 
 
                 } catch (err) {
-                    return res.status(500).json({ message: 'This email already exists' })
-
-
-                } catch (err) {
                     res.send(err)
-                        // return res.status(500).json({message: 'This email already exists'})
-
+                        // return res.status(500).json({ message: 'This email already exists' })
                 }
             }
         }
@@ -73,18 +69,13 @@ exports.employeeSignUp = (req, res, next) => {
         // hash password
         bcrypt.hash(password, 10, (err, hash) => {
             // handle error
-            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-            if (err) return res.send(err)
-                // handle success
+            if (err) { return res.status(500).json({ message: 'There has been an error, please try again' }) }
+            // handle success
             if (hash) {
                 confirmationToken = crypto.randomBytes(20).toString('hex')
                 queryDB()
                 async function queryDB() {
-
                     try {
-                        await connection.query(`INSERT INTO staff (password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, tokenUsed)
-
-                    try{
                         response = await connection.query(`
                             INSERT INTO staff(password, userName, companyID, email, roleID, expectedWorkHours, billRateCharge, staffRole, departmentID, confirmed)
 
@@ -97,10 +88,9 @@ exports.employeeSignUp = (req, res, next) => {
                             `)
 
 
-                        if (roleID === 2) {
+                        await connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', confirmed = 'false' WHERE email = '${email}'`)
 
-                        
-                        if (roleID === 2){
+                        if (roleID === '2') {
 
                             // If user role is co-Admin (i.e roleID = 2)
                             await connection.query(`
@@ -131,7 +121,7 @@ exports.employeeSignUp = (req, res, next) => {
                             ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')
                             `)
                         }
-
+                        // send confirmation mail to user
                         sendMail(
                             'akan.asanga@gmail.com',
                             'ayoola_toluwanimi@yahoo.com',
@@ -146,6 +136,7 @@ exports.employeeSignUp = (req, res, next) => {
                             status: 'Success! A confirmation link has been sent to the user',
                             data: req.body
                         })
+
                     } catch (err) {
                         res.status(500).json({
                             status: 'This user already exists in our database. Try another email?',
@@ -363,7 +354,7 @@ exports.confirmSignUp = (req, res, next) => {
 
                                                                                                 if (permitDetails.permit === 'allowed') {
                                                                                                     connection.query(`select * from company c JOIN staff s ON c.companyID = s.companyID 
-        JOIN department d ON c.companyID = d.companyID WHERE c.companyID = ${companyID} `,
+                                                                                                        JOIN department d ON c.companyID = d.companyID WHERE c.companyID = ${companyID} `,
                                                                                                         (err, resp) => {
                                                                                                             if (err) { return res.status(500).json({ message: 'There has been an error, please try again' }) }
 
@@ -378,7 +369,7 @@ exports.confirmSignUp = (req, res, next) => {
                                                                                                 } else {
                                                                                                     return res.status(403).json({ message: 'You do not have permission to view all staff' })
                                                                                                 }
-                                                                                            }
+                                                                                            },
 
                                                                                             // search company staff
                                                                                             exports.searchStaff = (req, res, next) => {
@@ -399,7 +390,7 @@ exports.confirmSignUp = (req, res, next) => {
                                                                                                 } else {
                                                                                                     return res.status(403).json({ message: 'You do not have permission staff' })
                                                                                                 }
-                                                                                            }
+                                                                                            },
 
                                                                                             // Update company record
                                                                                             exports.updateCompanyRecord = (req, res, next) => {
@@ -423,7 +414,7 @@ exports.confirmSignUp = (req, res, next) => {
                                                                                                         return res.status(500).json({ message: 'You do not have permission to edit company details' })
                                                                                                     }
                                                                                                 }
-                                                                                            }
+                                                                                            },
 
                                                                                             // Add department
                                                                                             exports.addDepartment = (req, res, next) => {
@@ -449,7 +440,7 @@ exports.confirmSignUp = (req, res, next) => {
                                                                                                 } else {
                                                                                                     return res.status(500).json({ message: 'You do not have permission to edit company details' })
                                                                                                 }
-                                                                                            }
+                                                                                            },
 
                                                                                             // get department
                                                                                             exports.getDepartment = (req, res, next) => {
@@ -474,7 +465,7 @@ exports.confirmSignUp = (req, res, next) => {
                                                                                                 } else {
                                                                                                     return res.status(500).json({ message: 'You do not have permission to edit company details' })
                                                                                                 }
-                                                                                            }
+                                                                                            },
 
                                                                                             exports.editDepartment = (req, res, next) => {
                                                                                                 const { departmentName } = req.body
@@ -499,7 +490,7 @@ exports.confirmSignUp = (req, res, next) => {
                                                                                                 } else {
                                                                                                     return res.status(500).json({ message: 'You do not have permission to edit company details' })
                                                                                                 }
-                                                                                            }
+                                                                                            },
 
                                                                                             exports.deleteDepartment = (req, res, next) => {
                                                                                                 const { id, departmentID } = req.params
@@ -522,7 +513,7 @@ exports.confirmSignUp = (req, res, next) => {
                                                                                                 } else {
                                                                                                     return res.status(500).json({ message: 'You do not have permission to edit company details' })
                                                                                                 }
-                                                                                            }
+                                                                                            },
 
 
                                                                                             // Update user record
@@ -557,7 +548,7 @@ exports.confirmSignUp = (req, res, next) => {
                                                                                                             }
                                                                                                         })
                                                                                                 }
-                                                                                            }
+                                                                                            },
 
                                                                                             // read company
                                                                                             exports.viewCompanyProfile = (req, res, next) => {
@@ -581,7 +572,7 @@ exports.confirmSignUp = (req, res, next) => {
                                                                                                 } else {
                                                                                                     return res.status(500).json({ message: 'You do not have permission to edit company details' })
                                                                                                 }
-                                                                                            }
+                                                                                            },
 
                                                                                             // read User
                                                                                             exports.viewProfile = (req, res, next) => {
@@ -600,7 +591,7 @@ exports.confirmSignUp = (req, res, next) => {
                                                                                                 } else {
                                                                                                     return res.status(500).json({ message: 'Permission not granted' })
                                                                                                 }
-                                                                                            }
+                                                                                            },
 
                                                                                             // change user password
                                                                                             exports.changePassword = (req, res, next) => {
@@ -625,7 +616,7 @@ exports.confirmSignUp = (req, res, next) => {
                                                                                                         }
                                                                                                     })
                                                                                                 }
-                                                                                            }
+                                                                                            },
 
                                                                                             // edit employee time and billing
                                                                                             exports.timeAndBilling = (req, res, next) => {
@@ -662,7 +653,7 @@ exports.confirmSignUp = (req, res, next) => {
                                                                                                 } else {
                                                                                                     res.send('You do not have permission to edit details')
                                                                                                 }
-                                                                                            }
+                                                                                            },
 
                                                                                             // password reset
                                                                                             exports.resetPassword = (req, res, next) => {
