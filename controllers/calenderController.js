@@ -6,8 +6,8 @@ exports.NewEvent = (req, res, next) => {
     const {eventName, eventDateAndTime} =  req.body
 
     connection.query(`INSERT INTO calendar (eventName, eventDateAndTime, staffID) VALUE('${eventName}', '${eventDateAndTime}', '${req.respData.response[0].staffID}')`, (err, resp) => {
-        // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-        if(err)res.send(err)
+        if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+        
         if(resp){
             connection.query(`SELECT staffID from staff WHERE companyID = ${req.respData.response[0].staffID}`, (err, response) => {
                 let allStaff = response
