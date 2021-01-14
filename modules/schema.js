@@ -24,15 +24,6 @@ const schemas = {
     addE_schedule: Joi.object().keys({
         eventName: Joi.string().required(),
         eventDateAndTime: Joi.required(),
-    }),
-
-    insertTodolist: Joi.object().keys({
-        listName: Joi.string().required()
-    }),
-    insertBreakdown: Joi.object().keys({
-        toDoID: Joi.string().required(),
-        description: Joi.string().required(),
-        commentArea: Joi.string().required()
     })
 };
 
