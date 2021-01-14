@@ -48,8 +48,6 @@ exports.signUp = (req, res, next) => {
                         status: 'success',
                         data: req.body
                     })
-
-
                 } catch (err) {
                     res.send(err)
                     // return res.status(500).json({ message: 'This email already exists' })
@@ -82,7 +80,6 @@ exports.employeeSignUp = (req, res, next) => {
                         await connection.query(`UPDATE staff SET confirmationToken = '${confirmationToken}', confirmed = 'false' WHERE email = '${email}'`)
 
                         if (roleID === '2'){
-
                             // If user role is co-Admin (i.e roleID = 2)
                             await connection.query(`INSERT INTO permissions (permitID, staffID, permitItemID) VALUES ('2', LAST_INSERT_ID(), '1'), 
                             ('1', LAST_INSERT_ID(), '2'), ('1', LAST_INSERT_ID(), '5'), ('1', LAST_INSERT_ID(), '6'), 
@@ -115,7 +112,6 @@ exports.employeeSignUp = (req, res, next) => {
                             <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${response.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${response.insertID}<a/> to reset your password`,
                            
                         )
-                    
                         return res.json({
                             status: 'Success! A confirmation link has been sent to the user',
                             data: req.body
@@ -127,11 +123,9 @@ exports.employeeSignUp = (req, res, next) => {
                             data: email
                         })
                     }
-                   
                 }
             }
         })
-
     }
 }
 

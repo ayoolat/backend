@@ -8,8 +8,8 @@ exports.NewEvent = (req, res, next) => {
     const permitDetails = req.respData.response.find(x => x.permitItem == 'Add and edit Company calendar')
     if(permitDetails.permit === 'allowed'){
         connection.query(`INSERT INTO calendar (eventName, eventDateAndTime, staffID) VALUE('${eventName}', '${eventDateAndTime}', '${permitDetails.staffID}')`, (err, resp) => {
-            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
+            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            if(err)res.send(err)
             if(resp){
                 connection.query(`SELECT staffID from staff WHERE companyID = ${permitDetails.companyID}`, (err, response) => {
                     let allStaff = response
