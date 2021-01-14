@@ -11,7 +11,7 @@ exports.NewEvent = (req, res, next) => {
         if(resp){
             let newFormat = {
                 'title' : eventName,
-                'start' : date.now(),
+                'start' : Date.now(),
                 'end' : eventDateAndTime
             }
             connection.query(`SELECT staffID from staff WHERE companyID = ${req.respData.response[0].staffID}`, (err, response) => {
