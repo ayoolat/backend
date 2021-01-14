@@ -258,7 +258,7 @@ exports.getAllCompanyStaff = (req, res, next) => {
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
         
         if (resp) {
-            connection.query(`select * Department from company ID = ${companyID}`, (err, respQuery) => {
+            connection.query(`select * FROM department WHERE company ID = ${companyID}`, (err, respQuery) => {
                 if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
                 if(respQuery){
