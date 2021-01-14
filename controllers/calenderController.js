@@ -9,6 +9,11 @@ exports.NewEvent = (req, res, next) => {
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
         
         if(resp){
+            let newFormat = {
+                'title' : resp[0].eventName,
+                'start' : resp[0].dateCreated,
+                'end' : resp[0].eventDateAndTime
+            }
             connection.query(`SELECT staffID from staff WHERE companyID = ${req.respData.response[0].staffID}`, (err, response) => {
                 let allStaff = response
                 allStaff.forEach(element => {
@@ -20,11 +25,7 @@ exports.NewEvent = (req, res, next) => {
                     }
                     notificationControl.logNotification(notified, res)
                 });
-                let newFormat = {
-                    'title' : resp[0].eventName,
-                    'start' : resp[0].dateCreated,
-                    'end' : resp[0].eventDateAndTime
-                }
+               
                 return res.json({
                     status : 'success',
                     data : newFormat
