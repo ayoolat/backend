@@ -253,7 +253,7 @@ exports.userLogin = (req, res, next) => {
 exports.getAllCompanyStaff = (req, res, next) => {
     const {companyID} = req.params
 
-    connection.query(`select * FROM staff WHERE companyID = ${companyID}`, 
+    connection.query(`select firstName, lastName, email, password, expectedWorkHours, billRateCharge, departmentID, companyID, staffID, confirmed, roleID FROM staff WHERE companyID = ${companyID}`, 
     (err, resp) => {
         // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
         if(err)res.send(err)
