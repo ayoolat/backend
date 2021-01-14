@@ -266,7 +266,8 @@ exports.getAllCompanyStaff = (req, res, next) => {
                 if(respQuery){
                     return res.json({
                         status: 'success',
-                        data: resp
+                        data: resp,
+                        data1 : respQuery
                     })
                 }
             }) 
