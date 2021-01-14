@@ -3,7 +3,7 @@ const mysql = require('mysql')
 require('dotenv').config()
 
 // create mysql connection
-const connection = mysql.createPool({
+var connection = mysql.createPool({
     // host: 'localhost',
     // user: 'toluwanimi',
     // password: 'password',
@@ -18,12 +18,10 @@ const connection = mysql.createPool({
 })
 
 
-
-// connection.connect((err, res) => {
-//     if (err) throw err
-
-//     console.log("db server running")
-// })
+connection.connect((err, res) => {
+    if (err) throw err
+    console.log('DB connected')
+})
 
 // const connection = mysql.createConnection({
 //     host: "localhost",

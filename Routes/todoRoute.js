@@ -21,11 +21,15 @@ const router = express.Router();
  *      List:
  *        type: object
  *        required:
+ *          - staffID
  *          - listName
  *        properties:
  *          id:
  *            type: integer
  *            description: The auto-generated id of the todolist.
+ *          staffID:
+ *            type: string
+ *            description: The id
  *          listName:
  *            type: string
  *            description: The title of your todolist.
@@ -34,6 +38,7 @@ const router = express.Router();
  *            format: date
  *            description: The date of the record creation.
  *        example:
+ *           staffID: 1861
  *           listName: The Pragmatic Programmer
  */
 
@@ -104,13 +109,6 @@ router.get('/companyName/todolist', authenticateToken, todoController.getTodolis
  *     produces:
  *      - application/json
  *     description: Insert a TODO LIST
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *           required: true
- *           description: The todo id
  *     requestBody:
  *       required: true
  *       content:
@@ -125,7 +123,7 @@ router.get('/companyName/todolist', authenticateToken, todoController.getTodolis
  *              schema:
  *                $ref: '#/components/schemas/List'
  */
-router.post('/companyName/todolist/:id', authenticateToken, validator(schema.insertTodolist), todoController.insertTodolist)
+router.post('/companyName/todolist', authenticateToken, validator(schema.insertTodolist), todoController.insertTodolist)
 
 //Insert into TODO-LIST-BREAK-DOWN
 /**
@@ -139,13 +137,6 @@ router.post('/companyName/todolist/:id', authenticateToken, validator(schema.ins
  *     produces:
  *      - application/json
  *     description: Insert into TODO LIST BREAKDOWN
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *           required: true
- *           description: The todo id
  *     requestBody:
  *       required: true
  *       content:
@@ -160,7 +151,7 @@ router.post('/companyName/todolist/:id', authenticateToken, validator(schema.ins
  *              schema:
  *                $ref: '#/components/schemas/ListBreakdown'
  */
-router.post('/companyName/todolistbreakdown/:id', authenticateToken, validator(schema.insertBreakdown), todoController.insertBreakdown)
+router.post('/companyName/todolistbreakdown', authenticateToken, validator(schema.insertBreakdown), todoController.insertBreakdown)
 
 // UPDATE TODO LIST
 /**
