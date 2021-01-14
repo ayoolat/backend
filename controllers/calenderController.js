@@ -40,7 +40,7 @@ exports.getEvents = (req, res, next) => {
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
         if(resp){
-            let newFormat
+            newFormat = []
             resp.forEach(element => {
                 let newForm = {
                     'title' : element.eventName,
@@ -68,6 +68,9 @@ exports.editEvent = (req, res, next) => {
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
 
         if(resp){
+            let newFormat = [{'title' : eventName,
+                            'start' : Date.now(),
+                            'end' : eventDateAndTime}]
             connection.query(`SELECT staffID from staff WHERE companyID = ${req.respData.response[0].companyID}`, (err, response) => {
                 const allStaff = response
                 allStaff.forEach(element => {
@@ -79,11 +82,7 @@ exports.editEvent = (req, res, next) => {
                     }
                     notificationControl.logNotification(notified, res)
                 });
-                let newFormat = {
-                    'title' : resp[0].eventName,
-                    'start' : resp[0].dateCreated,
-                    'end' : resp[0].eventDateAndTime
-                }
+            
                 return res.json({
                     status : 'success',
                     data : newFormat
