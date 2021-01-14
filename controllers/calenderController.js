@@ -37,10 +37,12 @@ exports.getEvents = (req, res, next) => {
 
         if(resp){
             let newFormat = {
-                'title' : resp.eventName,
-                'start' : resp.dateCreated,
-                'end' : resp.eventDateAndTime
+                'title' : resp[0].eventName,
+                'start' : resp[0].dateCreated,
+                'end' : resp[0].eventDateAndTime
             }
+            console.log(resp)
+            console.log(newFormat)
             return res.json({
                 status : 'success',
                 data : newFormat
