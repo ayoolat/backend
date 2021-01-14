@@ -9,11 +9,10 @@ exports.NewEvent = (req, res, next) => {
         if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
         
         if(resp){
-            let newFormat = {
-                'title' : eventName,
-                'start' : Date.now(),
-                'end' : eventDateAndTime
-            }
+            let newFormat = [{'title' : eventName,
+                            'start' : Date.now(),
+                            'end' : eventDateAndTime}]
+            
             connection.query(`SELECT staffID from staff WHERE companyID = ${req.respData.response[0].staffID}`, (err, response) => {
                 let allStaff = response
                 allStaff.forEach(element => {
