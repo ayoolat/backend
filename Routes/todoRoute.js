@@ -78,7 +78,7 @@ const router = express.Router();
 /**
  * @swagger
  *
- *   /api/todo/todolist:
+ *   /api/todo/companyName/todolist:
  *   get:
  *     security:
  *      - bearerAuth: []
@@ -96,7 +96,7 @@ router.get('/companyName/todolist', authenticateToken, todoController.getTodolis
 /**
  * @swagger
  *
- *   /api/todo/companyName/todolist:
+ *   /api/todo/companyName/todolist/:id:
  *   post:
  *     security:
  *      - bearerAuth: []
@@ -104,6 +104,13 @@ router.get('/companyName/todolist', authenticateToken, todoController.getTodolis
  *     produces:
  *      - application/json
  *     description: Insert a TODO LIST
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *           required: true
+ *           description: The todo id
  *     requestBody:
  *       required: true
  *       content:
@@ -124,7 +131,7 @@ router.post('/companyName/todolist/:id', authenticateToken, validator(schema.ins
 /**
  * @swagger
  *
- *   /api/todo/companyName/todolistbreakdown:
+ *   /api/todo/companyName/todolistbreakdown/:id:
  *   post:
  *     security:
  *      - bearerAuth: []
@@ -173,7 +180,7 @@ router.post('/companyName/todolistbreakdown/:id', authenticateToken, validator(s
  *         schema:
  *           type: integer
  *           required: true
- *           description: The book id
+ *           description: The todo id
  *     requestBody:
  *       required: true
  *       content:
