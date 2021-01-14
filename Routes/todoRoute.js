@@ -101,7 +101,7 @@ router.get('/companyName/todolist', authenticateToken, todoController.getTodolis
 /**
  * @swagger
  *
- *   /api/todo/companyName/todolist/:id:
+ *   /api/todo/companyName/todolist:
  *   post:
  *     security:
  *      - bearerAuth: []
@@ -129,7 +129,7 @@ router.post('/companyName/todolist', authenticateToken, validator(schema.insertT
 /**
  * @swagger
  *
- *   /api/todo/companyName/todolistbreakdown/:id:
+ *   /api/todo/companyName/todolistbreakdown:
  *   post:
  *     security:
  *      - bearerAuth: []
