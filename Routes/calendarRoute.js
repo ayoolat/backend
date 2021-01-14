@@ -69,7 +69,7 @@ const router = express.Router();
  *              schema:
  *                $ref: '#/components/schemas/Calender'
  */
-router.post('/companyName/new', authenticateToken, calendarController.NewEvent);
+router.post('/companyName/new/:id', authenticateToken, calendarController.NewEvent);
 
 // get events
 /**

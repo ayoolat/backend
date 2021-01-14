@@ -3,11 +3,12 @@ const notificationControl = require('./notificationControl')
 
 // add to Calendar (internal and admin only)
 exports.NewEvent = (req, res, next) => {
+    const {id} = req.params
     const {eventName, eventDateAndTime} =  req.body
 
     const permitDetails = req.respData.response.find(x => x.permitItem == 'Add and edit Company calendar')
     if(permitDetails.permit === 'allowed'){
-        connection.query(`INSERT INTO calendar (eventName, eventDateAndTime, staffID) VALUE('${eventName}', '${eventDateAndTime}', '${permitDetails.staffID}')`, (err, resp) => {
+        connection.query(`INSERT INTO calendar (eventName, eventDateAndTime, staffID) VALUE('${eventName}', '${eventDateAndTime}', '${ID}')`, (err, resp) => {
             // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
             if(err)res.send(err)
             if(resp){
