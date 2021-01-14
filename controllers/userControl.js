@@ -241,20 +241,20 @@ exports.userLogin = (req, res, next) => {
                                 if(hashErr) {return res.status(500).json({message: 'There has been an error, please try again'})}
                 
                                 // if password matches
-                                let  payload = {'response': resp1}
+                                let  payload = {'response': resp}
                 
                                 //get token
                                 let accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, {expiresIn : '3600000'})
                 
                                 let respData = {
-                                    'response' : resp1,
+                                    'response' : resp,
                                     'accessToken' : accessToken
                                 }
                                 return res.json({
                                     status : 'success',
                                     data : respData,
                                     data1 : respQuery,
-                                    data2 : resp
+                                    // data2 : resp1
                                 })
                             })    
                         }
@@ -268,19 +268,13 @@ exports.userLogin = (req, res, next) => {
 // get all staff
 exports.getAllCompanyStaff = (req, res, next) => {
     const {companyID} = req.params
-    permitDetails = req.respData.response.find(x => x.permitItem == 'View all company users')
 
-    if(!permitDetails){
-        if(err) {return res.status(500).json({message: 'Payload is empty'})}
-    }
-
-    if(permitDetails.permit === 'allowed'){
         connection.query(`select * from company c JOIN staff s ON c.companyID = s.companyID 
         JOIN department d ON c.companyID = d.companyID WHERE c.companyID = ${companyID} `, 
         (err, resp) => {
-            if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-
-
+            if(err)res.send(err)
+            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+            console.log(resp)
             if (resp) {
                 return res.json({
                     status: 'success',
@@ -288,9 +282,6 @@ exports.getAllCompanyStaff = (req, res, next) => {
                 })
             }
         })
-    } else {
-        return res.status(403).json({ message: 'You do not have permission to view all staff' })
-    }
 }
 
 // Update company record

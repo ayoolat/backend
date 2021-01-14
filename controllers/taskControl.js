@@ -195,21 +195,39 @@ exports.editTask = (req, res, next) => {
 
     permitDetails = req.respData.response.find(x => x.permitItem == 'Add and Edit tasks')
     if(permitDetails.permit === 'allowed'){
-        connection.query(`UPDATE task SET taskName = '${taskName}', assignedID = '${assignedID}', taskDescription = '${taskDescription}', 
-        startDate = '${startDate}', endDate = '${endDate}', documentsAttached = "${documentsAttached}" lastUpdated = NOW() WHERE taskId = ${taskID} AND staffID = ${id}`, 
-        (err, resp) => {
-            // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
-            if(err){res.send(err)}
-            if(resp){
-                let notified = {
-                    'staffID' : assignedID,
-                    'heading' : 'Your task has been edited',
-                    'body' : taskName,
-                    'status' : 'false'
+        if(!req.file){
+            connection.query(`UPDATE task SET taskName = '${taskName}', assignedID = '${assignedID}', taskDescription = '${taskDescription}', 
+            startDate = '${startDate}', endDate = '${endDate}', lastUpdated = NOW() WHERE taskId = ${taskID} AND staffID = ${id}`, 
+            (err, resp) => {
+                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                if(err){res.send(err)}
+                if(resp){
+                    let notified = {
+                        'staffID' : assignedID,
+                        'heading' : 'Your task has been edited',
+                        'body' : taskName,
+                        'status' : 'false'
+                    }
+                    notificationControl.logNotification(notified, res)
                 }
-                notificationControl.logNotification(notified, res)
-            }
-        })
+            })
+        }else{
+            connection.query(`UPDATE task SET taskName = '${taskName}', assignedID = '${assignedID}', taskDescription = '${taskDescription}', 
+            startDate = '${startDate}', endDate = '${endDate}', documentsAttached = "${documentsAttached}" lastUpdated = NOW() WHERE taskId = ${taskID} AND staffID = ${id}`, 
+            (err, resp) => {
+                // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}
+                if(err){res.send(err)}
+                if(resp){
+                    let notified = {
+                        'staffID' : assignedID,
+                        'heading' : 'Your task has been edited',
+                        'body' : taskName,
+                        'status' : 'false'
+                    }
+                    notificationControl.logNotification(notified, res)
+                }
+            })
+        }  
     }else{res.send('You do not have permission to edit this task')}
 }
 
@@ -217,8 +235,6 @@ exports.editTask = (req, res, next) => {
 exports.editTaskStatus = (req, res, next) => {
     const {id} = req.params
     const {taskStatus, taskID} = req.body
-    const {response} = req.respData
-    let status
 
     connection.query(`UPDATE task SET taskStatus = ${taskStatus}, lastUpdated = NOW() WHERE assignedID = ${id} and taskId = ${taskID}`, (err, resp) => {
         // if(err) {return res.status(500).json({message: 'There has been an error, please try again'})}

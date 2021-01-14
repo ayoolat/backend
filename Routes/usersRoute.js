@@ -6,6 +6,7 @@ console.log('users')
 const authenticateToken = require('../middleware/authentication')
 const fileUpload = require('../middleware/fileUpload')
 const schema = require('../modules/schema')
+const authorization = require('../middleware/authorization')
 const validator = require('../middleware/validator')
 
 // Export controller
@@ -312,7 +313,7 @@ router.post('/login', userController.userLogin);
  *              schema:
  *                $ref: '#/components/schemas/UsersEmployee'
  */
-router.post('/signUp/companyName/addUser', authenticateToken, validator(schema.employeeSignUp), userController.employeeSignUp);
+router.post('/signUp/companyName/addUser', authenticateToken, authorization.authorize('Add user'), validator(schema.employeeSignUp), userController.employeeSignUp);
 
 
 // Employees second stage signup
@@ -365,7 +366,7 @@ router.put('/companyName/confirmation/:token/:id', validator(schema.changePasswo
  *       '200':
  *          description: successful
  */
-router.get('/companyName/employee/:companyID', authenticateToken, userController.getAllCompanyStaff)
+router.get('/companyName/employee/:companyID', authenticateToken, authorization.authorize('View all company users'), userController.getAllCompanyStaff)
 
 // Update company details
 /**
