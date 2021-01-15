@@ -10,6 +10,7 @@ exports.initiatePayment=(req, res)=>{
     console.log(req.body)
 
     connection.query(`SELECT subID, price from sub_plan where subID = ${planID}`, (err, resp)=>{
+        console.log(resp)
         if(err) throw err;
 
         if(resp){
