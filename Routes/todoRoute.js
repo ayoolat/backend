@@ -98,34 +98,6 @@ router.get('/companyName/todolist', authenticateToken, todoController.getTodolis
  */
 router.post('/companyName/todolist', authenticateToken, todoController.insertTodolist)
 
-//Insert into TODO-LIST-BREAK-DOWN
-/**
- * @swagger
- *
- *   /api/todo/companyName/todolistbreakdown:
- *   post:
- *     security:
- *      - bearerAuth: []
- *     tags: [TODO]
- *     produces:
- *      - application/json
- *     description: Insert into TODO LIST BREAKDOWN
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ListBreakdown'
- *     responses:
- *       '200':
- *          description: Todolist added successfully
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ListBreakdown'
- */
-/* router.post('/companyName/todolistbreakdown', authenticateToken, todoController.insertBreakdown) */
-
 // UPDATE TODO LIST
 /**
  * @swagger
@@ -162,43 +134,6 @@ router.post('/companyName/todolist', authenticateToken, todoController.insertTod
  *                $ref: '#/components/schemas/List'
  */
 router.put('/companyName/todolist/:id', authenticateToken, todoController.updateTodolist)
-
-// UPDATE TODO LIST BREAKDOWN
-/**
- * @swagger
- *
- *   /api/todo/companyName/todolistbreakdown/:id:
- *   put:
- *     security:
- *      - bearerAuth: []
- *     tags: [TODO]
- *     produces:
- *      - application/json
- *     description: Updating the TODO LIST BREAKDOWN
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *           required: true
- *           description: Todo list id
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ListBreakdown'
- *     responses:
- *       '201':
- *          description: Successful updated
- *       '404':
- *          description: Not found.
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ListBreakdown'
- */
-/* router.put('/companyName/todolistbreakdown/:id', authenticateToken, todoController.updateBreakdown) */
 
 //Delete TODO-LIST
 /**
@@ -237,41 +172,5 @@ router.put('/companyName/todolist/:id', authenticateToken, todoController.update
  */
 router.delete('/companyName/todolist/:id', authenticateToken, todoController.deleteTodolist)
 
-// DELETE TODO-LIST
-/**
- * @swagger
- *
- *   /api/todo/companyName/todolistbreakdown/:id:
- *   delete:
- *     security:
- *      - bearerAuth: []
- *     tags: [TODO]
- *     produces:
- *      - application/json
- *     description: Deleting a List Breakdown
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *           required: true
- *           description:  List breakdown id
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ListBreakdown'
- *     responses:
- *       '204':
- *          description: Todo list has being deleted
- *       '404':
- *          description: Not found.
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ListBreakdown'
- */
-/* router.delete('/companyName/todolistbreakdown/:id', authenticateToken, todoController.deleteBreakdown) */
 
 module.exports = router
