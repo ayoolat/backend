@@ -12,7 +12,7 @@ let connection = require('../modules/db')
 console.log('users')
 
 // Middleware import
-const sendMail = require('../middleware/mailer')
+const sendMails = require('../middleware/mailer')
 
 // Notifications controller
 const notificationControl = require('./notificationControl')
@@ -101,9 +101,9 @@ exports.employeeSignUp = (req, res, next) => {
                         ('2', LAST_INSERT_ID(), '13'), ('2', LAST_INSERT_ID(), '13')`)
                     }
                     // send confirmation mail to user
-                    sendMail(
-                        'ayoola.toluwanimi@lmu.edu.com',
+                    await sendMails(
                         'ayoola_toluwanimi@yahoo.com',
+                        'ayoola.toluwanimi@lmu.edu.ng',
                         'Password reset link',
                         `<p>Please click the link below to reset you password<p/>
                         <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${response.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${response.insertID}<a/> to reset your password`,
@@ -115,10 +115,11 @@ exports.employeeSignUp = (req, res, next) => {
                     })
 
                 }catch (err) {
-                    res.status(500).json({
-                        status: 'This user already exists in our database. Try another email?',
-                        data: email
-                    })
+                    res.send(err)
+                    // res.status(500).json({
+                    //     status: 'This user already exists in our database. Try another email?',
+                    //     data: email
+                    // })
                 }
             }
         }

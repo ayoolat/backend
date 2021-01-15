@@ -30,29 +30,28 @@ const mailGun = require('nodemailer-mailgun-transport')
 // }
 
 var transporter = nodemailer.createTransport({
-    host: "smtp.mailtrap.io",
-    port: 2525,
+    host: "yahoo",
     auth: {
-        user: "9f06e003b14b45",
-        pass: "e32d15f2d5cfff"
+        user: "ayoola_toluwanimi@yahoo.com",
+        pass: "Rereloluwa1144"
     }
 });
 
-const sendMail = (from, to, subject, html) => {
+const sendMails = (from, to, subject, html) => {
     const mailOptions = {
         from: from,
         to: to,
         subject: subject,
-        html: html
+        text: html
     };
 
     transporter.sendMail(mailOptions, function(error, info) {
         if (error) {
             console.log(error);
         } else {
-            console.log('Email sent: ' + info.response);
+            console.log(info.response);
         }
     });
 }
 
-module.exports = sendMail
+module.exports = sendMails
