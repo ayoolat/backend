@@ -16,12 +16,6 @@ const connection = mysql.createPool({
     queueLimit: 0
 })
 
-
-// connection.connect((err, res) => {
-//     if (err) throw err
-//     console.log('DB connected')
-// })
-
 // const connection = mysql.createConnection({
 //     host: "localhost",
 //     user: "root",
@@ -33,18 +27,6 @@ const connection = mysql.createPool({
 // connection.connect((err, res) => {
 //     if (err) throw err
 //     console.log('DB connected')
-// })
-// const connection = mysql.createConnection({
-//     host: "localhost",
-//     user: "root",
-//     password: "",
-//     database: "pacetimesheet_"
-// })
-
-// connection.connect((err, res) => {
-//     if (err) throw err
-
-//     console.log("db server running")
 // })
 
 module.exports = connection
