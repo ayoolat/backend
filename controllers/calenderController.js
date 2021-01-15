@@ -45,7 +45,9 @@ exports.getEvents = (req, res, next) => {
                 let newForm = {
                     'title' : element.eventName,
                     'start' : element.dateCreated,
-                    'end' : element.eventDateAndTime
+                    'end' : element.eventDateAndTime,
+                    'eventID' : element.eventID,
+                    'staffID' : element.staffID
                 }
                 newFormat.push(newForm)
             })

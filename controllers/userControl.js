@@ -102,7 +102,7 @@ exports.employeeSignUp = (req, res, next) => {
                     }
                     // send confirmation mail to user
                     sendMail(
-                        'akan.asanga@gmail.com',
+                        'ayoola.toluwanimi@lmu.edu.com',
                         'ayoola_toluwanimi@yahoo.com',
                         'Password reset link',
                         `<p>Please click the link below to reset you password<p/>

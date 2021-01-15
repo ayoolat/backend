@@ -3,6 +3,8 @@ const request = require('request');
 const url = require('url');
 require('dotenv').config();
 
+connection.query = util.promisify(connection.query);
+
 exports.initiatePayment = async (req, res)=>{
     const{name, phone, email, companyID, planID} = req.body;
     const tx_ref = Date.now();
