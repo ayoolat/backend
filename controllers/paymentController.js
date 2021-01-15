@@ -1,6 +1,7 @@
 var connection = require('../modules/db');
 const request = require('request');
 const url = require('url');
+const util = require('util');
 require('dotenv').config();
 
 connection.query = util.promisify(connection.query);
