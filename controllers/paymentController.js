@@ -49,7 +49,7 @@ exports.initiatePayment = async (req, res)=>{
                 if(error) return res.status(400).json(error);
     
                 connection.query(`insert into transactions (companyID, referenceID, planID, amount, creditStatus) values('${companyID}', '${tx_ref}','${planID}','${amount}', 'pending')`, (err, resp)=>{
-                    if(err) throw err;
+                    if(err) return res.send(err);
     
                     if(resp){
                         res.status(200).json(response.body)
