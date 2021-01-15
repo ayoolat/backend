@@ -462,8 +462,9 @@ exports.timeAndBilling = (req, res, next) => {
     where staffID = ${id}`,
     (err, resp) => {
         // if(err) {return res.status(500).json({message: 'There has been an error, try again'})}
-        if(err)res.send(err)
-        if(!resp){
+        if(err) return res.send(err)
+
+        if(resp == []){
             return res.json({
                 status : 'User does not exist in this company',
             })
