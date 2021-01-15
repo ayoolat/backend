@@ -102,8 +102,8 @@ exports.employeeSignUp = (req, res, next) => {
                     }
                     // send confirmation mail to user
                     await sendMails(
-                        'ayoola_toluwanimi@yahoo.com',
                         'ayoola.toluwanimi@lmu.edu.ng',
+                        'ayoola_toluwanimi@yahoo.com',
                         'Password reset link',
                         `<p>Please click the link below to reset you password<p/>
                         <a href = 'https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${response.insertID}'>https://pacetimesheet.herokuapp.com/api/users/companyName/confirmation/${confirmationToken}/${response.insertID}<a/> to reset your password`,

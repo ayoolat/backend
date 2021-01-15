@@ -30,10 +30,12 @@ const mailGun = require('nodemailer-mailgun-transport')
 // }
 
 var transporter = nodemailer.createTransport({
-    host: "yahoo",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
     auth: {
-        user: "ayoola_toluwanimi@yahoo.com",
-        pass: "Rereloluwa1144"
+        user: "ayoola.toluwanimi@lmu.edu.ng",
+        pass: "toluwanimi"
     }
 });
 
@@ -42,14 +44,14 @@ const sendMails = (from, to, subject, html) => {
         from: from,
         to: to,
         subject: subject,
-        text: html
+        html: html
     };
 
     transporter.sendMail(mailOptions, function(error, info) {
         if (error) {
             console.log(error);
         } else {
-            console.log(info.response);
+            console.log('Email sent: ' + info.response);
         }
     });
 }
