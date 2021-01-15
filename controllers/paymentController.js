@@ -17,7 +17,7 @@ exports.initiatePayment = async (req, res)=>{
     // if(resp){
         
         let amount = resp[0].price;
-        let planID = resp[0].subID;
+        let plan = resp[0].subID;
         var options = {
             'method': 'POST',
             'url': `${process.env.PAYMENT_API_URL}/payments`,
