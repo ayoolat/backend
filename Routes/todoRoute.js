@@ -23,6 +23,8 @@ const router = express.Router();
  *        required:
  *          - staffID
  *          - listName
+ *          - dueDate
+ *          - status
  *        properties:
  *          id:
  *            type: integer
@@ -33,9 +35,12 @@ const router = express.Router();
  *          listName:
  *            type: string
  *            description: The title of your todolist.
+ *          dueDate:
+ *            type: string
+ *            description: Date when due for the task
  *          status:
  *            type: string
- *            description: Status of the todo list
+ *            description: Status of the todo task
  *          createdAt:
  *            type: string
  *            format: date
@@ -43,44 +48,8 @@ const router = express.Router();
  *        example:
  *           staffID: 1861
  *           listName: The Pragmatic Programmer
+ *           dueDate: date.now()
  *           status: pending
- */
-
-
-/*  TODO LIST BREAKDOWN SCHEMA */
-
-/** 
- *
- * @swagger
- *  components:
- *    schemas:
- *      ListBreakdown:
- *        type: object
- *        required:
- *          - toDoTD
- *          - description
- *          - commentArea
- *        properties:
- *          id:
- *            type: integer
- *            description: The auto-generated id of the todolist.
- *          ToDoID:
- *            type: integer
- *            description: The todolist id is created here.
- *          description:
- *            type: string
- *            description: The description of the todolist.
- *          commentArea:
- *            type: string
- *            description: The comment under description.
- *          createdAt:
- *            type: string
- *            format: date
- *            description: The date of the record creation.
- *        example:
- *           toDoID: 5
- *           description: Monday
- *           commentArea: Meeting with doctor Grace
  */
 
 //Get todo list
@@ -155,7 +124,7 @@ router.post('/companyName/todolist', authenticateToken, todoController.insertTod
  *              schema:
  *                $ref: '#/components/schemas/ListBreakdown'
  */
-router.post('/companyName/todolistbreakdown', authenticateToken, todoController.insertBreakdown)
+/* router.post('/companyName/todolistbreakdown', authenticateToken, todoController.insertBreakdown) */
 
 // UPDATE TODO LIST
 /**
@@ -229,7 +198,7 @@ router.put('/companyName/todolist/:id', authenticateToken, todoController.update
  *              schema:
  *                $ref: '#/components/schemas/ListBreakdown'
  */
-router.put('/companyName/todolistbreakdown/:id', authenticateToken, todoController.updateBreakdown)
+/* router.put('/companyName/todolistbreakdown/:id', authenticateToken, todoController.updateBreakdown) */
 
 //Delete TODO-LIST
 /**
@@ -303,6 +272,6 @@ router.delete('/companyName/todolist/:id', authenticateToken, todoController.del
  *              schema:
  *                $ref: '#/components/schemas/ListBreakdown'
  */
-router.delete('/companyName/todolistbreakdown/:id', authenticateToken, todoController.deleteBreakdown)
+/* router.delete('/companyName/todolistbreakdown/:id', authenticateToken, todoController.deleteBreakdown) */
 
 module.exports = router

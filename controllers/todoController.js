@@ -16,16 +16,15 @@ exports.getTodolist = (req, res) => {
             staffID = data.response[0].staffID;
             if (staffID == undefined) { staffID = req.params.staffID }
             if (staffID == undefined) { return res.status(404).send('No staff ID') }
-            let mysql = `SELECT  staffID,listName,todolist.lastUpdated, breakdownID, todolistbreakdown.toDoID, 
-    description, commentArea, todolistbreakdown.dateCreated 
-    FROM todolistbreakdown INNER JOIN todolist ON todolistbreakdown.toDoID = todolist.todoID
-    WHERE staffID = ${staffID}`
+            let mysql = `SELECT * FROM todolist WHERE staffID = ${staffID}`
             connection.query(mysql, (err, respond) => {
                 if (err) {
                     res.status(400).send(err)
                 } else {
-                    res.send(respond)
-                    console.log(respond)
+                    res.json({
+                        status: 'success',
+                        data: req.body
+                    })
                 }
             })
         })
@@ -42,7 +41,7 @@ exports.insertTodolist = (req, res) => {
 
         staffID = data.response[0].staffID;
         if (staffID == undefined) { return res.status(404).send('No staff ID') }
-        let mysql = `insert into todolist(staffID,listName,lastUpdated,status)
+        let mysql = `insert into todolist(staffID,listName,dueDate,status)
          values ('${staffID}','${req.body.listName}','${req.body.lastUpdated}','${req.body.status}')`
         connection.query(mysql, (err, respond) => {
             if (err) {
@@ -54,7 +53,10 @@ exports.insertTodolist = (req, res) => {
                 auditManager.logTrail(trail)
                 res.status(400).send(err)
             } else {
-                res.send({ message: "TODO LIST ADDED", toDoID: respond.insertId });
+                res.json({
+                    status: 'success',
+                    data: req.body
+                })
                 trail = {
                     actor: `Staff ID ${staffID}`,
                     action: `Staff ID ${staffID} successfully added a todolist `,
@@ -68,7 +70,7 @@ exports.insertTodolist = (req, res) => {
 }
 
 //Insert into TODO-LIST-BREAK-DOWN
-exports.insertBreakdown = (req, res) => {
+/* exports.insertBreakdown = (req, res) => {
         let mysql = `insert into todolistbreakdown(toDoID,  description, commentArea)
          values ('${req.body.toDoID}', '${req.body.description}', '${req.body.commentArea}')`
         connection.query(mysql, (err, respond) => {
@@ -90,8 +92,8 @@ exports.insertBreakdown = (req, res) => {
                 auditManager.logTrail(trail)
             }
         })
-    }
-    // UPDATE TODO LIST
+    } */
+// UPDATE TODO LIST
 exports.updateTodolist = (req, res) => {
     let mysql = `UPDATE todolist SET
         listName = '${req.body.listName}', 
@@ -117,7 +119,7 @@ exports.updateTodolist = (req, res) => {
     });
 };
 // UPDATE TODO LIST BREAKDOWN
-exports.updateBreakdown = (req, res) => {
+/* exports.updateBreakdown = (req, res) => {
     let mysql = `UPDATE todolist SET , 
         description = '${req.body.listName}',
         commentArea= '${req.body.staffID}' 
@@ -141,7 +143,7 @@ exports.updateBreakdown = (req, res) => {
             auditManager.logTrail(trail)
         }
     });
-};
+}; */
 //Delete TODO-LIST
 exports.deleteTodolist = (req, res) => {
     let mysql = `DELETE FROM todolist WHERE id = ${req.params.id}`
@@ -168,7 +170,7 @@ exports.deleteTodolist = (req, res) => {
 
 
 // DELETE TODO-LIST-BREAKDOWN
-exports.deleteBreakdown = (req, res) => {
+/* exports.deleteBreakdown = (req, res) => {
     let mysql = `DELETE FROM todolistbreakdown WHERE id = ${req.params.id}`
     connection.query(mysql, (err, respond) => {
         if (err) {
@@ -189,4 +191,4 @@ exports.deleteBreakdown = (req, res) => {
             auditManager.logTrail(trail)
         }
     });
-};
+}; */
