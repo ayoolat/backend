@@ -29,5 +29,3 @@ exports.authorize = (permitItem) => {
         })
     }
 }
-
-// index = resp.findIndex(x => x.name == assignedMainList[id].name)
