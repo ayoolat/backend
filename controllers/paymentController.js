@@ -11,43 +11,45 @@ exports.initiatePayment=(req, res)=>{
 
     connection.query(`SELECT subID, price from sub_plan where subID = ${planID}`, (err, resp)=>{
         if(err) throw err;
-        let amount = resp[0].price;
-        let planID = resp[0].subID;
-        var options = {
-            'method': 'POST',
-            'url': `${process.env.PAYMENT_API_URL}/payments`,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.PAYMENT_SECRET_KEY}`
-            },
-            body: JSON.stringify({
-                "tx_ref": tx_ref,
-                "amount": amount,
-                "currency": "NGN",
-                "redirect_url":`${process.env.db_host}/api/payment/verify-payment`,
-                "payment_options":"card",
-                // "payment_plan": planID,
-                "customer":{
-                    "email": email,
-                    "phonenumber": phone,
-                    "name": name
+        if(resp){
+            let amount = resp[0].price;
+            let planID = resp[0].subID;
+            var options = {
+                'method': 'POST',
+                'url': `${process.env.PAYMENT_API_URL}/payments`,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${process.env.PAYMENT_SECRET_KEY}`
                 },
-                "customizations":{
-                    "title":"Pace Time Sheet",
-                    "description":"Time is Money",
-                    "logo":"https://miro.medium.com/max/624/1*QWo6-O99AZq5sHo8BgeUBg.png"
-                }
-            })
-            };
-
-            request(options, function(error, response){
-                if(error) return res.status(400).json(error);
-
-                connection.query(`insert into transactions (companyID, referenceID, planID, amount, creditStatus) values('${companyID}', '${tx_ref}','${planID}','${amount}', 'pending')`, (err, resp)=>{
-                    if(err) throw err;
-                    res.status(200).json(response.body)
+                body: JSON.stringify({
+                    "tx_ref": tx_ref,
+                    "amount": amount,
+                    "currency": "NGN",
+                    "redirect_url":`${process.env.db_host}/api/payment/verify-payment`,
+                    "payment_options":"card",
+                    // "payment_plan": planID,
+                    "customer":{
+                        "email": email,
+                        "phonenumber": phone,
+                        "name": name
+                    },
+                    "customizations":{
+                        "title":"Pace Time Sheet",
+                        "description":"Time is Money",
+                        "logo":"https://miro.medium.com/max/624/1*QWo6-O99AZq5sHo8BgeUBg.png"
+                    }
                 })
-            })
+                };
+
+                request(options, function(error, response){
+                    if(error) return res.status(400).json(error);
+
+                    connection.query(`insert into transactions (companyID, referenceID, planID, amount, creditStatus) values('${companyID}', '${tx_ref}','${planID}','${amount}', 'pending')`, (err, resp)=>{
+                        if(err) throw err;
+                        res.status(200).json(response.body)
+                    })
+                })
+        }
     })
 
 }
