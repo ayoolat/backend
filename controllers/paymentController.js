@@ -14,10 +14,10 @@ exports.initiatePayment = async (req, res)=>{
 
     resp = await connection.query(`SELECT subID, price from sub_plan where subID = ${planID}`)
 
-    // console.log(resp)
+    console.log(resp)
     // if(err) throw err;
 
-    // if(resp){
+    if(resp){
         
         let amount = resp[0].price;
         var options = {
@@ -58,7 +58,7 @@ exports.initiatePayment = async (req, res)=>{
                 }
             })
         })
-    // }
+    }
 
 }
 
