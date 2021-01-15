@@ -33,6 +33,9 @@ const router = express.Router();
  *          listName:
  *            type: string
  *            description: The title of your todolist.
+ *          status:
+ *            type: string
+ *            description: Status of the todo list
  *          createdAt:
  *            type: string
  *            format: date
@@ -40,6 +43,7 @@ const router = express.Router();
  *        example:
  *           staffID: 1861
  *           listName: The Pragmatic Programmer
+ *           status: pending
  */
 
 
@@ -123,7 +127,7 @@ router.get('/companyName/todolist', authenticateToken, todoController.getTodolis
  *              schema:
  *                $ref: '#/components/schemas/List'
  */
-router.post('/companyName/todolist', authenticateToken, validator(schema.insertTodolist), todoController.insertTodolist)
+router.post('/companyName/todolist', authenticateToken, todoController.insertTodolist)
 
 //Insert into TODO-LIST-BREAK-DOWN
 /**
@@ -151,7 +155,7 @@ router.post('/companyName/todolist', authenticateToken, validator(schema.insertT
  *              schema:
  *                $ref: '#/components/schemas/ListBreakdown'
  */
-router.post('/companyName/todolistbreakdown', authenticateToken, validator(schema.insertBreakdown), todoController.insertBreakdown)
+router.post('/companyName/todolistbreakdown', authenticateToken, todoController.insertBreakdown)
 
 // UPDATE TODO LIST
 /**

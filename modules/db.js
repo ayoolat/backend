@@ -2,7 +2,6 @@
 const mysql = require('mysql')
 require('dotenv').config()
 
-// create mysql connection
 const connection = mysql.createPool({
     // host: 'localhost',
     // user: 'toluwanimi',
@@ -15,10 +14,10 @@ const connection = mysql.createPool({
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
-    // host: 'localhost',
-    // user: 'root',
-    // password: '',
-    // database: 'pace'
+        // host: 'localhost',
+        // user: 'root',
+        // password: '',
+        // database: 'pace'
 })
 
 
@@ -27,6 +26,18 @@ const connection = mysql.createPool({
 //     console.log('DB connected')
 // })
 
+// const connection = mysql.createConnection({
+//     host: "localhost",
+//     user: "root",
+//     password: "",
+//     database: "pacetimesheet_"
+// })
+
+
+// connection.connect((err, res) => {
+//     if (err) throw err
+//     console.log('DB connected')
+// })
 // const connection = mysql.createConnection({
 //     host: "localhost",
 //     user: "root",
