@@ -81,7 +81,7 @@ app.use('/api/taskSheet', taskSheetRoute)
 app.use('/api/permissions', managePermissionsRoute)
 app.use('/api/timeSheet', timeSheetRoute)
 app.use('/api/billingSheet', billingSheetRoute)
-// app.use('/api/payment', paymentRoute)
+app.use('/api/payment', paymentRoute)
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 

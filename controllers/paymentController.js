@@ -11,6 +11,7 @@ exports.initiatePayment=(req, res)=>{
 
     connection.query(`SELECT subID, price from sub_plan where subID = ${planID}`, (err, resp)=>{
         if(err) throw err;
+
         if(resp){
             let amount = resp[0].price;
             let planID = resp[0].subID;
@@ -39,16 +40,19 @@ exports.initiatePayment=(req, res)=>{
                         "logo":"https://miro.medium.com/max/624/1*QWo6-O99AZq5sHo8BgeUBg.png"
                     }
                 })
-                };
+            };
 
-                request(options, function(error, response){
-                    if(error) return res.status(400).json(error);
+            request(options, function(error, response){
+                if(error) return res.status(400).json(error);
 
-                    connection.query(`insert into transactions (companyID, referenceID, planID, amount, creditStatus) values('${companyID}', '${tx_ref}','${planID}','${amount}', 'pending')`, (err, resp)=>{
-                        if(err) throw err;
+                connection.query(`insert into transactions (companyID, referenceID, planID, amount, creditStatus) values('${companyID}', '${tx_ref}','${planID}','${amount}', 'pending')`, (err, resp)=>{
+                    if(err) throw err;
+
+                    if(resp){
                         res.status(200).json(response.body)
-                    })
+                    }
                 })
+            })
         }
     })
 
@@ -62,24 +66,26 @@ exports.verifyPayment =(req, res)=>{
 
     // console.log(transaction_id)
 
-var options = {
-'method': 'GET',
-'url': `${process.env.PAYMENT_API_URL}/transactions/${transaction_id}/verify`,
-'headers': {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${process.env.PAYMENT_SECRET_KEY}`
-}
-};
-request(options, function (error, response) { 
-if (error) throw new Error(error);
-console.log(response.body);
-const ans = JSON.parse(response.body);
-// console.log(transaction_id)
-const {tx_ref, amount, status} = ans.data;
+    var options = {
+    'method': 'GET',
+    'url': `${process.env.PAYMENT_API_URL}/transactions/${transaction_id}/verify`,
+    'headers': {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.PAYMENT_SECRET_KEY}`
+        }
+    };
+    request(options, function (error, response) { 
+    if (error) throw new Error(error);
 
-console.log(tx_ref);
-console.log(amount);
-console.log(status);
+    if(response){}
+    console.log(response.body);
+    const ans = JSON.parse(response.body);
+    // console.log(transaction_id)
+    const {tx_ref, amount, status} = ans.data;
+
+    console.log(tx_ref);
+    console.log(amount);
+    console.log(status);
 
 connection.query(`select amount, creditStatus from transactions where referenceID = ${tx_ref}`, (error, resp)=>{
     if(error) throw (error);
