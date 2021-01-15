@@ -67,6 +67,7 @@ const taskSheetRoute = require('./Routes/taskSheetRoute')
 const managePermissionsRoute = require('./Routes/managePermissionRoute')
 const timeSheetRoute = require('./Routes/timeSheetRoute')
 const billingSheetRoute = require('./Routes/billingSheetRoute')
+const paymentRoute = require('./Routes/paymentRoute')
 
 // instantiate controllers
 app.use('/api/users', usersRoute)
@@ -80,6 +81,7 @@ app.use('/api/taskSheet', taskSheetRoute)
 app.use('/api/permissions', managePermissionsRoute)
 app.use('/api/timeSheet', timeSheetRoute)
 app.use('/api/billingSheet', billingSheetRoute)
+app.use('/api/payment', paymentRoute)
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 

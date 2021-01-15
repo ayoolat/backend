@@ -8,13 +8,17 @@ const connection = mysql.createPool({
     // user: 'toluwanimi',
     // password: 'password',
     // database: 'pacetimesheet_'
-    host: process.env.db_host,
-    user: process.env.db_user,
-    password: process.env.db_password,
-    database: process.env.db_database,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+    // host: process.env.db_host,
+    // user: process.env.db_user,
+    // password: process.env.db_password,
+    // database: process.env.db_database,
+    // waitForConnections: true,
+    // connectionLimit: 10,
+    // queueLimit: 0
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'pace'
 })
 
 
