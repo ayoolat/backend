@@ -33,6 +33,9 @@ const router = express.Router();
  *          listName:
  *            type: string
  *            description: The title of your todolist.
+ *          status:
+ *            type: string
+ *            description: Status of the todo list
  *          createdAt:
  *            type: string
  *            format: date
@@ -40,6 +43,7 @@ const router = express.Router();
  *        example:
  *           staffID: 1861
  *           listName: The Pragmatic Programmer
+ *           status: pending
  */
 
 
