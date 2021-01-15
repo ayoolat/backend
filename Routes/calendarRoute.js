@@ -2,6 +2,7 @@ const express = require('express')
 
 // Export middleWare
 const authenticateToken = require('../middleware/authentication')
+const authorization = require('../middleware/authorization')
 
 // Export controller
 const calendarController = require('../controllers/calenderController')
@@ -69,7 +70,7 @@ const router = express.Router();
  *              schema:
  *                $ref: '#/components/schemas/Calender'
  */
-router.post('/companyName/new', authenticateToken, calendarController.NewEvent);
+router.post('/companyName/new', authenticateToken, authorization.authorize('Add and edit Company calendar'), calendarController.NewEvent);
 
 // get events
 /**
@@ -117,7 +118,7 @@ router.get('/companyName/:id', authenticateToken, calendarController.getEvents);
  *              schema:
  *                $ref: '#/components/schemas/Calender'
  */
-router.put('/companyName/edit/:id/:eventID', authenticateToken, calendarController.editEvent);
+router.put('/companyName/edit/:id/:eventID', authenticateToken, authorization.authorize('Add and edit Company calendar'), calendarController.editEvent);
 
 // Delete calender
 /**
@@ -154,6 +155,6 @@ router.put('/companyName/edit/:id/:eventID', authenticateToken, calendarControll
  *              schema:
  *                $ref: '#/components/schemas/Calender'
  */
-router.delete('/companyName/delete/:id/:eventID', authenticateToken, calendarController.deleteEVent)
+router.delete('/companyName/delete/:id/:eventID', authenticateToken, authorization.authorize('Add and edit Company calendar'), calendarController.deleteEVent)
 
 module.exports = router

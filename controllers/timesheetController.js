@@ -103,37 +103,29 @@ exports.getAllStaffTimeSheet = (req, res, next) => {
     const {id} = req.params
     const {startDate, endDate} = req.params
 
-    permitDetails = req.respData.response.find(x => x.permitItem == 'View company timesheet and billing report')
-    if(permitDetails.permit === 'allowed'){
-        connection.query(`SELECT s.firstName, s.departmentId, s.lastName, t.seconds, s.expectedWOrkHours, t.loginTime, t.logoutTime, t.date FROM staff s 
-        JOIN timer t ON s.staffID = t.staffID 
-        WHERE companyId = ${id} AND date BETWEEN '${startDate}' AND '${endDate}'`, (err, resp) => {
-            if(err){
-                res.statusCode(401).send('error')
-            }
-            if(resp){
-                res.send(resp)
-            }
-        })
-    }
-
+    connection.query(`SELECT s.firstName, s.departmentId, s.lastName, t.seconds, s.expectedWOrkHours, t.loginTime, t.logoutTime, t.date FROM staff s 
+    JOIN timer t ON s.staffID = t.staffID 
+    WHERE companyId = ${id} AND date BETWEEN '${startDate}' AND '${endDate}'`, (err, resp) => {
+        if(err){
+            res.statusCode(500).json({Status : "error"})
+        }
+        if(resp){
+            res.send(resp)
+        }
+    })
 }
 
 exports.getAllDepartmentTimeSheet = (req, res, next) => {
-    permitDetails = req.respData.response.find(x => x.permitItem == 'View department timesheet and billing report')
-    if(permitDetails.permit === 'allowed'){
-        connection.query(`SELECT s.firstName, s.lastName, t.seconds, s.expectedWOrkHours, t.loginTime, t.logoutTime, t.date FROM staff s
-        JOIN timer t ON s.staffID = t.staffID 
-        WHERE departmentId = ${id} AND date BETWEEN '${startDate}' AND '${endDate}'`, (err, resp) => {
-            if(err){
-                res.statusCode(401).send('error')
-            }
-            if(resp){
-                res.send(resp)
-            }
-        })
-    }
-
+    connection.query(`SELECT s.firstName, s.lastName, t.seconds, s.expectedWOrkHours, t.loginTime, t.logoutTime, t.date FROM staff s
+    JOIN timer t ON s.staffID = t.staffID 
+    WHERE departmentId = ${id} AND date BETWEEN '${startDate}' AND '${endDate}'`, (err, resp) => {
+        if(err){
+            res.statusCode(500).json({Status : "error"})
+        }
+        if(resp){
+            res.send(resp)
+        }
+    })
 }
 
     

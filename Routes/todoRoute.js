@@ -123,7 +123,7 @@ router.get('/companyName/todolist', authenticateToken, todoController.getTodolis
  *              schema:
  *                $ref: '#/components/schemas/List'
  */
-router.post('/companyName/todolist', authenticateToken, validator(schema.insertTodolist), todoController.insertTodolist)
+router.post('/companyName/todolist', authenticateToken, todoController.insertTodolist)
 
 //Insert into TODO-LIST-BREAK-DOWN
 /**
@@ -151,7 +151,7 @@ router.post('/companyName/todolist', authenticateToken, validator(schema.insertT
  *              schema:
  *                $ref: '#/components/schemas/ListBreakdown'
  */
-router.post('/companyName/todolistbreakdown', authenticateToken, validator(schema.insertBreakdown), todoController.insertBreakdown)
+router.post('/companyName/todolistbreakdown', authenticateToken, todoController.insertBreakdown)
 
 // UPDATE TODO LIST
 /**

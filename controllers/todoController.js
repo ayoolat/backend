@@ -5,20 +5,32 @@ const auditManager = require("../middleware/auditTrail")
 
 //Get todo list
 exports.getTodolist = (req, res) => {
-    let mysql = `SELECT  staffID,listName,todolist.lastUpdated, breakdownID, todolistbreakdown.toDoID, 
-    description, commentArea, todolistbreakdown.dateCreated 
-    FROM todolistbreakdown INNER JOIN todolist ON todolistbreakdown.toDoID = todolist.todoID`
-    connection.query(mysql, (err, respond) => {
-        if (err) {
-            res.status(400).send(err)
-        } else {
-            res.send(respond)
-            console.log(respond)
-        }
-    })
-}
+        const authenticationHeader = req.headers['authorization']
+        const Token = authenticationHeader && authenticationHeader.split(' ')[1]
 
-//Insert into TODO-LIST
+        if (Token == null) return res.status(401).send('invalid request')
+
+        jwt.verify(Token, process.env.ACCESS_TOKEN_KEY, (err, data) => {
+            if (err) return res.send('invalid token or token expired')
+
+            staffID = data.response[0].staffID;
+            if (staffID == undefined) { staffID = req.params.staffID }
+            if (staffID == undefined) { return res.status(404).send('No staff ID') }
+            let mysql = `SELECT  staffID,listName,todolist.lastUpdated, breakdownID, todolistbreakdown.toDoID, 
+    description, commentArea, todolistbreakdown.dateCreated 
+    FROM todolistbreakdown INNER JOIN todolist ON todolistbreakdown.toDoID = todolist.todoID
+    WHERE staffID = ${staffID}`
+            connection.query(mysql, (err, respond) => {
+                if (err) {
+                    res.status(400).send(err)
+                } else {
+                    res.send(respond)
+                    console.log(respond)
+                }
+            })
+        })
+    }
+    //Insert into TODO-LIST
 exports.insertTodolist = (req, res) => {
     const authenticationHeader = req.headers['authorization']
     const Token = authenticationHeader && authenticationHeader.split(' ')[1]
@@ -29,7 +41,6 @@ exports.insertTodolist = (req, res) => {
         if (err) return res.send('invalid token or token expired')
 
         staffID = data.response[0].staffID;
-        if (staffID == undefined) { staffID = req.body.staffID }
         if (staffID == undefined) { return res.status(404).send('No staff ID') }
         let mysql = `insert into todolist(staffID,listName,lastUpdated,status)
          values ('${staffID}','${req.body.listName}','${req.body.lastUpdated}','${req.body.status}')`
@@ -43,7 +54,7 @@ exports.insertTodolist = (req, res) => {
                 auditManager.logTrail(trail)
                 res.status(400).send(err)
             } else {
-                res.send("To DO list  added");
+                res.send({ message: "TODO LIST ADDED", toDoID: respond.insertId });
                 trail = {
                     actor: `Staff ID ${staffID}`,
                     action: `Staff ID ${staffID} successfully added a todolist `,
@@ -59,7 +70,7 @@ exports.insertTodolist = (req, res) => {
 //Insert into TODO-LIST-BREAK-DOWN
 exports.insertBreakdown = (req, res) => {
         let mysql = `insert into todolistbreakdown(toDoID,  description, commentArea)
-         values ('${req.body.toDoID}', '${req.body.description}', '${req.body.commentArea})`
+         values ('${req.body.toDoID}', '${req.body.description}', '${req.body.commentArea}')`
         connection.query(mysql, (err, respond) => {
             if (err) {
                 trail = {

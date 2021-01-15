@@ -6,6 +6,7 @@ console.log('users')
 const authenticateToken = require('../middleware/authentication')
 const fileUpload = require('../middleware/fileUpload')
 const schema = require('../modules/schema')
+const authorization = require('../middleware/authorization')
 const validator = require('../middleware/validator')
 
 // Export controller
@@ -312,7 +313,7 @@ router.post('/login', userController.userLogin);
  *              schema:
  *                $ref: '#/components/schemas/UsersEmployee'
  */
-router.post('/signUp/companyName/addUser', authenticateToken, validator(schema.employeeSignUp), userController.employeeSignUp);
+router.post('/signUp/companyName/addUser', authenticateToken, authorization.authorize('Add user'), validator(schema.employeeSignUp), userController.employeeSignUp);
 
 
 // Employees second stage signup
@@ -365,9 +366,10 @@ router.put('/companyName/confirmation/:token/:id', validator(schema.changePasswo
  *       '200':
  *          description: successful
  */
-router.get('/companyName/employee/:companyID', authenticateToken, userController.getAllCompanyStaff)
+router.get('/companyName/employee/:companyID', authenticateToken, authorization.authorize('View all company users'), userController.getAllCompanyStaff)
 
 // Update company details
+
 /**
  * @swagger
  *
@@ -395,9 +397,10 @@ router.get('/companyName/employee/:companyID', authenticateToken, userController
  *              schema:
  *                $ref: '#/components/schemas/Company'
  */
-router.put('/companyName/companyProfile/updateProfile/:id', authenticateToken, userController.updateCompanyRecord)
+router.put('/companyName/companyProfile/updateProfile/:id', authenticateToken, authorization.authorize('Edit company settings'), userController.updateCompanyRecord)
 
 // Add a department
+
 /**
  * @swagger
  *
@@ -425,7 +428,7 @@ router.put('/companyName/companyProfile/updateProfile/:id', authenticateToken, u
  *              schema:
  *                $ref: '#/components/schemas/Department'
  */
-router.post('/companyName/companyProfile/addDepartment/:id', authenticateToken, userController.addDepartment)
+router.post('/companyName/companyProfile/addDepartment/:id', authenticateToken, authorization.authorize('Edit company settings'), userController.addDepartment)
 
 // view department
 /**
@@ -443,17 +446,17 @@ router.post('/companyName/companyProfile/addDepartment/:id', authenticateToken, 
  *       '200':
  *          description: successful
  */
-router.get('/companyName/companyProfile/department/:id', authenticateToken, userController.getDepartment)
+router.get('/companyName/companyProfile/department/:id', authenticateToken, authorization.authorize('Add user'), userController.getDepartment)
 
 
 // // Update user details
 // router.put('/companyName/userProfile/updateProfile/:id', authenticateToken, fileUpload.uploadImage.single('image'), userController.updateUserRecord)
 
 // Edit a department
-router.post('/companyName/companyProfile/editDepartment/:id/:departmentID', authenticateToken, userController.editDepartment)
+router.post('/companyName/companyProfile/editDepartment/:id/:departmentID', authenticateToken, authorization.authorize('Edit company settings'), userController.editDepartment)
 
 // delete a department
-router.post('/companyName/companyProfile/deleteDepartment/:id/:departmentID', authenticateToken, userController.deleteDepartment)
+router.post('/companyName/companyProfile/deleteDepartment/:id/:departmentID', authenticateToken, authorization.authorize('Edit company settings'), userController.deleteDepartment)
 
 // Update user details
 router.put('/companyName/userProfile/updateProfile/:id', authenticateToken, fileUpload.uploadImage.single('image'), userController.updateUserRecord)
@@ -475,7 +478,7 @@ router.put('/companyName/userProfile/updateProfile/:id', authenticateToken, file
  *       '200':
  *          description: successful
  */
-router.get('/companyName/companyProfile/:id', authenticateToken, userController.viewCompanyProfile)
+router.get('/companyName/companyProfile/:id', authenticateToken, authorization.authorize('Edit company settings'), userController.viewCompanyProfile)
 
 // view personal profile
 /**
@@ -526,11 +529,14 @@ router.put('/companyName/userProfile/changePassword/:id', authenticateToken, val
  *              schema:
  *                $ref: '#/components/schemas/Billing'
  */
-router.put('/companyName/employee/timeAndBilling/:id', authenticateToken, userController.timeAndBilling)
+router.put('/companyName/employee/timeAndBilling/:id', authenticateToken, authorization.authorize('Edit company settings'), userController.timeAndBilling)
 
 // reset password
 router.post('/companyName/userProfile/forgot-password', userController.resetPassword)
 router.put('/companyName/userProfile/passwordReset/:token/:id', authenticateToken, validator(schema.changePassword), userController.setNewPassword)
+
+// delete User
+router.delete(`/companyName/employee/deleteUser/:id`, authenticateToken, authorization.authorize('Add user'), userController.timeAndBilling)
 
 
 

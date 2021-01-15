@@ -4,6 +4,7 @@ console.log('tasks')
 
 // Export middleWare
 const authenticateToken = require('../middleware/authentication')
+const authorization = require('../middleware/authorization')
 
 // Export controller
 const taskController = require('../controllers/taskControl')
@@ -101,7 +102,7 @@ const router = express.Router();
  *              schema:
  *                $ref: '#/components/schemas/Task'
  */
-router.post('/companyName/newTask/:id', authenticateToken, fileUpload.fileUpload.single('documentsAttached'), taskController.newTask);
+router.post('/companyName/newTask/:id', authenticateToken, authorization.authorize('Add and Edit tasks'), fileUpload.fileUpload.single('documentsAttached'), taskController.newTask);
 
 // search Task
 router.post('/companyName/search/:id', authenticateToken, taskController.searchTask);
@@ -179,7 +180,7 @@ router.get('/companyName/status/:id/:status', authenticateToken, taskController.
  *       '200':
  *          description: successful
  */
-router.get('/companyName/allTasks/:id', authenticateToken, taskController.getCompanyTasks);
+router.get('/companyName/allTasks/:id', authenticateToken, authorization.authorize('Add and Edit tasks'), taskController.getCompanyTasks);
 
 // get all company tasks by status
 /**
@@ -197,7 +198,7 @@ router.get('/companyName/allTasks/:id', authenticateToken, taskController.getCom
  *       '200':
  *          description: successful
  */
-router.get('/companyName/allTasks/:status/:id', authenticateToken, taskController.getCompanyTasksByStatus);
+router.get('/companyName/allTasks/:status/:id', authenticateToken, authorization.authorize('Add and Edit tasks'), taskController.getCompanyTasksByStatus);
 
 // update company tasks //
 /**
@@ -227,7 +228,7 @@ router.get('/companyName/allTasks/:status/:id', authenticateToken, taskControlle
  *              schema:
  *                $ref: '#/components/schemas/Task'
  */
-router.put('/companyName/editTask/:id', authenticateToken, fileUpload.fileUpload.single('documentsAttached'), taskController.editTask);
+router.put('/companyName/editTask/:id', authenticateToken, authorization.authorize('Add and Edit tasks'), fileUpload.fileUpload.single('documentsAttached'), taskController.editTask);
 
 // Update task status //
 /**
@@ -294,6 +295,6 @@ router.put('/companyName/editTaskStatus/:id', authenticateToken, taskController.
  *              schema:
  *                $ref: '#/components/schemas/Task'
  */
-router.delete('/companyName/deleteTask/:id', authenticateToken, taskController.deleteTask);
+router.delete('/companyName/deleteTask/:id', authenticateToken, authorization.authorize('Add and Edit tasks'), taskController.deleteTask);
 
 module.exports = router;
