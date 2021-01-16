@@ -29,7 +29,7 @@ exports.initiatePayment = async (req, res)=>{
                     "tx_ref": tx_ref,
                     "amount": amount,
                     "currency": "NGN",
-                    "redirect_url":`${process.env.db_host}/api/payment/verify-payment`,
+                    "redirect_url":`https://pacetimesheet.herokuapp.com/api/payment/verify-payment`,
                     "payment_options":"card",
                     // "payment_plan": planID,
                     "customer":{
