@@ -23,7 +23,7 @@ exports.getTodolist = (req, res) => {
                 } else {
                     res.json({
                         status: 'success',
-                        data: req.body
+                        data: respond
                     })
                 }
             })
